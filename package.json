@@ -1,7 +1,19 @@
 {
   "name": "moviegraphy",
-  "type": "module",
   "version": "0.0.1",
+  "description": "",
+  "author": "Nicolás Omar González Passerino",
+  "license": "GPL-3.0-only",
+  "private": true,
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolasOmar/moviegraphy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NicolasOmar/moviegraphy/issues"
+  },
+  "type": "module",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -10,7 +22,12 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "update": "npx @astro/upgrade",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write src/**/*.astro ",
+    "format:check": "prettier --check src/**/*.astro ",
+    "lint-staged": "lint-staged -v"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
@@ -26,6 +43,26 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
-    "husky": "^9.1.7"
+    "@eslint/js": "^9.39.4",
+    "@types/eslint-plugin-jsx-a11y": "^6.10.1",
+    "@typescript-eslint/parser": "^8.63.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.7.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
+    "prettier": "^3.9.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript-eslint": "^8.63.0"
+  },
+  "lint-staged": {
+    "src/**/*.(astro|ts|tsx)": [
+      "prettier --write",
+      "eslint --max-warnings 0"
+    ]
   }
 }

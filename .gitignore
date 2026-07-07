@@ -65,3 +65,7 @@ node_modules/
 .claude
 
 dist
+.astro
+
+CLAUDE.md
+AGENTS.md
