@@ -2,7 +2,7 @@
 import { faker } from '@faker-js/faker'
 import astroLogo from '../assets/astro.svg'
 import background from '../assets/background.svg'
-import ReactTable from './ReactTable'
+import TableIsland from '../islands/TableIsland'
 import type { Movie } from '../ts/movie'
 import './Welcome.css'
 
@@ -48,7 +48,7 @@ const columns = [
         <img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" />
       </a>
 
-      <ReactTable dataSource={randomMovies} columns={columns} />
+      <TableIsland client:load table={{ dataSource: randomMovies, columns }} />
     </section>
   </main>
 </section>
