@@ -2,15 +2,16 @@ import type { ReactTableProps } from '@components/ReactTable'
 import type { InputEventHandler } from '@ts/misc'
 import type { MovieEntity } from '@ts/movie'
 
+import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import ReactInput from '@components/ReactInput'
 import { ReactTable } from '@components/ReactTable'
 import { useStore } from '@nanostores/react'
-import { movieList, removeMovie } from '@store/movie'
+import { $contextMovieList, removeMovie, updateMovieContext } from '@store/movie'
 import { Button } from 'antd'
 import { type FC, useMemo, useState } from 'react'
 
 export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) => {
-  const generalMovieList = useStore(movieList)
+  const generalMovieList = useStore($contextMovieList)
 
   const [searchParam, setSearchParam] = useState<string>('')
   const memoizedTable = useMemo(() => {
@@ -18,13 +19,21 @@ export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) =
       searchParam.length > 0
         ? generalMovieList.filter(_movie => _movie.name.includes(searchParam))
         : generalMovieList
-    const testing = {
+    const optionsColumn = {
       key: 'options',
-      render: ({ id }: MovieEntity) => <Button onClick={() => removeMovie(id)}>X</Button>,
+      render: (_singleMovie: MovieEntity) => (
+        <>
+          <Button icon={<EditFilled />} onClick={() => updateMovieContext(_singleMovie)} />
+
+          <Button icon={<DeleteFilled />} onClick={() => removeMovie(_singleMovie.id)} />
+        </>
+      ),
       title: 'Options'
     }
 
-    return <ReactTable {...{ columns: [...columns, testing], dataSource: filteredDataSource }} />
+    return (
+      <ReactTable {...{ columns: [...columns, optionsColumn], dataSource: filteredDataSource }} />
+    )
   }, [generalMovieList, columns, searchParam])
 
   const handleChange: InputEventHandler = event => setSearchParam(event.target.value)

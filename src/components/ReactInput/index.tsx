@@ -14,7 +14,7 @@ interface ReactInputProps {
 const ReactInput: FC<ReactInputProps> = ({ id, label, name, onChange, value }) => {
   return (
     <Form.Item label={label} name={name}>
-      <Input id={id} onChange={onChange} type={'text'} value={value} />
+      <Input defaultValue={value} id={id} onChange={onChange} type={'text'} />
     </Form.Item>
   )
 }

@@ -14,12 +14,23 @@ const randomMovies: MovieEntity[] = Array(randomNumber)
     releaseYear: faker.number.int({ max: 2026, min: 1990 })
   }))
 
-export const movieList = atom(randomMovies)
+export const $contextMovieList = atom<MovieEntity[]>(randomMovies)
+export const $contextSelectedMovie = atom<MovieEntity | null>(null)
 
 export const addMovie = (newMovie: MovieEntity) => {
-  movieList.set([...movieList.get(), { ...newMovie, id: faker.string.uuid() }])
+  $contextMovieList.set([...$contextMovieList.get(), { ...newMovie, id: faker.string.uuid() }])
+}
+
+export const updateMovie = (updatedMovie: MovieEntity) => {
+  $contextMovieList.set(
+    $contextMovieList.get().map(_movie => (_movie.id === updatedMovie.id ? updatedMovie : _movie))
+  )
 }
 
 export const removeMovie = (movieId: string) => {
-  movieList.set(movieList.get().filter(({ id }) => id !== movieId))
+  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id !== movieId))
+}
+
+export const updateMovieContext = (_updateData: MovieEntity | null) => {
+  $contextSelectedMovie.set(_updateData)
 }

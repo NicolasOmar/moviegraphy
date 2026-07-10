@@ -1,13 +1,17 @@
 import type { MovieEntity } from '@ts/movie'
-import type { FC } from 'react'
 
 import ReactInput from '@components/ReactInput'
-import { addMovie } from '@store/movie'
+import { useStore } from '@nanostores/react'
+import { $contextSelectedMovie, addMovie, updateMovie, updateMovieContext } from '@store/movie'
 import { Button, Form } from 'antd'
 import { useFormik } from 'formik'
+import { type FC, useMemo } from 'react'
 
 export const ReactMovieForm: FC = () => {
+  const contextMovie = useStore($contextSelectedMovie)
+  const [antForm] = Form.useForm<MovieEntity>()
   const basicFormik = useFormik<MovieEntity>({
+    enableReinitialize: true,
     initialValues: {
       countryMade: '',
       description: '',
@@ -16,13 +20,29 @@ export const ReactMovieForm: FC = () => {
       releaseYear: 0
     },
     onSubmit: formObj => {
-      addMovie(formObj)
+      if (contextMovie === null) {
+        addMovie(formObj)
+      } else {
+        updateMovie(formObj)
+      }
+
+      antForm.resetFields()
       basicFormik.resetForm()
+      updateMovieContext(null)
+    }
+  })
+  const submitButtonText = useMemo(() => (contextMovie ? 'Update' : 'Create'), [contextMovie])
+
+  $contextSelectedMovie.listen(_movie => {
+    if (_movie) {
+      antForm.setFieldsValue(_movie)
+      basicFormik.setValues(_movie)
     }
   })
 
   return (
     <Form
+      form={antForm}
       layout="horizontal"
       onFinish={() => basicFormik.submitForm()}
       style={{ padding: '5% 5% 0 5%' }}
@@ -53,7 +73,7 @@ export const ReactMovieForm: FC = () => {
       />
 
       <Form.Item>
-        <Button htmlType="submit">Create movie</Button>
+        <Button htmlType="submit">{submitButtonText}</Button>
       </Form.Item>
     </Form>
   )
