@@ -2,38 +2,39 @@
 import astroLogo from '@assets/astro.svg'
 import background from '@assets/background.svg'
 import { ReactMovieTable } from '@components/ReactMovieTable'
+
 import './index.css'
 
 const columns = [
   {
-    title: 'Name',
     dataIndex: 'name',
-    key: 'name'
+    key: 'name',
+    title: 'Name'
   },
   {
-    title: 'Description',
     dataIndex: 'description',
-    key: 'description'
+    key: 'description',
+    title: 'Description'
   },
   {
-    title: 'Year of release',
     dataIndex: 'releaseYear',
-    key: 'releaseYear'
+    key: 'releaseYear',
+    title: 'Year of release'
   },
   {
-    title: 'Country',
     dataIndex: 'countryMade',
-    key: 'countryMade'
+    key: 'countryMade',
+    title: 'Country'
   }
 ]
 ---
 
 <section id="container">
-  <img id="background" src={background.src} alt="" fetchpriority="high" />
+  <img alt="" fetchpriority="high" id="background" src={background.src} />
   <main>
     <section id="hero">
       <a href="https://astro.build">
-        <img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" />
+        <img alt="Astro Homepage" height="48" src={astroLogo.src} width="115" />
       </a>
 
       <ReactMovieTable client:load columns={columns} />

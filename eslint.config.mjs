@@ -7,14 +7,16 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
+import perfectionist from 'eslint-plugin-perfectionist'
 
 export default defineConfig(
   globalIgnores(['dist/**', '.astro/**', 'node_modules/**']),
   js.configs.recommended,
   tseslint.configs.recommended,
   astro.configs.recommended,
+  perfectionist.configs['recommended-natural'],
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     plugins: {
       react,
       'react-hooks': reactHooks,

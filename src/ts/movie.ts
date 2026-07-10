@@ -1,6 +1,7 @@
 export interface MovieEntity {
-  name: string
-  description: string
-  releaseYear: number
   countryMade: string
+  description: string
+  id: string
+  name: string
+  releaseYear: number
 }

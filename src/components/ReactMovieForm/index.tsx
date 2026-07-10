@@ -1,17 +1,19 @@
-import { Button, Form } from 'antd'
-import { useFormik } from 'formik'
+import type { MovieEntity } from '@ts/movie'
 import type { FC } from 'react'
+
 import ReactInput from '@components/ReactInput'
 import { addMovie } from '@store/movie'
-import type { MovieEntity } from '@ts/movie'
+import { Button, Form } from 'antd'
+import { useFormik } from 'formik'
 
 export const ReactMovieForm: FC = () => {
   const basicFormik = useFormik<MovieEntity>({
     initialValues: {
-      name: '',
+      countryMade: '',
       description: '',
-      releaseYear: 0,
-      countryMade: ''
+      id: '',
+      name: '',
+      releaseYear: 0
     },
     onSubmit: formObj => {
       addMovie(formObj)
@@ -22,36 +24,32 @@ export const ReactMovieForm: FC = () => {
   return (
     <Form
       layout="horizontal"
-      style={{ padding: '5% 5% 0 5%' }}
       onFinish={() => basicFormik.submitForm()}
+      style={{ padding: '5% 5% 0 5%' }}
     >
       <ReactInput
-        id="name"
-        name="name"
         label="Name"
+        name="name"
+        onChange={basicFormik.handleChange}
         value={basicFormik.values.name}
-        onChange={basicFormik.handleChange}
       />
       <ReactInput
-        id="description"
-        name="description"
         label="Description"
+        name="description"
+        onChange={basicFormik.handleChange}
         value={basicFormik.values.description}
-        onChange={basicFormik.handleChange}
       />
       <ReactInput
-        id="releaseYear"
-        name="releaseYear"
         label="Year of release"
-        value={basicFormik.values.releaseYear}
+        name="releaseYear"
         onChange={basicFormik.handleChange}
+        value={basicFormik.values.releaseYear}
       />
       <ReactInput
-        id="countryMade"
-        name="countryMade"
         label="Country"
-        value={basicFormik.values.countryMade}
+        name="countryMade"
         onChange={basicFormik.handleChange}
+        value={basicFormik.values.countryMade}
       />
 
       <Form.Item>

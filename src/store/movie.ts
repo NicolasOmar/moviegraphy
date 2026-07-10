@@ -1,19 +1,25 @@
-import { atom } from 'nanostores'
-import { faker } from '@faker-js/faker'
 import type { MovieEntity } from '@ts/movie'
 
-const randomNumber = faker.number.int({ min: 5, max: 15 })
+import { faker } from '@faker-js/faker'
+import { atom } from 'nanostores'
+
+const randomNumber = faker.number.int({ max: 15, min: 5 })
 const randomMovies: MovieEntity[] = Array(randomNumber)
   .fill(null)
   .map(() => ({
-    name: faker.word.words(3),
+    countryMade: faker.location.country(),
     description: faker.lorem.sentence(),
-    releaseYear: faker.number.int({ min: 1990, max: 2026 }),
-    countryMade: faker.location.country()
+    id: faker.string.uuid(),
+    name: faker.word.words(3),
+    releaseYear: faker.number.int({ max: 2026, min: 1990 })
   }))
 
 export const movieList = atom(randomMovies)
 
 export const addMovie = (newMovie: MovieEntity) => {
-  movieList.set([...movieList.get(), newMovie])
+  movieList.set([...movieList.get(), { ...newMovie, id: faker.string.uuid() }])
+}
+
+export const removeMovie = (movieId: string) => {
+  movieList.set(movieList.get().filter(({ id }) => id !== movieId))
 }
