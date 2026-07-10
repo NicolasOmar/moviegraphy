@@ -1,4 +1,4 @@
-export interface Movie {
+export interface MovieEntity {
   name: string
   description: string
   releaseYear: number

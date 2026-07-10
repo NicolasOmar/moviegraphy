@@ -11,6 +11,7 @@
       "@components/*": ["src/components/*"],
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
+      "@store/*": ["src/store/*"],
       "@ts/*": ["src/ts/*"]
     }
   }

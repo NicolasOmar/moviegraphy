@@ -1,20 +1,8 @@
 ---
-import { faker } from '@faker-js/faker'
 import astroLogo from '@assets/astro.svg'
 import background from '@assets/background.svg'
 import { ReactMovieTable } from '@components/ReactMovieTable'
-import type { Movie } from '@ts/movie'
 import './index.css'
-
-const randomNumber = faker.number.int({ min: 5, max: 15 })
-const randomMovies: Movie[] = Array(randomNumber)
-  .fill(null)
-  .map(() => ({
-    name: faker.word.words(3),
-    description: faker.lorem.sentence(),
-    releaseYear: faker.number.int({ min: 1990, max: 2026 }),
-    countryMade: faker.location.country()
-  }))
 
 const columns = [
   {
@@ -28,7 +16,7 @@ const columns = [
     key: 'description'
   },
   {
-    title: 'Year',
+    title: 'Year of release',
     dataIndex: 'releaseYear',
     key: 'releaseYear'
   },
@@ -48,7 +36,7 @@ const columns = [
         <img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" />
       </a>
 
-      <ReactMovieTable client:load {...{ dataSource: randomMovies, columns }} />
+      <ReactMovieTable client:load columns={columns} />
     </section>
   </main>
 </section>
