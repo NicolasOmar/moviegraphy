@@ -1,10 +1,10 @@
 ---
 import { faker } from '@faker-js/faker'
-import astroLogo from '../assets/astro.svg'
-import background from '../assets/background.svg'
-import TableIsland from '../islands/TableIsland'
-import type { Movie } from '../ts/movie'
-import './Welcome.css'
+import astroLogo from '@assets/astro.svg'
+import background from '@assets/background.svg'
+import { ReactMovieTable } from '@components/ReactMovieTable'
+import type { Movie } from '@ts/movie'
+import './index.css'
 
 const randomNumber = faker.number.int({ min: 5, max: 15 })
 const randomMovies: Movie[] = Array(randomNumber)
@@ -48,7 +48,7 @@ const columns = [
         <img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" />
       </a>
 
-      <TableIsland client:load table={{ dataSource: randomMovies, columns }} />
+      <ReactMovieTable client:load {...{ dataSource: randomMovies, columns }} />
     </section>
   </main>
 </section>
