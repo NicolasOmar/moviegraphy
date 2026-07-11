@@ -3,11 +3,10 @@ import type { InputEventHandler } from '@ts/misc'
 import type { MovieEntity } from '@ts/movie'
 
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
-import ReactInput from '@components/ReactInput'
 import { ReactTable } from '@components/ReactTable'
 import { useStore } from '@nanostores/react'
 import { $contextMovieList, removeMovie, updateMovieContext } from '@store/movie'
-import { Button } from 'antd'
+import { Button, Input } from 'antd'
 import { type FC, useMemo, useState } from 'react'
 
 export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) => {
@@ -36,11 +35,11 @@ export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) =
     )
   }, [generalMovieList, columns, searchParam])
 
-  const handleChange: InputEventHandler = event => setSearchParam(event.target.value)
+  const handleSearch: InputEventHandler = event => setSearchParam(event.target.value)
 
   return (
     <>
-      <ReactInput onChange={handleChange} />
+      <Input onChange={handleSearch} />
       {memoizedTable}
     </>
   )
