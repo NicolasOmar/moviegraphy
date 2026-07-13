@@ -64,9 +64,12 @@ node_modules/
 .vscode
 .claude
 
+# building projects
 dist
 .astro
+.netlify
+/prisma/generated
 
+# agents in general
 CLAUDE.md
 AGENTS.md
-/prisma/generated
