@@ -5,7 +5,7 @@ import type { MovieEntity } from '@ts/movie'
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import { ReactTable } from '@components/ReactTable'
 import { useStore } from '@nanostores/react'
-import { $contextMovieList, removeMovie, updateMovieContext } from '@store/movie'
+import { $contextMovieList, deleteMovieOnContext, updateMovieOnContextContext } from '@store/movie'
 import { Button, Input } from 'antd'
 import { type FC, useMemo, useState } from 'react'
 
@@ -22,9 +22,12 @@ export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) =
       key: 'options',
       render: (_singleMovie: MovieEntity) => (
         <>
-          <Button icon={<EditFilled />} onClick={() => updateMovieContext(_singleMovie)} />
+          <Button icon={<EditFilled />} onClick={() => updateMovieOnContextContext(_singleMovie)} />
 
-          <Button icon={<DeleteFilled />} onClick={() => removeMovie(_singleMovie.id)} />
+          <Button
+            icon={<DeleteFilled />}
+            onClick={() => deleteMovieOnContext(_singleMovie.id.toString())}
+          />
         </>
       ),
       title: 'Options'

@@ -4,6 +4,8 @@ import background from '@assets/background.svg'
 import { ReactMovieTable } from '@components/ReactMovieTable'
 
 import './index.css'
+// import { getMovies } from '@api/movies'
+// import type { MovieEntity } from '@ts/movie'
 
 const columns = [
   {
@@ -27,6 +29,8 @@ const columns = [
     title: 'Country'
   }
 ]
+
+// const movieListDB = (await getMovies()) as MovieEntity[]
 ---
 
 <section id="container">

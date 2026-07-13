@@ -2,27 +2,50 @@ import type { MovieEntity } from '@ts/movie'
 
 import ReactFormInput from '@components/ReactFormInput'
 import { useStore } from '@nanostores/react'
-import { $contextSelectedMovie, addMovie, updateMovie, updateMovieContext } from '@store/movie'
+import {
+  $contextSelectedMovie,
+  addMovieToContext,
+  updateMovieOnContext,
+  updateMovieOnContextContext
+} from '@store/movie'
+import { APIS } from '@ts/constants'
 import { Button, Form } from 'antd'
 import { type FC, useMemo } from 'react'
+
+const parseToFormData = <T extends object>(rawFormData: T): FormData => {
+  const _formData = new FormData()
+
+  ;(Object.keys(rawFormData) as Array<keyof T>).forEach(key =>
+    _formData.append(String(key), String(rawFormData[key]))
+  )
+
+  return _formData
+}
 
 export const ReactMovieForm: FC = () => {
   const contextMovie = useStore($contextSelectedMovie)
   const [antForm] = Form.useForm<MovieEntity>()
   const submitButtonText = useMemo(() => (contextMovie ? 'Update' : 'Create'), [contextMovie])
 
-  const handleSubmit = (movieFormData: MovieEntity) => {
+  const handleSubmit = async (movieFormData: MovieEntity) => {
     if (contextMovie === null) {
-      addMovie(movieFormData)
+      const parsedFormData = parseToFormData(movieFormData)
+
+      await fetch(APIS.CREATE_MOVIE, {
+        body: parsedFormData,
+        method: 'POST'
+      })
+
+      addMovieToContext(movieFormData)
     } else {
-      updateMovie({
+      updateMovieOnContext({
         ...movieFormData,
         id: contextMovie.id
       })
     }
 
     antForm.resetFields()
-    updateMovieContext(null)
+    updateMovieOnContextContext(null)
   }
 
   $contextSelectedMovie.listen(_movie => {

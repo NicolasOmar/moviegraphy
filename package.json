@@ -27,7 +27,7 @@
     "format": "prettier --write src/**/*.{ts,tsx,astro} ",
     "format:check": "prettier --check src/**/*.{ts,tsx,astro} ",
     "lint-staged": "lint-staged -v",
-    "update": "npx @astro/upgrade &&ncu -i --format group --doctor --doctorTest 'npm run check:project'",
+    "update": "npx @astro/upgrade && ncu -i --format group --doctor --doctorTest 'npm run check:project'",
     "check:project": "npm run format:check && npm run lint && npm run build"
   },
   "dependencies": {
@@ -35,11 +35,15 @@
     "@astrojs/check": "^0.9.9",
     "@astrojs/react": "^6.0.1",
     "@nanostores/react": "^1.1.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "antd": "^6.5.0",
     "astro": "^7.0.6",
+    "dotenv": "^17.4.2",
     "nanostores": "^1.4.0",
+    "pg": "^8.22.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "typescript": "^6.0.3"
@@ -50,6 +54,7 @@
     "@eslint/js": "^9.39.4",
     "@faker-js/faker": "^10.5.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
+    "@types/pg": "^8.20.0",
     "@typescript-eslint/parser": "^8.63.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
@@ -61,8 +66,11 @@
     "globals": "^17.7.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
+    "npm-check-updates": "^22.2.9",
     "prettier": "^3.9.4",
     "prettier-plugin-astro": "^0.14.1",
+    "prisma": "^7.8.0",
+    "tsx": "^4.23.0",
     "typescript-eslint": "^8.63.0"
   },
   "lint-staged": {
