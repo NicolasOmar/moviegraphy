@@ -15,10 +15,10 @@ export const createMovie: CreateOrUpdateOne<MovieModel> = async newMovie => {
 }
 
 export const updateMovie: CreateOrUpdateOne<MovieModel> = async modifiedMovie => {
-  const { id, ...dataToUpdate } = modifiedMovie
-
+  const { id: movieId, ...dataToUpdate } = modifiedMovie
+  
   return await prisma.movie.update({
-    where: { id },
+    where: { id: movieId },
     data: dataToUpdate
   })
 }

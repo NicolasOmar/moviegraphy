@@ -4,59 +4,64 @@ import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedMovie,
-  addMovieToContext,
-  setSingleMovieOnContext,
-  updateMovieOnContext
+  addMovieToListContext,
+  updateMovieOnListContext,
+  updateSelectedMovieOnContext
 } from '@store/movie'
+import { parseModelToFormData } from '@ts/parsers'
 import { Button, Form } from 'antd'
 import { type FC, useMemo } from 'react'
-import { API_URL } from 'ts/constants'
-
-const parseToFormData = <T extends object>(rawFormData: T): FormData => {
-  const _formData = new FormData()
-
-  ;(Object.keys(rawFormData) as Array<keyof T>).forEach(key =>
-    _formData.append(String(key), String(rawFormData[key]))
-  )
-
-  return _formData
-}
+import { API_METHODS, API_URL } from 'ts/constants'
 
 export const ReactMovieForm: FC = () => {
-  const contextMovie = useStore($contextSelectedMovie)
-  const [antForm] = Form.useForm<MovieModel>()
-  const submitButtonText = useMemo(() => (contextMovie ? 'Update' : 'Create'), [contextMovie])
+  const selectedMovieInContext = useStore($contextSelectedMovie)
+  const [movieForm] = Form.useForm<MovieModel>()
+  const submitButtonText = useMemo(
+    () => (selectedMovieInContext ? 'Update' : 'Create'),
+    [selectedMovieInContext]
+  )
 
-  const handleSubmit = async (movieFormData: MovieModel) => {
-    if (contextMovie === null) {
-      const parsedFormData = parseToFormData(movieFormData)
+  const handleSubmit = async (_movieFormDataModel: MovieModel) => {
+    if (selectedMovieInContext === null) {
+      const movieToCreate = parseModelToFormData(_movieFormDataModel)
 
-      await fetch(API_URL.CREATE_MOVIE, {
-        body: parsedFormData,
-        method: 'POST'
+      await fetch(API_URL.MOVIES, {
+        body: movieToCreate,
+        method: API_METHODS.POST
       })
 
-      addMovieToContext(movieFormData)
+      addMovieToListContext(_movieFormDataModel)
     } else {
-      updateMovieOnContext({
-        ...movieFormData,
-        id: contextMovie.id
+      const movieToUpdate = parseModelToFormData({
+        ..._movieFormDataModel,
+        id: selectedMovieInContext.id
       })
+
+      await fetch(API_URL.MOVIES, {
+        body: movieToUpdate,
+        method: API_METHODS.PATCH
+      })
+
+      updateMovieOnListContext({
+        ..._movieFormDataModel,
+        id: selectedMovieInContext.id
+      })
+
+      updateSelectedMovieOnContext(null)
     }
 
-    antForm.resetFields()
-    setSingleMovieOnContext(null)
+    movieForm.resetFields()
   }
 
   $contextSelectedMovie.listen(_movie => {
     if (_movie) {
-      antForm.setFieldsValue(_movie)
+      movieForm.setFieldsValue(_movie)
     }
   })
 
   return (
     <Form
-      form={antForm}
+      form={movieForm}
       initialValues={{
         countryMade: '',
         description: '',

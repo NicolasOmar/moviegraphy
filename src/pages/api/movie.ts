@@ -2,18 +2,9 @@ export const prerender = false
 import type { MovieModel } from '@models'
 import type { APIRoute } from 'astro'
 
-import { createMovie } from '@api/movies'
+import { createMovie, updateMovie } from '@api/movies'
+import { parseFormDataToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
-
-const parseFormDataToModel = <T extends object>(_formData: FormData): T => {
-  return Array.from(_formData.entries()).reduce(
-    (prev, [key, value]) => ({
-      ...prev,
-      [key]: value
-    }),
-    {} as T
-  )
-}
 
 export const POST: APIRoute = async ({ request }) => {
   const newMovieFormData = await request.formData()
@@ -23,6 +14,23 @@ export const POST: APIRoute = async ({ request }) => {
     ...newMovieModel,
     id: v6(),
     releaseYear: +newMovieModel.releaseYear
+  })
+
+  return new Response(
+    JSON.stringify({
+      message: 'Success!'
+    }),
+    { status: 200 }
+  )
+}
+
+export const PATCH: APIRoute = async ({ request }) => {
+  const updateMovieFormData = await request.formData()
+  const updateMovieModel = parseFormDataToModel<MovieModel>(updateMovieFormData)
+
+  await updateMovie({
+    ...updateMovieModel,
+    releaseYear: +updateMovieModel.releaseYear
   })
 
   return new Response(
