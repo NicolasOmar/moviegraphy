@@ -13,9 +13,9 @@ datasource db {
 }
 
 model Movie {
-  countryMade   String
-  description   String
-  id            Int     @id @default(autoincrement()) 
-  name          String
-  releaseYear   String
+  countryMade String
+  description String
+  id          String @id @unique
+  name        String
+  releaseYear Int
 }

@@ -1,9 +1,9 @@
-import type { ReactTableProps } from '@components/ReactTable'
+import type { ReactTableProps } from '@components/shared/ReactTable'
+import type { MovieModel } from '@prisma/models'
 import type { InputEventHandler } from '@ts/misc'
-import type { MovieEntity } from '@ts/movie'
 
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
-import { ReactTable } from '@components/ReactTable'
+import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'
 import {
   $contextMovieList,
@@ -14,7 +14,7 @@ import {
 import { Button, Input } from 'antd'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
-export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns, dataSource }) => {
+export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, dataSource }) => {
   const generalMovieList = useStore($contextMovieList)
   const [searchParam, setSearchParam] = useState<string>('')
   const memoizedTable = useMemo(() => {
@@ -24,7 +24,7 @@ export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns, dat
         : generalMovieList
     const optionsColumn = {
       key: 'options',
-      render: (_singleMovie: MovieEntity) => (
+      render: (_singleMovie: MovieModel) => (
         <>
           <Button icon={<EditFilled />} onClick={() => setSingleMovieOnContext(_singleMovie)} />
 

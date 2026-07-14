@@ -1,6 +1,6 @@
-import type { MovieEntity } from '@ts/movie'
+import type { MovieModel } from '@prisma/models'
 
-import ReactFormInput from '@components/ReactFormInput'
+import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedMovie,
@@ -8,7 +8,7 @@ import {
   setSingleMovieOnContext,
   updateMovieOnContext
 } from '@store/movie'
-import { APIS } from '@ts/constants'
+import { API_URL } from '@ts/constants'
 import { Button, Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
@@ -24,14 +24,14 @@ const parseToFormData = <T extends object>(rawFormData: T): FormData => {
 
 export const ReactMovieForm: FC = () => {
   const contextMovie = useStore($contextSelectedMovie)
-  const [antForm] = Form.useForm<MovieEntity>()
+  const [antForm] = Form.useForm<MovieModel>()
   const submitButtonText = useMemo(() => (contextMovie ? 'Update' : 'Create'), [contextMovie])
 
-  const handleSubmit = async (movieFormData: MovieEntity) => {
+  const handleSubmit = async (movieFormData: MovieModel) => {
     if (contextMovie === null) {
       const parsedFormData = parseToFormData(movieFormData)
 
-      await fetch(APIS.CREATE_MOVIE, {
+      await fetch(API_URL.CREATE_MOVIE, {
         body: parsedFormData,
         method: 'POST'
       })

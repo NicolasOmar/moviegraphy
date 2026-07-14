@@ -12,6 +12,7 @@
       "@components/*": ["src/components/*"],
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
+      "@prisma/*": ["prisma/generated/*"],
       "@store/*": ["src/store/*"],
       "@ts/*": ["src/ts/*"]
     }

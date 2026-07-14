@@ -27,8 +27,12 @@
     "format": "prettier --write src/**/*.{ts,tsx,astro} ",
     "format:check": "prettier --check src/**/*.{ts,tsx,astro} ",
     "lint-staged": "lint-staged -v",
+    "db:generate": "prisma format && prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
     "update": "npx @astro/upgrade && ncu -i --format group --doctor --doctorTest 'npm run check:project'",
-    "check:project": "npm run format:check && npm run lint && npm run build"
+    "check:project": "npm run format:check && npm run lint && npm run db:generate && npm run build"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
@@ -47,13 +51,13 @@
     "pg": "^8.22.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
     "@eslint/js": "^9.39.4",
-    "@faker-js/faker": "^10.5.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/pg": "^8.20.0",
     "@typescript-eslint/parser": "^8.63.0",
