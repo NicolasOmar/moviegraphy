@@ -33,10 +33,16 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "vitest run --config vitest.config.frontend.ts",
+    "test:frontend:coverage": "vitest run --config vitest.config.frontend.ts --coverage",
+    "test:backend": "vitest run --config vitest.config.backend.ts",
+    "test:backend:coverage": "vitest run --config vitest.config.backend.ts --coverage",
+    "test:coverage": "npm run test:frontend:coverage && npm run test:backend:coverage",
     "update": "npm run update:astro && npm run update:deps",
     "update:astro": "npx @astrojs/upgrade",
     "update:deps": "ncu -i --format group --doctor --doctorTest 'npm run check:project'",
-    "check:project": "npm run format:check && npm run lint && npm run db:generate && npm run build"
+    "check:project": "npm run format:check && npm run lint && npm run db:generate && npm run build && npm test"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
@@ -62,9 +68,14 @@
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
     "@eslint/js": "^9.39.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/pg": "^8.20.0",
     "@typescript-eslint/parser": "^8.64.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/eslint-plugin": "^1.6.23",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.7.0",
@@ -74,13 +85,16 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.7.0",
     "husky": "^9.1.7",
+    "jsdom": "^29.1.1",
     "lint-staged": "^17.0.8",
     "npm-check-updates": "^22.2.9",
     "prettier": "^3.9.5",
     "prettier-plugin-astro": "^0.14.1",
     "prisma": "^7.8.0",
     "tsx": "^4.23.1",
-    "typescript-eslint": "^8.64.0"
+    "typescript-eslint": "^8.64.0",
+    "vitest": "^4.1.10",
+    "vitest-mock-extended": "^5.0.0"
   },
   "lint-staged": {
     "(prisma|ts|src)/**/*.(astro|ts|tsx)": [

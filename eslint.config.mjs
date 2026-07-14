@@ -8,6 +8,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
 import perfectionist from 'eslint-plugin-perfectionist'
+import vitest from '@vitest/eslint-plugin'
 
 export default defineConfig(
   globalIgnores(['dist/**', '.astro/**', 'node_modules/**']),
@@ -38,6 +39,13 @@ export default defineConfig(
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules
+    }
+  },
+  {
+    files: ['**/*.test.{ts,tsx}'],
+    plugins: { vitest },
+    rules: {
+      ...vitest.configs.recommended.rules
     }
   },
   eslintConfigPrettier
