@@ -5,8 +5,8 @@ import { useStore } from '@nanostores/react'
 import {
   $contextSelectedMovie,
   addMovieToContext,
-  updateMovieOnContext,
-  updateMovieOnContextContext
+  setSingleMovieOnContext,
+  updateMovieOnContext
 } from '@store/movie'
 import { APIS } from '@ts/constants'
 import { Button, Form } from 'antd'
@@ -45,7 +45,7 @@ export const ReactMovieForm: FC = () => {
     }
 
     antForm.resetFields()
-    updateMovieOnContextContext(null)
+    setSingleMovieOnContext(null)
   }
 
   $contextSelectedMovie.listen(_movie => {

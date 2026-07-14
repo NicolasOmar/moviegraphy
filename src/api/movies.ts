@@ -15,6 +15,5 @@ export const getMovies: () => Promise<Movie[]> = async () => {
 }
 
 export const createMovie: (newMovie: Movie) => Promise<Movie> = async newMovie => {
-  console.warn('createMovie', newMovie)
   return await prisma.movie.create({ data: newMovie })
 }

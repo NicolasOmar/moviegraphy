@@ -5,13 +5,17 @@ import type { MovieEntity } from '@ts/movie'
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import { ReactTable } from '@components/ReactTable'
 import { useStore } from '@nanostores/react'
-import { $contextMovieList, deleteMovieOnContext, updateMovieOnContextContext } from '@store/movie'
+import {
+  $contextMovieList,
+  deleteMovieOnContext,
+  setMovieContext,
+  setSingleMovieOnContext
+} from '@store/movie'
 import { Button, Input } from 'antd'
-import { type FC, useMemo, useState } from 'react'
+import { type FC, useEffect, useMemo, useState } from 'react'
 
-export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) => {
+export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns, dataSource }) => {
   const generalMovieList = useStore($contextMovieList)
-
   const [searchParam, setSearchParam] = useState<string>('')
   const memoizedTable = useMemo(() => {
     const filteredDataSource =
@@ -22,7 +26,7 @@ export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) =
       key: 'options',
       render: (_singleMovie: MovieEntity) => (
         <>
-          <Button icon={<EditFilled />} onClick={() => updateMovieOnContextContext(_singleMovie)} />
+          <Button icon={<EditFilled />} onClick={() => setSingleMovieOnContext(_singleMovie)} />
 
           <Button
             icon={<DeleteFilled />}
@@ -33,12 +37,12 @@ export const ReactMovieTable: FC<ReactTableProps<MovieEntity>> = ({ columns }) =
       title: 'Options'
     }
 
-    return (
-      <ReactTable {...{ columns: [...columns, optionsColumn], dataSource: filteredDataSource }} />
-    )
+    return <ReactTable columns={[...columns, optionsColumn]} dataSource={filteredDataSource} />
   }, [generalMovieList, columns, searchParam])
 
-  const handleSearch: InputEventHandler = event => setSearchParam(event.target.value)
+  useEffect(() => setMovieContext(dataSource ?? []), [dataSource])
+
+  const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
 
   return (
     <>

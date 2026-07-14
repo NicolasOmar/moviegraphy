@@ -1,11 +1,12 @@
 ---
+import type { MovieEntity } from '@ts/movie'
+
+import { getMovies } from '@api/movies'
 import astroLogo from '@assets/astro.svg'
-import background from '@assets/background.svg'
-import { ReactMovieTable } from '@components/ReactMovieTable'
 
 import './index.css'
-// import { getMovies } from '@api/movies'
-// import type { MovieEntity } from '@ts/movie'
+import background from '@assets/background.svg'
+import { ReactMovieTable } from '@components/ReactMovieTable'
 
 const columns = [
   {
@@ -30,7 +31,7 @@ const columns = [
   }
 ]
 
-// const movieListDB = (await getMovies()) as MovieEntity[]
+const movieListDB = (await getMovies()) as MovieEntity[]
 ---
 
 <section id="container">
@@ -41,7 +42,7 @@ const columns = [
         <img alt="Astro Homepage" height="48" src={astroLogo.src} width="115" />
       </a>
 
-      <ReactMovieTable client:load columns={columns} />
+      <ReactMovieTable client:load columns={columns} dataSource={movieListDB} />
     </section>
   </main>
 </section>
