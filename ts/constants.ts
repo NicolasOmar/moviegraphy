@@ -1,12 +1,13 @@
 const API_ROUTE_BASE = '/api'
 
-enum API_ENTITIES {
-  MOVIE = 'movie'
+export enum API_METHODS {
+  DELETE = 'DELETE',
+  PATCH = 'PATCH',
+  POST = 'POST'
 }
 
-export enum API_METHODS {
-  POST = 'POST',
-  PATCH = 'PATCH',
+enum API_ENTITIES {
+  MOVIE = 'movie'
 }
 
 export enum API_URL {

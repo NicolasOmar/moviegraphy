@@ -1,9 +1,9 @@
 export const parseModelToFormData = <T extends object>(rawFormData: T): FormData => {
   const _formData = new FormData()
 
-    ; (Object.keys(rawFormData) as Array<keyof T>).forEach(key =>
-      _formData.append(String(key), String(rawFormData[key]))
-    )
+  ;(Object.keys(rawFormData) as Array<keyof T>).forEach(key =>
+    _formData.append(String(key), String(rawFormData[key]))
+  )
 
   return _formData
 }

@@ -11,6 +11,8 @@ import {
   setMovieListOnContext,
   updateSelectedMovieOnContext
 } from '@store/movie'
+import { API_METHODS, API_URL } from '@ts/constants'
+import { parseModelToFormData } from '@ts/parsers'
 import { Button, Input } from 'antd'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
@@ -26,15 +28,9 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
       key: 'options',
       render: (_singleMovie: MovieModel) => (
         <>
-          <Button
-            icon={<EditFilled />}
-            onClick={() => updateSelectedMovieOnContext(_singleMovie)}
-          />
+          <Button icon={<EditFilled />} onClick={() => handleEdit(_singleMovie)} />
 
-          <Button
-            icon={<DeleteFilled />}
-            onClick={() => deleteMovieOnListContext(_singleMovie.id.toString())}
-          />
+          <Button icon={<DeleteFilled />} onClick={() => handleDelete(_singleMovie.id)} />
         </>
       ),
       title: 'Options'
@@ -46,6 +42,20 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
   useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
 
   const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
+
+  const handleEdit = (_movieToEdit: MovieModel) => updateSelectedMovieOnContext(_movieToEdit)
+
+  const handleDelete = async (id: string) => {
+    const movieIdToDelete = parseModelToFormData({ id })
+
+    await fetch(API_URL.MOVIES, {
+      body: movieIdToDelete,
+      method: API_METHODS.DELETE
+    })
+
+    deleteMovieOnListContext(id)
+    updateSelectedMovieOnContext(null)
+  }
 
   return (
     <>
