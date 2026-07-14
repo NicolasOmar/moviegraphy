@@ -7,14 +7,14 @@
     "jsxImportSource": "react",
     "baseUrl": "./",
     "paths": {
-      "@api/*": ["src/api/*"],
+      "@api/*": ["prisma/api/*"],
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@prisma/*": ["prisma/generated/*"],
+      "@models": ["prisma/generated/models"],
       "@store/*": ["src/store/*"],
-      "@ts/*": ["src/ts/*"]
+      "@ts/*": ["ts/*"]
     }
   }
 }

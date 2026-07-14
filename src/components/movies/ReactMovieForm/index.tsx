@@ -1,4 +1,4 @@
-import type { MovieModel } from '@prisma/models'
+import type { MovieModel } from '@models'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
@@ -8,9 +8,9 @@ import {
   setSingleMovieOnContext,
   updateMovieOnContext
 } from '@store/movie'
-import { API_URL } from '@ts/constants'
 import { Button, Form } from 'antd'
 import { type FC, useMemo } from 'react'
+import { API_URL } from 'ts/constants'
 
 const parseToFormData = <T extends object>(rawFormData: T): FormData => {
   const _formData = new FormData()

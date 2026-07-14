@@ -1,5 +1,5 @@
 export const prerender = false
-import type { MovieModel } from '@prisma/models'
+import type { MovieModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie } from '@api/movies'

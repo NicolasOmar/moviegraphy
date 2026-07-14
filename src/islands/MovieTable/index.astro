@@ -1,5 +1,5 @@
 ---
-import { getMovies } from '@api/movies'
+import { getMovieList } from '@api/movies'
 import astroLogo from '@assets/astro.svg'
 
 import './index.css'
@@ -29,7 +29,7 @@ const movieListColumns = [
   }
 ]
 
-const movieListDataSource = await getMovies()
+const movieListDataSource = await getMovieList()
 ---
 
 <section id="container">

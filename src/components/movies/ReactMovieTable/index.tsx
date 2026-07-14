@@ -1,5 +1,5 @@
 import type { ReactTableProps } from '@components/shared/ReactTable'
-import type { MovieModel } from '@prisma/models'
+import type { MovieModel } from '@models'
 import type { InputEventHandler } from '@ts/misc'
 
 import { DeleteFilled, EditFilled } from '@ant-design/icons'

@@ -1,4 +1,4 @@
-import type { MovieModel } from '@prisma/models'
+import type { MovieModel } from '@models'
 
 import { atom } from 'nanostores'
 import { v6 } from 'uuid'
