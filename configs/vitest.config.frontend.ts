@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+
 import { defineConfig } from 'vitest/config'
 
 import { sharedAlias } from './vitest.shared'
@@ -25,6 +27,6 @@ export default defineConfig({
     globals: false,
     include: ['src/**/*.test.{ts,tsx}', 'ts/**/*.test.ts'],
     name: 'frontend',
-    setupFiles: ['./vitest.setup.frontend.ts']
+    setupFiles: [fileURLToPath(new URL('./vitest.setup.frontend.ts', import.meta.url))]
   }
 })

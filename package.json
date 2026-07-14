@@ -18,26 +18,26 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
+    "start": "astro --config configs/astro.config.mjs dev",
+    "build": "astro check && astro --config configs/astro.config.mjs build",
+    "preview": "astro --config configs/astro.config.mjs preview",
     "prepare": "husky",
-    "lint:base": "eslint src/**/*.{ts,tsx,astro} {prisma,ts}/**/*.ts",
+    "lint:base": "eslint --config configs/eslint.config.mjs src/**/*.{ts,tsx,astro} {prisma,ts}/**/*.ts",
     "lint": "npm run lint:base -- --max-warnings 0",
     "lint:fix": "npm run lint:base -- --fix",
-    "format:base": "prettier src/**/*.{ts,tsx,astro} {prisma,ts}/**/*.ts",
+    "format:base": "prettier --config configs/.prettierrc.json src/**/*.{ts,tsx,astro} {prisma,ts}/**/*.ts",
     "format": "npm run format:base -- --write",
     "format:check": "npm run format:base -- --check",
     "lint-staged": "lint-staged -v",
-    "db:generate": "prisma format && prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed",
+    "db:generate": "prisma format --config configs/prisma.config.ts && prisma generate --config configs/prisma.config.ts",
+    "db:push": "prisma db push --config configs/prisma.config.ts",
+    "db:migrate": "prisma migrate dev --config configs/prisma.config.ts",
+    "db:seed": "prisma db seed --config configs/prisma.config.ts",
     "test": "npm run test:frontend && npm run test:backend",
-    "test:frontend": "vitest run --config vitest.config.frontend.ts",
-    "test:frontend:coverage": "vitest run --config vitest.config.frontend.ts --coverage",
-    "test:backend": "vitest run --config vitest.config.backend.ts",
-    "test:backend:coverage": "vitest run --config vitest.config.backend.ts --coverage",
+    "test:frontend": "vitest run --config configs/vitest.config.frontend.ts",
+    "test:frontend:coverage": "vitest run --config configs/vitest.config.frontend.ts --coverage",
+    "test:backend": "vitest run --config configs/vitest.config.backend.ts",
+    "test:backend:coverage": "vitest run --config configs/vitest.config.backend.ts --coverage",
     "test:coverage": "npm run test:frontend:coverage && npm run test:backend:coverage",
     "update": "npm run update:astro && npm run update:deps",
     "update:astro": "npx @astrojs/upgrade",
@@ -98,8 +98,8 @@
   },
   "lint-staged": {
     "(prisma|ts|src)/**/*.(astro|ts|tsx)": [
-      "prettier --write",
-      "eslint --max-warnings 0"
+      "prettier --config configs/.prettierrc.json --write",
+      "eslint --config configs/eslint.config.mjs --max-warnings 0"
     ]
   }
 }
