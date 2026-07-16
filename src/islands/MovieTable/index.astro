@@ -1,0 +1,46 @@
+---
+import { getMovieList } from '@api/movies'
+import astroLogo from '@assets/astro.svg'
+
+import './index.css'
+import background from '@assets/background.svg'
+import { ReactMovieTable } from '@components/movies/ReactMovieTable'
+
+const movieListColumns = [
+  {
+    dataIndex: 'name',
+    key: 'name',
+    title: 'Name'
+  },
+  {
+    dataIndex: 'description',
+    key: 'description',
+    title: 'Description'
+  },
+  {
+    dataIndex: 'releaseYear',
+    key: 'releaseYear',
+    title: 'Year of release'
+  },
+  {
+    dataIndex: 'countryMade',
+    key: 'countryMade',
+    title: 'Country'
+  }
+]
+
+const movieList = await getMovieList()
+---
+
+<section id="container">
+  <img alt="" fetchpriority="high" id="background" src={background.src} />
+  <main>
+    <section id="hero">
+      <a href="https://astro.build">
+        <img alt="Astro Homepage" height="48" src={astroLogo.src} width="115" />
+      </a>
+
+      <ReactMovieTable client:load columns={movieListColumns} dataSource={movieList} />
+    </section>
+  </main>
+</section>

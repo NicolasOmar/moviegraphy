@@ -1,0 +1,23 @@
+[
+  {
+    "countryMade": "USA",
+    "description": "A computer hacker learns about the true nature of reality.",
+    "id": "8f3c1a2e-1111-4a1a-9a1a-000000000001",
+    "name": "The Matrix",
+    "releaseYear": 1999
+  },
+  {
+    "countryMade": "USA",
+    "description": "Neo and his allies race against time before the machines discover the city of Zion.",
+    "id": "8f3c1a2e-1111-4a1a-9a1a-000000000002",
+    "name": "The Matrix Reloaded",
+    "releaseYear": 2003
+  },
+  {
+    "countryMade": "France",
+    "description": "A shy waitress decides to change the lives of those around her for the better.",
+    "id": "8f3c1a2e-1111-4a1a-9a1a-000000000003",
+    "name": "Amelie",
+    "releaseYear": 2001
+  }
+]
