@@ -17,7 +17,7 @@ TBW.
 TBW.
 
 ## Status
-<!-- ![Project version][badge-repo-version]
+![Project version][badge-repo-version]
 [![Code Coverage][badge-code-coverage]][link-code-coverage]
 [![Quality Gate Status][badge-soundcloud-quality]][link-soundcloud-status]
 [![Maintainability Rating][badge-soundcloud-maintanibility]][link-soundcloud-status]
@@ -29,32 +29,30 @@ TBW.
 ![GitHub last commit][badge-github-last-commit]
 [![Semantic Commits][badge-semantic-commits]][link-semantic-commits]
 
-[badge-repo-version]: https://img.shields.io/github/package-json/v/nicolasomar/meds-warning?label=version&logo=npm&color=success
-[badge-code-coverage]: https://img.shields.io/codecov/c/github/nicolasomar/meds-warning?label=coverage&logo=codecov
-[link-code-coverage]: https://app.codecov.io/gh/NicolasOmar/meds-warning
-[badge-soundcloud-quality]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_meds-warning&metric=alert_status
-[badge-soundcloud-maintanibility]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_meds-warning&metric=sqale_rating
-[badge-soundcloud-security]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_meds-warning&metric=security_rating
-[badge-soundcloud-tech-debt]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_meds-warning&metric=sqale_index
-[link-soundcloud-status]: https://sonarcloud.io/summary/new_code?id=NicolasOmar_meds-warning
-[badge-snyk-status]: https://snyk.io/test/github/nicolasomar/meds-warning/badge.svg
-[link-snyk-status]: https://snyk.io/test/github/nicolasomar/meds-warning
-[badge-github-repo-stars]: https://img.shields.io/github/stars/nicolasomar/meds-warning?label=stars&logo=github&labelColor=535353&style=flat
-[badge-github-commits]: https://img.shields.io/github/commit-activity/m/nicolasomar/meds-warning?logo=github
-[badge-github-last-commit]: https://img.shields.io/github/last-commit/nicolasomar/meds-warning?logo=github
+[badge-repo-version]: https://img.shields.io/github/package-json/v/nicolasomar/moviegraphy?label=version&logo=npm&color=success
+[badge-code-coverage]: https://img.shields.io/codecov/c/github/nicolasomar/moviegraphy?label=coverage&logo=codecov
+[link-code-coverage]: https://app.codecov.io/gh/NicolasOmar/moviegraphy
+[badge-soundcloud-quality]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_moviegraphy&metric=alert_status
+[badge-soundcloud-maintanibility]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_moviegraphy&metric=sqale_rating
+[badge-soundcloud-security]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_moviegraphy&metric=security_rating
+[badge-soundcloud-tech-debt]: https://sonarcloud.io/api/project_badges/measure?project=NicolasOmar_moviegraphy&metric=sqale_index
+[link-soundcloud-status]: https://sonarcloud.io/summary/new_code?id=NicolasOmar_moviegraphy
+[badge-snyk-status]: https://snyk.io/test/github/nicolasomar/moviegraphy/badge.svg
+[link-snyk-status]: https://snyk.io/test/github/nicolasomar/moviegraphy
+[badge-github-repo-stars]: https://img.shields.io/github/stars/nicolasomar/moviegraphy?label=stars&logo=github&labelColor=535353&style=flat
+[badge-github-commits]: https://img.shields.io/github/commit-activity/m/nicolasomar/moviegraphy?logo=github
+[badge-github-last-commit]: https://img.shields.io/github/last-commit/nicolasomar/moviegraphy?logo=github
 [badge-semantic-commits]: https://img.shields.io/badge/using-conventional%20commits-e10079?logo=conventional-commits
 [link-semantic-commits]: https://github.com/semantic-release/semantic-release
 
 ## Project Stack
-![nextjs dependency][badge-dependency-next]
+![astro dependency][badge-dependency-astro]
 ![react dependency][badge-dependency-react]
-![lucide-react dependency][badge-dependency-lucide-react]
 ![typescript dependency][badge-dependency-typescript]
+![ant design dependency][badge-dependency-antd]
+![nanostores dependency][badge-dependency-nanostores]
 ![prisma dependency][badge-dependency-prisma]
-![postgres dependency][badge-dependency-postgres]
-![tailwind dependency][badge-dependency-tailwind]
-![zod dependency][badge-dependency-zod]
-![mailgin dependency][badge-dependency-mailgun]
+![postgres dependency][badge-dependency-pg]
 ![vitest dependency][badge-dependency-vitest]
 ![react testing library dependency][badge-dependency-react-testing-library]
 ![eslint dependency][badge-dependency-eslint]
@@ -64,25 +62,22 @@ TBW.
 ![semantic-release dependency][badge-dependency-semantic-release]
 ![commitlint dependency][badge-dependency-commitlint]
 
-[badge-dependency-next]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/next/main?logo=next.js
-[badge-dependency-react]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/react/main?logo=react
-[badge-dependency-lucide-react]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/lucide-react/main?logo=lucide
-[badge-dependency-typescript]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/typescript/main?logo=typescript
-[badge-dependency-tailwind]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/tailwindcss/main?logo=tailwindcss
-[badge-dependency-postgres]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/pg/main?logo=postgresql
-[badge-dependency-prisma]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/prisma/main?logo=prisma
-[badge-dependency-zod]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/zod/main?logo=zod
-[badge-dependency-mailgun]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/mailgun.js/main?logo=mailgun
-[badge-dependency-vitest]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/vitest/main?logo=vitest
-[badge-dependency-react-testing-library]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/@testing-library/react/main?logo=testinglibrary
-[badge-dependency-eslint]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/eslint/main?logo=eslint
-[badge-dependency-prettier]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/prettier/main?logo=prettier
-[badge-dependency-lint-staged]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/lint-staged/main?logo=lint-staged
-[badge-dependency-husky]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/husky/main?logo=husky
-[badge-dependency-semantic-release]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/semantic-release/main?logo=semantic-release
-[badge-dependency-commitlint]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/meds-warning/dev/@commitlint/cli/main?logo=commitlint -->
-
-TBW
+[badge-dependency-astro]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/astro/main?logo=astro
+[badge-dependency-react]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/react/main?logo=react
+[badge-dependency-typescript]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/typescript/main?logo=typescript
+[badge-dependency-antd]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/antd/main?logo=antdesign
+[badge-dependency-nanostores]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/nanostores/main?logo=nanostores
+[badge-dependency-prisma]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/@prisma/client/main?logo=prisma
+[badge-dependency-pg]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/pg/main?logo=postgresql
+[badge-dependency-commitlint]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/@commitlint/cli/main?logo=commitlint
+[badge-dependency-vitest]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/vitest/main?logo=vitest
+[badge-dependency-react-testing-library]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/@testing-library/react/main?logo=testinglibrary
+[badge-dependency-eslint]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/eslint/main?logo=eslint
+[badge-dependency-prettier]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/prettier/main?logo=prettier
+[badge-dependency-lint-staged]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/lint-staged/main?logo=lint-staged
+[badge-dependency-husky]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/husky/main?logo=husky
+[badge-dependency-semantic-release]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/semantic-release/main?logo=semantic-release
+[badge-dependency-commitlint]: https://img.shields.io/github/package-json/dependency-version/nicolasomar/moviegraphy/dev/@commitlint/cli/main?logo=commitlint
 
 ## What do I need?
 Before cloning this repo, I recommend installing the following software:
@@ -99,7 +94,7 @@ npm run setup
 
 Lastly, create an `.env` file at your project's root with the following content.
 ```env
-TBW
+DATABASE_URL=HERE_GOES_YOUR_DATABASE_CONNECTION_STRING
 ```
 
 ## How to run it
