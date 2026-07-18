@@ -2,7 +2,6 @@ import type { ReactTableProps } from '@components/shared/ReactTable'
 import type { MovieModel } from '@models'
 import type { InputEventHandler } from '@ts/misc'
 
-import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'
 import {
@@ -28,9 +27,8 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
       key: 'options',
       render: (_singleMovie: MovieModel) => (
         <>
-          <Button icon={<EditFilled />} onClick={() => handleEdit(_singleMovie)} />
-
-          <Button icon={<DeleteFilled />} onClick={() => handleDelete(_singleMovie.id)} />
+          <Button onClick={() => handleEdit(_singleMovie)}>E</Button>
+          <Button onClick={() => handleDelete(_singleMovie.id)}>D</Button>
         </>
       ),
       title: 'Options'

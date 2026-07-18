@@ -40,7 +40,7 @@ const movieList = await getMovieList()
         <img alt="Astro Homepage" height="48" src={astroLogo.src} width="115" />
       </a>
 
-      <ReactMovieTable client:load columns={movieListColumns} dataSource={movieList} />
+      <ReactMovieTable client:visible columns={movieListColumns} dataSource={movieList} />
     </section>
   </main>
 </section>
