@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/NicolasOmar/moviegraphy/compare/v1.1.0...v1.1.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* removing ant design icons for possible build errors on netlify ([c0112cd](https://github.com/NicolasOmar/moviegraphy/commit/c0112cd2aac3e7b9e8a128c83b7a803f4fc0d546))
+* removing prerender constant in main page for client libraries rendering ([ab54a48](https://github.com/NicolasOmar/moviegraphy/commit/ab54a48447ccf40102f25a90484cfe43c11c0a46))
+
 # [1.1.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.0.0...v1.1.0) (2026-07-17)
 
 
