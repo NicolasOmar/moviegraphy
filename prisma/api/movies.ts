@@ -1,5 +1,3 @@
-export const prerender = false
-
 import type { MovieModel } from '@models'
 
 import prismaInstance from './prisma'
@@ -11,7 +9,15 @@ type DeleteOne = (id: string) => Promise<boolean>
 type GetMany<T> = () => Promise<T[]>
 
 export const getMovieList: GetMany<MovieModel> = async () => {
-  return await prismaInstance.movie.findMany()
+  try {
+    return await prismaInstance.movie.findMany()
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+
+    console.warn(`[getMovieList] Prisma query failed, returning an empty list: ${message}`)
+
+    return []
+  }
 }
 
 export const createMovie: CreateOrUpdateOne<MovieModel> = async newMovie => {

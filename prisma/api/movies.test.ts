@@ -22,6 +22,29 @@ describe('getMovieList', () => {
     expect(mockedPrisma.movie.findMany).toHaveBeenCalledWith()
     expect(result).toEqual(movieMocks)
   })
+
+  it('falls back to an empty list and logs a warning when the query rejects', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    mockedPrisma.movie.findMany.mockRejectedValue(
+      new Error('SASL: client password must be a string')
+    )
+
+    const result = await getMovieList()
+
+    expect(result).toEqual([])
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[getMovieList] Prisma query failed, returning an empty list: SASL: client password must be a string'
+    )
+  })
+
+  it('falls back to an empty list when a non-Error value is thrown', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    mockedPrisma.movie.findMany.mockRejectedValue('connection refused')
+
+    const result = await getMovieList()
+
+    expect(result).toEqual([])
+  })
 })
 
 describe('createMovie', () => {
