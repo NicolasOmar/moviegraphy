@@ -6,8 +6,8 @@ const adapter = new PrismaPg({
   connectionString: import.meta.env.DATABASE_URL
 })
 
-const prisma = new PrismaClient({
+const prismaInstance = new PrismaClient({
   adapter
 })
 
-export default prisma
+export default prismaInstance
