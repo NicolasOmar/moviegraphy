@@ -1,5 +1,5 @@
 # Moviegraphy
-TBW.
+Web-based system to organize your personal movie library.
 
 ## Table of contents
 - [Purpose](#purpose)
@@ -14,7 +14,9 @@ TBW.
 - [License](#license)
 
 ## Purpose
-TBW.
+Its main goal is to create a brand new movie library system for my dad that will replace its former version, [Peliteca](https://github.com/nicolasomar/peliteca) (which I developed during 2015).
+
+Also, I want to use this tool as a process to master several libraries, patterns, and structures for future tools I want to build.
 
 ## Status
 ![Project version][badge-repo-version]

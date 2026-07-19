@@ -1,12 +1,12 @@
 {
   "name": "moviegraphy",
   "version": "1.1.1",
-  "description": "",
+  "description": "Web-based system to organize your personal movie library",
   "author": "Nicolás Omar González Passerino",
   "keywords": [],
   "license": "GPL-3.0-only",
   "private": true,
-  "homepage": "",
+  "homepage": "https://moviegraphy.netlify.app/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NicolasOmar/moviegraphy.git"
@@ -47,7 +47,7 @@
     "update:astro": "npx @astrojs/upgrade",
     "update:deps": "ncu -i --format group --peer --doctor --doctorTest 'npm run check:project'",
     "check:project": "npm run format:check && npm run lint && npm run build && npm test",
-    "publish": "semantic-release"
+    "publish": "semantic-release --extends ./configs/.releaserc.json"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
