@@ -21,8 +21,8 @@ model Movie {
 }
 
 model User {
-  id        String @id @unique
-  name      String
-  email     String @unique
-  password  String
+  id       String @id @unique
+  name     String
+  email    String @unique
+  password String
 }

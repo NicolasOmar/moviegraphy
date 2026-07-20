@@ -9,7 +9,7 @@ export const sharedAlias = {
   '@islands': resolvePath('../src/islands'),
   '@layouts': resolvePath('../src/layouts'),
   '@models': resolvePath('../prisma/generated/models'),
-  '@store': resolvePath('../src/store'),
+  '@store': resolvePath('../store'),
   '@ts': resolvePath('../ts'),
   ts: resolvePath('../ts')
 }
