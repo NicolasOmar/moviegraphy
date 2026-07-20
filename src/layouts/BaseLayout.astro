@@ -1,10 +1,8 @@
 ---
-import { ReactLayout } from '@components/shared/ReactLayout'
-
 const listOfLinks = [
-  { key: 'home', label: 'Home', link: '/' },
-  { key: 'movies', label: 'Movies', link: '/movies' },
-  { key: 'users', label: 'Users', link: '/users' }
+  { label: 'Home', page: '/' },
+  { label: 'Movies', page: '/movies' },
+  { label: 'Users', page: '/users' }
 ]
 ---
 
@@ -19,9 +17,10 @@ const listOfLinks = [
     <title>Moviegraphy</title>
   </head>
   <body>
-    <ReactLayout client:load listOfLinks={listOfLinks}>
-      <slot />
-    </ReactLayout>
+    <header>
+      {listOfLinks.map(_link => <a href={_link.page}>{_link.label}</a>)}
+    </header>
+    <slot />
   </body>
 </html>
 
@@ -31,5 +30,23 @@ const listOfLinks = [
     margin: 0;
     width: 100%;
     height: 100%;
+    font-family:
+      -apple-system, 'system-ui', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+      sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+  header {
+    width: 100vw;
+    padding: 2em 0;
+    display: flex;
+    justify-content: space-evenly;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.88);
+    margin-bottom: 2em;
+  }
+  header > a {
+    color: black;
+    text-decoration: none;
+  }
+  header > a:hover {
+    color: red;
   }
 </style>

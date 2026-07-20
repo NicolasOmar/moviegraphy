@@ -1,7 +1,22 @@
 ---
+import MovieForm from '@islands/MovieForm/index.astro'
+import MovieTable from '@islands/MovieTable/index.astro'
 import BaseLayout from '@layouts/BaseLayout.astro'
 ---
 
 <BaseLayout>
-  <section>Movies page, welcome</section>
+  <section class="main-section">
+    <MovieForm />
+    <MovieTable />
+  </section>
 </BaseLayout>
+
+<style>
+  .main-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 2.5%;
+    justify-content: center;
+    align-content: center;
+  }
+</style>

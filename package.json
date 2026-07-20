@@ -110,6 +110,7 @@
   },
   "lint-staged": {
     "(prisma|ts|src)/**/*.(astro|ts|tsx)": [
+      "eslint --config configs/eslint.config.mjs --fix",
       "prettier --config configs/.prettierrc.json --write",
       "eslint --config configs/eslint.config.mjs --max-warnings 0"
     ]
