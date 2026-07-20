@@ -13,7 +13,7 @@
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
       "@models": ["prisma/generated/models"],
-      "@store/*": ["src/store/*"],
+      "@store/*": ["store/*"],
       "@ts/*": ["ts/*"]
     }
   }

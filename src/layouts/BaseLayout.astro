@@ -1,3 +1,13 @@
+---
+import { ReactLayout } from '@components/shared/ReactLayout'
+
+const listOfLinks = [
+  { key: 'home', label: 'Home', link: '/' },
+  { key: 'movies', label: 'Movies', link: '/movies' },
+  { key: 'users', label: 'Users', link: '/users' }
+]
+---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -9,7 +19,9 @@
     <title>Moviegraphy</title>
   </head>
   <body>
-    <slot />
+    <ReactLayout client:load listOfLinks={listOfLinks}>
+      <slot />
+    </ReactLayout>
   </body>
 </html>
 

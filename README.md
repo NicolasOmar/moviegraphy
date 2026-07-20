@@ -14,7 +14,7 @@ Web-based system to organize your personal movie library.
 - [License](#license)
 
 ## Purpose
-Its main goal is to create a brand new movie library system for my dad that will replace its former version, [Peliteca](https://github.com/nicolasomar/peliteca) (which I developed during 2015).
+Its main goal is to create a brand new movie library system for my dad that will replace its former version, [Peliteca](https://github.com/nicolasomar/peliteca) (which I developed in 2015).
 
 Also, I want to use this tool as a process to master several libraries, patterns, and structures for future tools I want to build.
 
@@ -113,7 +113,7 @@ npm start:prod
 In case you have cloned the repo, it will show you the following folders:
 - `.github:` [Github Actions](https://github.com/features/actions/) files used to run post-merge commits like unit test coverage collection.
 - `.husky:` Dedicated to [Husky](https://typicode.github.io/husky/) configuration files.
-- `configs:` Location of several tools configuration files for better organization.
+- `configs:` Used to wrap all the configuration files related to local and third-party services (for a cleaner project organization).
 - `src:` Location of all used components partially following Astro guidance:
   - `assets:` SVG files for specific purposes.
   - `components:` Location of the used components, all based on React and TypeScript.
