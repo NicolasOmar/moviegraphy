@@ -1,4 +1,4 @@
-import type { UserModel } from '@models'
+import type { UserFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/misc'
 import type { FC } from 'react'
 
@@ -6,10 +6,6 @@ import ReactFormInput from '@components/shared/ReactFormInput'
 import { API_METHODS, API_URL } from '@ts/constants'
 import { parseModelToFormData } from '@ts/parsers'
 import { Button, Form } from 'antd'
-
-export interface UserFormModel extends Omit<UserModel, 'id'> {
-  repeatPassword: string
-}
 
 const formInputs: FormInputList<UserFormModel> = [
   { label: 'Username', name: 'name' },

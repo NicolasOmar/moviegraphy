@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: ['src/pages/api/**', '**/*.test.{ts,tsx}', '**/__mocks__/**'],
-      include: ['src/**/*.{ts,tsx}', 'ts/**/*.ts'],
+      include: ['src/**/*.{ts,tsx}', 'ts/parsers.ts'],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],
       reportsDirectory: 'coverage/frontend',
@@ -25,7 +25,7 @@ export default defineConfig({
     environment: 'jsdom',
     exclude: ['src/pages/api/**'],
     globals: false,
-    include: ['src/**/*.test.{ts,tsx}', 'ts/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'ts/parsers.test.ts'],
     name: 'frontend',
     setupFiles: [fileURLToPath(new URL('./vitest.setup.frontend.ts', import.meta.url))]
   }

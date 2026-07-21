@@ -17,3 +17,6 @@ export const parseFormDataToModel = <T extends object>(_formData: FormData): T =
     {} as T
   )
 }
+
+export const handleError = (error: unknown) =>
+  error instanceof Error ? error.message : String(error)
