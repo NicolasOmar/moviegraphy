@@ -5,13 +5,15 @@ import type { APIRoute } from 'astro'
 import { createUser } from '@api/users'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { HttpError } from '@ts/errors'
-import { parseFormDataToModel } from '@ts/parsers'
+import { handleError, parseFormDataToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 
 const handleErrorResponse = (error: HttpError | unknown): Response => {
   if (error instanceof HttpError) {
     return new Response(JSON.stringify({ message: error.message }), { status: error.status })
   }
+
+  console.error(`[POST /api/users] ${handleError(error)}`)
 
   return new Response(JSON.stringify({ message: USER_ERROR_MESSAGES.UNEXPECTED }), {
     status: HTTP_STATUS.INTERNAL_SERVER_ERROR
