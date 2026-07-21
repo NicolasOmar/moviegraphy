@@ -27,7 +27,7 @@ export const ReactUserForm: FC = () => {
     })
 
     if (status === 500) {
-      addMessageToContext(statusText)
+      addMessageToContext({ content: statusText, type: 'error' })
     }
   }
 

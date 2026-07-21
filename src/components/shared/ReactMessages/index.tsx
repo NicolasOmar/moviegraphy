@@ -7,7 +7,9 @@ export const ReactMessages: FC = () => {
   const [addMessageToList, messageList] = message.useMessage()
 
   $contextMessageList.subscribe(_message => {
-    addMessageToList.info(_message[0])
+    if (_message) {
+      addMessageToList.open(_message)
+    }
   })
 
   return messageList
