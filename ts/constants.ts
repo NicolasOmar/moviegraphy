@@ -7,9 +7,11 @@ export enum API_METHODS {
 }
 
 enum API_ENTITIES {
-  MOVIE = 'movie'
+  MOVIE = 'movie',
+  USERS = 'users'
 }
 
 export enum API_URL {
-  MOVIES = `${API_ROUTE_BASE}/${API_ENTITIES.MOVIE}`
+  MOVIES = `${API_ROUTE_BASE}/${API_ENTITIES.MOVIE}`,
+  USERS = `${API_ROUTE_BASE}/${API_ENTITIES.USERS}`
 }

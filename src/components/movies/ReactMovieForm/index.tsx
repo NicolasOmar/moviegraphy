@@ -1,4 +1,5 @@
 import type { MovieModel } from '@models'
+import type { FormInputList } from '@ts/misc'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
@@ -12,6 +13,13 @@ import { parseModelToFormData } from '@ts/parsers'
 import { Button, Form } from 'antd'
 import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URL } from 'ts/constants'
+
+const formInputs: FormInputList<MovieModel> = [
+  { label: 'Name', name: 'name' },
+  { label: 'Description', name: 'description' },
+  { label: 'Year of release', name: 'releaseYear' },
+  { label: 'Country', name: 'countryMade' }
+]
 
 export const ReactMovieForm: FC = () => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
@@ -71,12 +79,11 @@ export const ReactMovieForm: FC = () => {
       }}
       layout="horizontal"
       onFinish={handleSubmit}
-      style={{ padding: '5% 5% 0 5%' }}
+      style={{ padding: '0 5%' }}
     >
-      <ReactFormInput label="Name" name="name" />
-      <ReactFormInput label="Description" name="description" />
-      <ReactFormInput label="Year of release" name="releaseYear" />
-      <ReactFormInput label="Country" name="countryMade" />
+      {formInputs.map((_inputConfig, _index) => (
+        <ReactFormInput key={`movie-form-${_index}`} {..._inputConfig} />
+      ))}
 
       <Form.Item>
         <Button htmlType="submit">{submitButtonText}</Button>

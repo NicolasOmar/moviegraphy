@@ -1,22 +1,13 @@
 ---
-import MovieForm from '@islands/MovieForm/index.astro'
+import { ReactMovieForm } from '@components/movies/ReactMovieForm'
 import MovieTable from '@islands/MovieTable/index.astro'
 import BaseLayout from '@layouts/BaseLayout.astro'
+import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
 ---
 
 <BaseLayout>
-  <section class="main-section">
-    <MovieForm />
+  <TwoColumnsLayout>
+    <ReactMovieForm client:visible />
     <MovieTable />
-  </section>
+  </TwoColumnsLayout>
 </BaseLayout>
-
-<style>
-  .main-section {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 2.5%;
-    justify-content: center;
-    align-content: center;
-  }
-</style>

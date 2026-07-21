@@ -1,13 +1,8 @@
 ---
+import { ReactUserForm } from '@components/users/ReactUserForm'
 import BaseLayout from '@layouts/BaseLayout.astro'
 ---
 
 <BaseLayout>
-  <section class="title">Welcome to Users section</section>
+  <ReactUserForm client:visible />
 </BaseLayout>
-
-<style>
-  section.title {
-    text-align: center;
-  }
-</style>

@@ -32,15 +32,13 @@ const movieListColumns = [
 const movieList = await getMovieList()
 ---
 
-<section id="container">
+<main>
   <img alt="" fetchpriority="high" id="background" src={background.src} />
-  <main>
-    <section id="hero">
-      <a href="https://astro.build">
-        <img alt="Astro Homepage" height="48" src={astroLogo.src} width="115" />
-      </a>
+  <section id="hero">
+    <a href="https://astro.build">
+      <img alt="Astro Homepage" height="48" src={astroLogo.src} width="115" />
+    </a>
+  </section>
 
-      <ReactMovieTable client:visible columns={movieListColumns} dataSource={movieList} />
-    </section>
-  </main>
-</section>
+  <ReactMovieTable client:visible columns={movieListColumns} dataSource={movieList} />
+</main>

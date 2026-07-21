@@ -1,12 +1,7 @@
 import type { MovieModel } from '@models'
+import type { CreateOrUpdateOne, DeleteOne, GetMany } from '@ts/misc'
 
 import prismaInstance from './prisma'
-
-type CreateOrUpdateOne<T> = (_entity: T) => Promise<T>
-
-type DeleteOne = (id: string) => Promise<boolean>
-
-type GetMany<T> = () => Promise<T[]>
 
 export const getMovieList: GetMany<MovieModel> = async () => {
   try {
