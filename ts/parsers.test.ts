@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { movieMocks } from './mocks'
-import { handleError, parseFormDataToModel, parseModelToFormData } from './parsers'
+import { handleErrorMessage, parseFormDataToModel, parseModelToFormData } from './parsers'
 
 describe('parseModelToFormData', () => {
   it('serializes every field of the given model into string-coerced FormData entries', () => {
@@ -44,13 +44,15 @@ describe('parseFormDataToModel', () => {
   })
 })
 
-describe('handleError', () => {
+describe('handleErrorMessage', () => {
   it('extracts the message from an Error instance', () => {
-    expect(handleError(new Error('database connection failed'))).toBe('database connection failed')
+    expect(handleErrorMessage(new Error('database connection failed'))).toBe(
+      'database connection failed'
+    )
   })
 
   it('coerces non-Error values to a string', () => {
-    expect(handleError('plain string failure')).toBe('plain string failure')
-    expect(handleError({ code: 500 })).toBe('[object Object]')
+    expect(handleErrorMessage('plain string failure')).toBe('plain string failure')
+    expect(handleErrorMessage({ code: 500 })).toBe('[object Object]')
   })
 })

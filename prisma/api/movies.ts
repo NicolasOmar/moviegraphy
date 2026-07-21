@@ -1,7 +1,7 @@
 import type { MovieModel } from '@models'
 import type { CreateOrUpdateOne, DeleteOne, GetMany } from '@ts/misc'
 
-import { handleError } from '@ts/parsers'
+import { handleErrorMessage } from '@ts/parsers'
 
 import prismaInstance from './prisma'
 
@@ -9,7 +9,7 @@ export const getMovieList: GetMany<MovieModel> = async () => {
   try {
     return await prismaInstance.movie.findMany()
   } catch (error) {
-    const message = handleError(error)
+    const message = handleErrorMessage(error)
 
     console.warn(`[getMovieList] Prisma query failed, returning an empty list: ${message}`)
 

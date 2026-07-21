@@ -1,4 +1,6 @@
 ---
+import { ReactMessages } from '@components/shared/ReactMessages'
+
 const listOfLinks = [
   { label: 'Home', page: '/' },
   { label: 'Movies', page: '/movies' },
@@ -21,6 +23,7 @@ const listOfLinks = [
       {listOfLinks.map(_link => <a href={_link.page}>{_link.label}</a>)}
     </header>
     <slot />
+    <ReactMessages client:load />
   </body>
 </html>
 

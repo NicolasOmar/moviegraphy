@@ -3,6 +3,7 @@ import type { FormInputList } from '@ts/misc'
 import type { FC } from 'react'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
+import { addMessageToContext } from '@store/message'
 import { API_METHODS, API_URL } from '@ts/constants'
 import { parseModelToFormData } from '@ts/parsers'
 import { Button, Form } from 'antd'
@@ -20,10 +21,14 @@ export const ReactUserForm: FC = () => {
   const handleSubmit = async (_userFormDataModel: UserFormModel) => {
     const userToCreate = parseModelToFormData(_userFormDataModel)
 
-    await fetch(API_URL.USERS, {
+    const { status, statusText } = await fetch(API_URL.USERS, {
       body: userToCreate,
       method: API_METHODS.POST
     })
+
+    if (status === 500) {
+      addMessageToContext(statusText)
+    }
   }
 
   return (

@@ -19,7 +19,7 @@ export const updateMovieOnListContext = (updatedMovie: MovieModel) => {
 }
 
 export const deleteMovieOnListContext = (movieId: string) => {
-  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id === movieId))
+  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id !== movieId))
 }
 
 export const updateSelectedMovieOnContext = (_updateData: MovieModel | null) => {
