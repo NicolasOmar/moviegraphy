@@ -1,0 +1,14 @@
+[
+  {
+    "email": "neo@matrix.io",
+    "id": "9d3c1a2e-2222-4a1a-9a1a-000000000001",
+    "name": "Thomas Anderson",
+    "password": "wakeUpNeo123"
+  },
+  {
+    "email": "trinity@matrix.io",
+    "id": "9d3c1a2e-2222-4a1a-9a1a-000000000002",
+    "name": "Trinity",
+    "password": "followTheWhiteRabbit"
+  }
+]
