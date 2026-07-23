@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { movieMocks } from '../../ts/mocks'
+import { movieMocks } from '../ts/mocks'
 import {
   $contextMovieList,
   $contextSelectedMovie,

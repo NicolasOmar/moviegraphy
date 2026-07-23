@@ -19,3 +19,10 @@ model Movie {
   name        String
   releaseYear Int
 }
+
+model User {
+  id       String @id @unique
+  name     String @db.VarChar(25)
+  email    String @unique
+  password String @db.VarChar(25)
+}

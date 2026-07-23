@@ -1,24 +1,13 @@
 ---
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
-import MovieForm from '@islands/MovieForm/index.astro'
-import MovieTable from '@islands/MovieTable/index.astro'
-import Layout from '@layouts/Layout.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
 ---
 
-<Layout>
-  <section class="main-section">
-    <MovieForm />
-    <MovieTable />
-  </section>
-</Layout>
+<BaseLayout>
+  <section class="title">Welcome to Moviegraphy</section>
+</BaseLayout>
 
 <style>
-  .main-section {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 2.5%;
-    justify-content: center;
-    align-content: center;
+  section.title {
+    text-align: center;
   }
 </style>

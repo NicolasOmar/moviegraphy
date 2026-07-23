@@ -1,12 +1,12 @@
 {
   "name": "moviegraphy",
   "version": "1.1.1",
-  "description": "",
+  "description": "Web-based system to organize your personal movie library",
   "author": "Nicolás Omar González Passerino",
   "keywords": [],
   "license": "GPL-3.0-only",
   "private": true,
-  "homepage": "",
+  "homepage": "https://moviegraphy.netlify.app/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NicolasOmar/moviegraphy.git"
@@ -47,7 +47,7 @@
     "update:astro": "npx @astrojs/upgrade",
     "update:deps": "ncu -i --format group --peer --doctor --doctorTest 'npm run check:project'",
     "check:project": "npm run format:check && npm run lint && npm run build && npm test",
-    "publish": "semantic-release"
+    "publish": "semantic-release --extends ./configs/.releaserc.json"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
@@ -59,14 +59,15 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "antd": "^6.5.1",
-    "astro": "^7.0.9",
+    "astro": "^7.1.1",
     "dotenv": "^17.4.2",
     "nanostores": "^1.4.0",
     "pg": "^8.22.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "typescript": "^6.0.3",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
@@ -110,6 +111,7 @@
   },
   "lint-staged": {
     "(prisma|ts|src)/**/*.(astro|ts|tsx)": [
+      "eslint --config configs/eslint.config.mjs --fix",
       "prettier --config configs/.prettierrc.json --write",
       "eslint --config configs/eslint.config.mjs --max-warnings 0"
     ]
