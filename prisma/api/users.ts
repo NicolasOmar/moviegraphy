@@ -4,8 +4,8 @@ import type { CreateOrUpdateOne } from '@ts/misc'
 import { HTTP_STATUS } from '@ts/constants'
 import { HttpError } from '@ts/errors'
 import { handleErrorMessage } from '@ts/parsers'
-import { Prisma } from 'prisma/generated/client'
 
+import { Prisma } from '../generated/client'
 import prismaInstance from './prisma'
 
 export const createUser: CreateOrUpdateOne<UserModel> = async newUser => {

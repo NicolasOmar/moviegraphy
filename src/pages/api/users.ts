@@ -4,34 +4,45 @@ import type { APIRoute } from 'astro'
 
 import { createUser } from '@api/users'
 import { UserCreateSchema } from '@schemas/user'
-import { HTTP_STATUS } from '@ts/constants'
-import { parseFormDataToModel, parseHttpErrorToResponse, parseMessageToResponse } from '@ts/parsers'
+import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { HttpError } from '@ts/errors'
+import {
+  handleErrorMessage,
+  parseFormDataToModel,
+  parseHttpErrorToResponse,
+  parseMessageToResponse
+} from '@ts/parsers'
 import { v6 } from 'uuid'
-import { ZodError } from 'zod'
-
-const handleZodErrors = (errors: ZodError) => errors.issues.map(({ message }) => message)
 
 export const POST: APIRoute = async ({ request }) => {
   const newUserFormData = await request.formData()
   const newUserModel = parseFormDataToModel<UserFormModel>(newUserFormData)
+  const { email, name, password, repeatPassword } = newUserModel
+
+  if (!name || !email || !password || !repeatPassword) {
+    return parseMessageToResponse(USER_ERROR_MESSAGES.MISSING_FIELDS, HTTP_STATUS.BAD_REQUEST)
+  }
+
+  if (password !== repeatPassword) {
+    return parseMessageToResponse(USER_ERROR_MESSAGES.PASSWORD_MISMATCH, HTTP_STATUS.BAD_REQUEST)
+  }
 
   try {
     const { error } = await UserCreateSchema.safeParseAsync(newUserModel)
 
     if (error) {
-      const userCreateZodMessage = handleZodErrors(error)
-      return parseMessageToResponse(userCreateZodMessage, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      const userCreateZodMessage = error.issues.map(({ message }) => message)
+      return parseMessageToResponse(userCreateZodMessage, HTTP_STATUS.BAD_REQUEST)
     }
 
-    const userCreated = await createUser({
-      email: newUserModel.email,
-      id: v6(),
-      name: newUserModel.name,
-      password: newUserModel.password
-    })
+    const userCreated = await createUser({ email, id: v6(), name, password })
 
     return parseMessageToResponse(userCreated, HTTP_STATUS.OK)
   } catch (error) {
+    if (!(error instanceof HttpError)) {
+      console.error(`[POST /api/users] ${handleErrorMessage(error)}`)
+    }
+
     return parseHttpErrorToResponse(error)
   }
 }
