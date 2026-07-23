@@ -2,8 +2,8 @@ import { userMocks } from '@ts/mocks'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
-import prisma from './prisma'
-import { createUser } from './users'
+import prisma from '../prisma'
+import { createUser } from '../users'
 
 vi.mock('./prisma')
 

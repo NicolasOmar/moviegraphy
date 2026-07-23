@@ -22,7 +22,7 @@ model Movie {
 
 model User {
   id       String @id @unique
-  name     String
+  name     String @db.VarChar(25)
   email    String @unique
-  password String
+  password String @db.VarChar(25)
 }
