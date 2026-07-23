@@ -10,7 +10,7 @@ import {
   updateSelectedMovieOnContext
 } from '@store/movie'
 import { parseModelToFormData } from '@ts/parsers'
-import { Button, Form } from 'antd'
+import { Button, Form, Typography } from 'antd'
 import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URL } from 'ts/constants'
 
@@ -68,26 +68,32 @@ export const ReactMovieForm: FC = () => {
   })
 
   return (
-    <Form
-      form={movieForm}
-      initialValues={{
-        countryMade: '',
-        description: '',
-        id: '',
-        name: '',
-        releaseYear: 0
-      }}
-      layout="horizontal"
-      onFinish={handleSubmit}
-      style={{ padding: '0 5%' }}
-    >
-      {formInputs.map((_inputConfig, _index) => (
-        <ReactFormInput key={`movie-form-${_index}`} {..._inputConfig} />
-      ))}
+    <section>
+      <Typography.Title level={2} style={{ textAlign: 'center' }}>
+        Create a new movie
+      </Typography.Title>
 
-      <Form.Item>
-        <Button htmlType="submit">{submitButtonText}</Button>
-      </Form.Item>
-    </Form>
+      <Form
+        form={movieForm}
+        initialValues={{
+          countryMade: '',
+          description: '',
+          id: '',
+          name: '',
+          releaseYear: 0
+        }}
+        layout="horizontal"
+        onFinish={handleSubmit}
+        style={{ padding: '0 5%' }}
+      >
+        {formInputs.map((_inputConfig, _index) => (
+          <ReactFormInput key={`movie-form-${_index}`} {..._inputConfig} />
+        ))}
+
+        <Form.Item>
+          <Button htmlType="submit">{submitButtonText}</Button>
+        </Form.Item>
+      </Form>
+    </section>
   )
 }

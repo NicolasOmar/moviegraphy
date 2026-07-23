@@ -12,7 +12,7 @@ import {
 } from '@store/movie'
 import { API_METHODS, API_URL } from '@ts/constants'
 import { parseModelToFormData } from '@ts/parsers'
-import { Button, Input } from 'antd'
+import { Button, Input, Typography } from 'antd'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
 export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, dataSource }) => {
@@ -40,6 +40,10 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
   useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
 
   const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
+  const memoizedSeach = useMemo(
+    () => (movieListInContext.length > 0 ? <Input onChange={handleSearch} /> : null),
+    [movieListInContext]
+  )
 
   const handleEdit = (_movieToEdit: MovieModel) => updateSelectedMovieOnContext(_movieToEdit)
 
@@ -56,9 +60,12 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
   }
 
   return (
-    <>
-      <Input onChange={handleSearch} />
+    <section>
+      <Typography.Title level={2} style={{ textAlign: 'center' }}>
+        List of movies
+      </Typography.Title>
+      {memoizedSeach}
       {memoizedTable}
-    </>
+    </section>
   )
 }
