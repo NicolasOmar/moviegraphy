@@ -99,6 +99,13 @@ Lastly, create an `.env` file at your project's root with the following content.
 DATABASE_URL=HERE_GOES_YOUR_DATABASE_CONNECTION_STRING
 ```
 
+- You can use a string such as the follwing to start on your local database
+  ```env
+  postgresql://postgres:admin@localhost:5432/moviegraphy?schema=public
+  ```
+
+  > In case you choose that option, DO NOT FORGET to run npm un `db:compile` before starting for first time
+
 ## How to run it
 To run it, simply execute
 ```sh
