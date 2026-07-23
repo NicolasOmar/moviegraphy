@@ -5,13 +5,8 @@ import type { FC } from 'react'
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { addMessageToContext } from '@store/message'
 import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
-import { parseModelToFormData } from '@ts/parsers'
+import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Form } from 'antd'
-
-const parseResponseErrorMessage = async (_response: Response) => {
-  const errorMessage = (await _response.json()).message as string | string[]
-  return Array.isArray(errorMessage) ? errorMessage.join('. ') : errorMessage
-}
 
 const formInputs: FormInputList<UserFormModel> = [
   {
@@ -42,15 +37,16 @@ export const ReactUserForm: FC = () => {
   const handleSubmit = async (_userFormDataModel: UserFormModel) => {
     const userToCreate = parseModelToFormData(_userFormDataModel)
 
-    const userCreationPost = await fetch(API_URL.USERS, {
+    const userCreateResponse = await fetch(API_URL.USERS, {
       body: userToCreate,
       method: API_METHODS.POST
     })
 
-    if (userCreationPost.status !== HTTP_STATUS.OK) {
-      const userCreationErrorMessage = await parseResponseErrorMessage(userCreationPost)
-      addMessageToContext({ content: userCreationErrorMessage, type: 'error' })
+    if (userCreateResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
+      addMessageToContext({ content: errorMessage, type: 'error' })
     } else {
+      userForm.resetFields()
       addMessageToContext({ content: 'User created', type: 'success' })
     }
   }

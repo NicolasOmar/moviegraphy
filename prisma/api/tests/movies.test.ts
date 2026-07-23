@@ -5,7 +5,7 @@ import { movieMocks } from '../../../ts/mocks'
 import { createMovie, deleteMovie, getMovieList, updateMovie } from '../movies'
 import prisma from '../prisma'
 
-vi.mock('./prisma')
+vi.mock('../prisma')
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 

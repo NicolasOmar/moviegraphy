@@ -5,7 +5,7 @@ import { mockReset } from 'vitest-mock-extended'
 import prisma from '../prisma'
 import { createUser } from '../users'
 
-vi.mock('./prisma')
+vi.mock('../prisma')
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 
