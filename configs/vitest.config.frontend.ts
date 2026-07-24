@@ -25,7 +25,7 @@ export default defineConfig({
     environment: 'jsdom',
     exclude: ['src/pages/api/**'],
     globals: false,
-    include: ['src/**/*.test.{ts,tsx}', 'ts/parsers.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'ts/tests/**/*.test.ts', 'store/**/*.test.ts'],
     name: 'frontend',
     setupFiles: [fileURLToPath(new URL('./vitest.setup.frontend.ts', import.meta.url))]
   }

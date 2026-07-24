@@ -1,3 +1,4 @@
+import { $contextMessageList } from '@store/message'
 import {
   $contextMovieList,
   $contextSelectedMovie,
@@ -16,6 +17,7 @@ vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 beforeEach(() => {
   $contextMovieList.set([])
   $contextSelectedMovie.set(null)
+  $contextMessageList.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -64,6 +66,23 @@ describe('ReactMovieForm', () => {
     await waitFor(() => expect(screen.getByLabelText('Name')).toHaveValue(''))
   })
 
+  it('shows an error message and keeps the form filled when creation fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Name is required' }), { status: 400 })
+    )
+    render(<ReactMovieForm />)
+
+    await fillForm(user)
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() =>
+      expect($contextMessageList.get()).toEqual({ content: 'Name is required', type: 'error' })
+    )
+    expect($contextMovieList.get()).toEqual([])
+    expect(screen.getByLabelText('Name')).toHaveValue('The Matrix')
+  })
+
   it('updates a movie: pre-fills the form on selection, submits a PATCH request, updates the list, and clears the selection', async () => {
     const user = userEvent.setup()
     const [movieToEdit] = movieMocks
@@ -89,5 +108,43 @@ describe('ReactMovieForm', () => {
     )
     expect($contextMovieList.get()).toEqual([{ ...movieToEdit, name: 'The Matrix Resurrections' }])
     expect($contextSelectedMovie.get()).toBeNull()
+  })
+
+  it('shows an error message and keeps the selection when an update fails', async () => {
+    const user = userEvent.setup()
+    const [movieToEdit] = movieMocks
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Update rejected' }), { status: 500 })
+    )
+    render(<ReactMovieForm />)
+    $contextMovieList.set([movieToEdit])
+
+    act(() => {
+      updateSelectedMovieOnContext(movieToEdit)
+    })
+
+    expect(await screen.findByLabelText('Name')).toHaveValue(movieToEdit.name)
+    await user.click(screen.getByRole('button', { name: 'Update' }))
+
+    await waitFor(() =>
+      expect($contextMessageList.get()).toEqual({ content: 'Update rejected', type: 'error' })
+    )
+    expect($contextMovieList.get()).toEqual([movieToEdit])
+    expect($contextSelectedMovie.get()).toEqual(movieToEdit)
+  })
+
+  it('shows a generic invalidation message and never calls fetch when required fields are empty', async () => {
+    const user = userEvent.setup()
+    render(<ReactMovieForm />)
+
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() =>
+      expect($contextMessageList.get()).toEqual({
+        content: 'Check the form messages',
+        type: 'error'
+      })
+    )
+    expect(fetch).not.toHaveBeenCalled()
   })
 })

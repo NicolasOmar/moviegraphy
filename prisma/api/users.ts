@@ -1,7 +1,7 @@
 import type { UserModel } from '@models'
 import type { CreateOrUpdateOne } from '@ts/types'
 
-import { HTTP_STATUS } from '@ts/constants'
+import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { handleErrorMessage } from '@ts/parsers'
 import { HttpError } from '@ts/types'
 
@@ -15,7 +15,7 @@ export const createUser: CreateOrUpdateOne<UserModel> = async newUser => {
     console.error('[POST /api/users]', { error })
 
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-      throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'User email has already been taken')
+      throw new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)
     }
 
     const errorMessage = handleErrorMessage(error)

@@ -1,3 +1,5 @@
+import { HTTP_STATUS } from '@ts/constants'
+import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
@@ -54,6 +56,16 @@ describe('createMovie', () => {
     expect(mockedPrisma.movie.create).toHaveBeenCalledWith({ data: movie })
     expect(result).toEqual(movie)
   })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.movie.create.mockRejectedValue(new Error('unique constraint failed'))
+
+    await expect(createMovie(movie)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed')
+    )
+  })
 })
 
 describe('updateMovie', () => {
@@ -67,6 +79,16 @@ describe('updateMovie', () => {
     expect(mockedPrisma.movie.update).toHaveBeenCalledWith({ data: dataToUpdate, where: { id } })
     expect(result).toEqual(movie)
   })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.movie.update.mockRejectedValue(new Error('record not found'))
+
+    await expect(updateMovie(movie)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'record not found')
+    )
+  })
 })
 
 describe('deleteMovie', () => {
@@ -78,5 +100,15 @@ describe('deleteMovie', () => {
 
     expect(mockedPrisma.movie.delete).toHaveBeenCalledWith({ where: { id: movie.id } })
     expect(result).toBe(true)
+  })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.movie.delete.mockRejectedValue(new Error('foreign key constraint failed'))
+
+    await expect(deleteMovie(movie.id)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'foreign key constraint failed')
+    )
   })
 })

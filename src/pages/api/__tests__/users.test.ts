@@ -74,6 +74,18 @@ describe('POST', () => {
     expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.PASSWORD_MISMATCH })
   })
 
+  it('returns 400 with the joined Zod issue messages when the payload fails schema validation', async () => {
+    const formData = buildFormData({ email: 'not-an-email' })
+
+    const response = await POST(buildContext(formData))
+
+    expect(mockedCreateUser).not.toHaveBeenCalled()
+    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+    expect(await response.json()).toEqual({
+      message: ['Invalid email address']
+    })
+  })
+
   it('propagates the status and message carried by an HttpError from the data layer', async () => {
     mockedCreateUser.mockRejectedValue(
       new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)

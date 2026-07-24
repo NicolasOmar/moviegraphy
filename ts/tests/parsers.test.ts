@@ -1,7 +1,16 @@
+import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { HttpError } from '@ts/types'
 import { describe, expect, it } from 'vitest'
 
 import { movieMocks } from '../mocks'
-import { handleErrorMessage, parseFormDataToModel, parseModelToFormData } from '../parsers'
+import {
+  handleErrorMessage,
+  parseFormDataToModel,
+  parseHttpErrorToResponse,
+  parseMessageToResponse,
+  parseModelToFormData,
+  parseResponseErrorToMessage
+} from '../parsers'
 
 describe('parseModelToFormData', () => {
   it('serializes every field of the given model into string-coerced FormData entries', () => {
@@ -54,5 +63,48 @@ describe('handleErrorMessage', () => {
   it('coerces non-Error values to a string', () => {
     expect(handleErrorMessage('plain string failure')).toBe('plain string failure')
     expect(handleErrorMessage({ code: 500 })).toBe('[object Object]')
+  })
+})
+
+describe('parseResponseErrorToMessage', () => {
+  it('returns the message as-is when the response body carries a single string', async () => {
+    const response = new Response(JSON.stringify({ message: 'Name is required' }))
+
+    expect(await parseResponseErrorToMessage(response)).toBe('Name is required')
+  })
+
+  it('joins the messages with ". " when the response body carries an array', async () => {
+    const response = new Response(
+      JSON.stringify({ message: ['Name is required', 'Email is invalid'] })
+    )
+
+    expect(await parseResponseErrorToMessage(response)).toBe('Name is required. Email is invalid')
+  })
+})
+
+describe('parseMessageToResponse', () => {
+  it('wraps the given message and status into a Response with a JSON body', async () => {
+    const response = parseMessageToResponse('Movie created', HTTP_STATUS.OK)
+
+    expect(response.status).toBe(HTTP_STATUS.OK)
+    expect(await response.json()).toEqual({ message: 'Movie created' })
+  })
+})
+
+describe('parseHttpErrorToResponse', () => {
+  it('carries the status and message of an HttpError over to the Response', async () => {
+    const response = parseHttpErrorToResponse(
+      new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)
+    )
+
+    expect(response.status).toBe(HTTP_STATUS.CONFLICT)
+    expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.DUPLICATE_EMAIL })
+  })
+
+  it('masks any non-HttpError value behind a generic 500 response', async () => {
+    const response = parseHttpErrorToResponse(new Error('unexpected failure'))
+
+    expect(response.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.UNEXPECTED })
   })
 })

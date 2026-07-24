@@ -59,7 +59,11 @@ export const DELETE: APIRoute = async ({ request }) => {
   const deleteMovieFormData = await request.formData()
   const deleteMovieModel = parseFormDataToModel<{ id: string }>(deleteMovieFormData)
 
-  await deleteMovie(deleteMovieModel.id)
+  try {
+    await deleteMovie(deleteMovieModel.id)
 
-  return parseMessageToResponse(true, HTTP_STATUS.OK)
+    return parseMessageToResponse(true, HTTP_STATUS.OK)
+  } catch (apiDeleteError) {
+    return parseHttpErrorToResponse(apiDeleteError)
+  }
 }

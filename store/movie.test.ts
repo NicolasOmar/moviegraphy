@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { movieMocks } from '../ts/mocks'
 import {
@@ -10,8 +10,6 @@ import {
   updateMovieOnListContext,
   updateSelectedMovieOnContext
 } from './movie'
-
-vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 
 beforeEach(() => {
   $contextMovieList.set([])
@@ -26,38 +24,38 @@ describe('setMovieListOnContext', () => {
   })
 })
 
-describe('addMovieToListContext / updateMovieOnListContext', () => {
-  it('appends a new movie with a generated id, then updates only the matching entry on later edits', () => {
+describe('addMovieToListContext', () => {
+  it('appends the given movie to the end of the list, keeping its id unchanged', () => {
+    setMovieListOnContext(movieMocks)
+    const newMovie = { ...movieMocks[0], id: 'new-movie-id', name: 'New Movie' }
+
+    addMovieToListContext(newMovie)
+
+    expect($contextMovieList.get()).toEqual([...movieMocks, newMovie])
+  })
+})
+
+describe('updateMovieOnListContext', () => {
+  it('replaces only the entry matching the given id, leaving the rest untouched', () => {
     setMovieListOnContext(movieMocks)
     const [firstMovie, ...restOfMovies] = movieMocks
-
-    addMovieToListContext(firstMovie)
-
-    expect($contextMovieList.get()).toEqual([...movieMocks, { ...firstMovie, id: 'fixed-test-id' }])
-
     const updatedMovie = { ...firstMovie, name: 'Updated Name' }
+
     updateMovieOnListContext(updatedMovie)
 
-    expect($contextMovieList.get()).toEqual([
-      updatedMovie,
-      ...restOfMovies,
-      { ...firstMovie, id: 'fixed-test-id' }
-    ])
+    expect($contextMovieList.get()).toEqual([updatedMovie, ...restOfMovies])
   })
 })
 
 describe('deleteMovieOnListContext', () => {
-  it.fails(
-    'removes the movie with the given id from the list (KNOWN BUG: src/store/movie.ts filters `id === movieId`, so it keeps only the match instead of removing it)',
-    () => {
-      setMovieListOnContext(movieMocks)
-      const [movieToDelete] = movieMocks
+  it('removes the movie with the given id from the list', () => {
+    setMovieListOnContext(movieMocks)
+    const [movieToDelete, ...restOfMovies] = movieMocks
 
-      deleteMovieOnListContext(movieToDelete.id)
+    deleteMovieOnListContext(movieToDelete.id)
 
-      expect($contextMovieList.get().map(({ id }) => id)).not.toContain(movieToDelete.id)
-    }
-  )
+    expect($contextMovieList.get()).toEqual(restOfMovies)
+  })
 })
 
 describe('updateSelectedMovieOnContext', () => {

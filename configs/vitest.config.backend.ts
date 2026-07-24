@@ -27,7 +27,7 @@ export default defineConfig({
     },
     environment: 'node',
     globals: false,
-    include: ['prisma/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/parsers.test.ts'],
+    include: ['prisma/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/tests/**/*.test.ts'],
     name: 'backend'
   }
 })
