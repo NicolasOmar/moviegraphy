@@ -1,9 +1,9 @@
 import type { UserModel } from '@models'
-import type { CreateOrUpdateOne } from '@ts/misc'
+import type { CreateOrUpdateOne } from '@ts/types'
 
 import { HTTP_STATUS } from '@ts/constants'
-import { HttpError } from '@ts/errors'
 import { handleErrorMessage } from '@ts/parsers'
+import { HttpError } from '@ts/types'
 
 import { Prisma } from '../generated/client'
 import prismaInstance from './prisma'

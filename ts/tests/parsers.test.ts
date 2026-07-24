@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { movieMocks } from './mocks'
-import { handleErrorMessage, parseFormDataToModel, parseModelToFormData } from './parsers'
+import { movieMocks } from '../mocks'
+import { handleErrorMessage, parseFormDataToModel, parseModelToFormData } from '../parsers'
 
 describe('parseModelToFormData', () => {
   it('serializes every field of the given model into string-coerced FormData entries', () => {

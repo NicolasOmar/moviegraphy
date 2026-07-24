@@ -5,13 +5,13 @@ import type { APIRoute } from 'astro'
 import { createUser } from '@api/users'
 import { UserCreateSchema } from '@schemas/user'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { HttpError } from '@ts/errors'
 import {
   handleErrorMessage,
   parseFormDataToModel,
   parseHttpErrorToResponse,
   parseMessageToResponse
 } from '@ts/parsers'
+import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {

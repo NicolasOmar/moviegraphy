@@ -2,8 +2,8 @@ import type { APIContext } from 'astro'
 
 import { createUser } from '@api/users'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { HttpError } from '@ts/errors'
 import { userMocks } from '@ts/mocks'
+import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { POST } from '../users'

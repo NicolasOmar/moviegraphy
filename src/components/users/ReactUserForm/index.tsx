@@ -1,5 +1,5 @@
 import type { UserFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/misc'
+import type { FormInputList } from '@ts/types'
 import type { FC } from 'react'
 
 import ReactFormInput from '@components/shared/ReactFormInput'

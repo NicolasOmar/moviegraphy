@@ -1,5 +1,5 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from './constants'
-import { HttpError } from './errors'
+import { HttpError } from './types'
 
 export const parseModelToFormData = <T extends object>(rawFormData: T): FormData => {
   const _formData = new FormData()

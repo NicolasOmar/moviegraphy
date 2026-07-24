@@ -1,4 +1,4 @@
-import type { InputType } from '@ts/misc'
+import type { InputType } from '@ts/types'
 import type { Rule } from 'antd/es/form'
 import type { FC } from 'react'
 

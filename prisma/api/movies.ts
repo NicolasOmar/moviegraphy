@@ -1,5 +1,5 @@
 import type { MovieModel } from '@models'
-import type { CreateOrUpdateOne, DeleteOne, GetMany } from '@ts/misc'
+import type { CreateOrUpdateOne, DeleteOne, GetMany } from '@ts/types'
 
 import { handleErrorMessage } from '@ts/parsers'
 

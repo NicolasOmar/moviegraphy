@@ -1,6 +1,6 @@
 import type { ReactTableProps } from '@components/shared/ReactTable'
 import type { MovieModel } from '@models'
-import type { InputEventHandler } from '@ts/misc'
+import type { InputEventHandler } from '@ts/types'
 
 import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'

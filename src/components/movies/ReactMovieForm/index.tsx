@@ -1,5 +1,5 @@
 import type { MovieModel } from '@models'
-import type { FormInputList } from '@ts/misc'
+import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
