@@ -1,12 +1,12 @@
 import type { UserFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
-import type { FC } from 'react'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { addMessageToContext } from '@store/message'
 import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Form, Typography } from 'antd'
+import { type FC, useMemo, useState } from 'react'
 
 const formInputs: FormInputList<UserFormModel> = [
   {
@@ -50,8 +50,18 @@ const formInputs: FormInputList<UserFormModel> = [
 
 export const ReactUserForm: FC = () => {
   const [userForm] = Form.useForm<UserFormModel>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const memoizedInputs = useMemo(
+    () =>
+      formInputs.map((_inputConfig, _inputIndex) => (
+        <ReactFormInput isDisabled={isLoading} key={`user-form-${_inputIndex}`} {..._inputConfig} />
+      )),
+    [isLoading]
+  )
 
   const handleSubmit = async (_userFormDataModel: UserFormModel) => {
+    setIsLoading(true)
+
     const userToCreate = parseModelToFormData(_userFormDataModel)
 
     const userCreateResponse = await fetch(API_URL.USERS, {
@@ -66,6 +76,8 @@ export const ReactUserForm: FC = () => {
       userForm.resetFields()
       addMessageToContext({ content: 'User created', type: 'success' })
     }
+
+    setIsLoading(false)
   }
 
   const handleInvalidation = () =>
@@ -83,12 +95,12 @@ export const ReactUserForm: FC = () => {
         onFinishFailed={handleInvalidation}
         style={{ padding: '0 5%' }}
       >
-        {formInputs.map((_inputConfig, _index) => (
-          <ReactFormInput key={`user-form-${_index}`} {..._inputConfig} />
-        ))}
+        {memoizedInputs}
 
         <Form.Item>
-          <Button htmlType="submit">Create</Button>
+          <Button disabled={isLoading} htmlType="submit">
+            Create
+          </Button>
         </Form.Item>
       </Form>
     </>

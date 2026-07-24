@@ -12,7 +12,7 @@ import {
 } from '@store/movie'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Form, Typography } from 'antd'
-import { type FC, useMemo } from 'react'
+import { type FC, useMemo, useState } from 'react'
 import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
 
 const formInputs: FormInputList<MovieModel> = [
@@ -48,9 +48,21 @@ const formInputs: FormInputList<MovieModel> = [
 export const ReactMovieForm: FC = () => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
   const [movieForm] = Form.useForm<MovieModel>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const submitButtonText = useMemo(
     () => (selectedMovieInContext ? 'Update' : 'Create'),
     [selectedMovieInContext]
+  )
+  const memoizedInputs = useMemo(
+    () =>
+      formInputs.map((_inputConfig, _inputIndex) => (
+        <ReactFormInput
+          isDisabled={isLoading}
+          key={`movie-form-${_inputIndex}`}
+          {..._inputConfig}
+        />
+      )),
+    [isLoading]
   )
 
   $contextSelectedMovie.listen(_movie => {
@@ -60,6 +72,8 @@ export const ReactMovieForm: FC = () => {
   })
 
   const handleSubmit = async (_movieFormDataModel: MovieModel) => {
+    setIsLoading(true)
+
     if (selectedMovieInContext === null) {
       const movieToCreate = parseModelToFormData(_movieFormDataModel)
 
@@ -106,6 +120,8 @@ export const ReactMovieForm: FC = () => {
         })
       }
     }
+
+    setIsLoading(false)
   }
 
   const handleInvalidation = () =>
@@ -131,12 +147,12 @@ export const ReactMovieForm: FC = () => {
         onFinishFailed={handleInvalidation}
         style={{ padding: '0 5%' }}
       >
-        {formInputs.map((_inputConfig, _inputIndex) => (
-          <ReactFormInput key={`movie-form-${_inputIndex}`} {..._inputConfig} />
-        ))}
+        {memoizedInputs}
 
         <Form.Item>
-          <Button htmlType="submit">{submitButtonText}</Button>
+          <Button disabled={isLoading} htmlType="submit">
+            {submitButtonText}
+          </Button>
         </Form.Item>
       </Form>
     </section>

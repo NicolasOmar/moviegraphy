@@ -1,5 +1,6 @@
 ---
 import { ReactMessages } from '@components/shared/ReactMessages'
+import { ClientRouter } from 'astro:transitions'
 
 const listOfLinks = [
   { label: 'Home', page: '/' },
@@ -17,9 +18,11 @@ const listOfLinks = [
     <link href="/favicon.ico" rel="icon" />
     <meta content={Astro.generator} name="generator" />
     <title>Moviegraphy</title>
+
+    <ClientRouter />
   </head>
   <body>
-    <header>
+    <header transition:persist>
       {listOfLinks.map(_link => <a href={_link.page}>{_link.label}</a>)}
     </header>
     <slot />
