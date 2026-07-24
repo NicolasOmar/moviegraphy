@@ -12,9 +12,9 @@ export default defineConfig({
         'prisma/generated/**',
         'prisma/api/prisma.ts',
         '**/*.test.{ts,tsx}',
-        '**/__mocks__/**'
+        '**/mocks/**'
       ],
-      include: ['prisma/api/**/*.ts', 'src/pages/api/**/*.ts', 'ts/**/*.ts'],
+      include: ['prisma/api/**/*.ts', 'src/pages/api/**/*.ts', 'ts/parsers.ts'],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],
       reportsDirectory: 'coverage/backend',
@@ -27,7 +27,7 @@ export default defineConfig({
     },
     environment: 'node',
     globals: false,
-    include: ['prisma/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/**/*.test.ts'],
+    include: ['prisma/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/tests/**/*.test.ts'],
     name: 'backend'
   }
 })

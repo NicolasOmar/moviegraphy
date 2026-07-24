@@ -36,7 +36,6 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TITLE: Check weekly dependency updates
           ASSIGNEES: nicolasomar
-          MILESTONE: maintenance
           LABELS: dependencies
           BODY: |
             ### Objective

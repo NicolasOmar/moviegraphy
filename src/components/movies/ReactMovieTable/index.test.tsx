@@ -1,6 +1,8 @@
+import { $contextMessageList } from '@store/message'
 import { $contextMovieList, $contextSelectedMovie } from '@store/movie'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { API_URL } from '@ts/constants'
 import { movieMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -11,6 +13,7 @@ const columns = [{ dataIndex: 'name', title: 'Name' }]
 beforeEach(() => {
   $contextMovieList.set([])
   $contextSelectedMovie.set(null)
+  $contextMessageList.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -79,10 +82,31 @@ describe('ReactMovieTable', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        '/api/movie',
+        API_URL.MOVIES,
         expect.objectContaining({ body: expect.any(FormData), method: 'DELETE' })
       )
     )
     expect($contextSelectedMovie.get()).toBeNull()
+  })
+
+  it('shows an error message and keeps the movie in the list when deletion fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Movie is referenced elsewhere' }), { status: 409 })
+    )
+    render(<ReactMovieTable columns={columns} dataSource={movieMocks} />)
+    await waitFor(() => expect(screen.getByText(movieMocks[0].name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    await user.click(deleteButton)
+
+    await waitFor(() =>
+      expect($contextMessageList.get()).toEqual({
+        content: 'Movie is referenced elsewhere',
+        type: 'error'
+      })
+    )
+    expect(screen.getByText(movieMocks[0].name)).toBeInTheDocument()
   })
 })

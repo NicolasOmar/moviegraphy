@@ -14,8 +14,15 @@ datasource db {
 
 model Movie {
   countryMade String
-  description String
-  id          String @id @unique
-  name        String
+  description String? @db.VarChar(300)
+  id          String  @id @unique
+  name        String  @db.VarChar(150)
   releaseYear Int
+}
+
+model User {
+  id       String @id @unique
+  name     String @db.VarChar(25)
+  email    String @unique @db.VarChar(50)
+  password String @db.VarChar(25)
 }

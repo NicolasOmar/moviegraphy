@@ -39,3 +39,8 @@ Object.defineProperty(window, 'ResizeObserver', {
 })
 
 Element.prototype.scrollIntoView = () => undefined
+
+const nativeGetComputedStyle = window.getComputedStyle.bind(window)
+
+window.getComputedStyle = (element: Element, pseudoElt?: string | null) =>
+  nativeGetComputedStyle(element, pseudoElt ? undefined : pseudoElt)

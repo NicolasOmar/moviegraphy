@@ -1,7 +1,6 @@
 import type { MovieModel } from '@models'
 
 import { atom } from 'nanostores'
-import { v6 } from 'uuid'
 
 export const $contextMovieList = atom<MovieModel[]>([])
 export const $contextSelectedMovie = atom<MovieModel | null>(null)
@@ -9,7 +8,7 @@ export const $contextSelectedMovie = atom<MovieModel | null>(null)
 export const setMovieListOnContext = (movieList: MovieModel[]) => $contextMovieList.set(movieList)
 
 export const addMovieToListContext = (newMovie: MovieModel) => {
-  $contextMovieList.set([...$contextMovieList.get(), { ...newMovie, id: v6() }])
+  $contextMovieList.set([...$contextMovieList.get(), newMovie])
 }
 
 export const updateMovieOnListContext = (updatedMovie: MovieModel) => {
@@ -19,7 +18,7 @@ export const updateMovieOnListContext = (updatedMovie: MovieModel) => {
 }
 
 export const deleteMovieOnListContext = (movieId: string) => {
-  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id === movieId))
+  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id !== movieId))
 }
 
 export const updateSelectedMovieOnContext = (_updateData: MovieModel | null) => {

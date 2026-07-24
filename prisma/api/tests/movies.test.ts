@@ -1,11 +1,13 @@
+import { HTTP_STATUS } from '@ts/constants'
+import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
-import { movieMocks } from '../../ts/mocks'
-import { createMovie, deleteMovie, getMovieList, updateMovie } from './movies'
-import prisma from './prisma'
+import { movieMocks } from '../../../ts/mocks'
+import { createMovie, deleteMovie, getMovieList, updateMovie } from '../movies'
+import prisma from '../prisma'
 
-vi.mock('./prisma')
+vi.mock('../prisma', () => import('../mocks/prisma'))
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 
@@ -23,8 +25,8 @@ describe('getMovieList', () => {
     expect(result).toEqual(movieMocks)
   })
 
-  it('falls back to an empty list and logs a warning when the query rejects', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+  it('falls back to an empty list when the query rejects with an Error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movie.findMany.mockRejectedValue(
       new Error('SASL: client password must be a string')
     )
@@ -32,13 +34,10 @@ describe('getMovieList', () => {
     const result = await getMovieList()
 
     expect(result).toEqual([])
-    expect(warnSpy).toHaveBeenCalledWith(
-      '[getMovieList] Prisma query failed, returning an empty list: SASL: client password must be a string'
-    )
   })
 
   it('falls back to an empty list when a non-Error value is thrown', async () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movie.findMany.mockRejectedValue('connection refused')
 
     const result = await getMovieList()
@@ -57,6 +56,16 @@ describe('createMovie', () => {
     expect(mockedPrisma.movie.create).toHaveBeenCalledWith({ data: movie })
     expect(result).toEqual(movie)
   })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.movie.create.mockRejectedValue(new Error('unique constraint failed'))
+
+    await expect(createMovie(movie)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed')
+    )
+  })
 })
 
 describe('updateMovie', () => {
@@ -70,6 +79,16 @@ describe('updateMovie', () => {
     expect(mockedPrisma.movie.update).toHaveBeenCalledWith({ data: dataToUpdate, where: { id } })
     expect(result).toEqual(movie)
   })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.movie.update.mockRejectedValue(new Error('record not found'))
+
+    await expect(updateMovie(movie)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'record not found')
+    )
+  })
 })
 
 describe('deleteMovie', () => {
@@ -81,5 +100,15 @@ describe('deleteMovie', () => {
 
     expect(mockedPrisma.movie.delete).toHaveBeenCalledWith({ where: { id: movie.id } })
     expect(result).toBe(true)
+  })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.movie.delete.mockRejectedValue(new Error('foreign key constraint failed'))
+
+    await expect(deleteMovie(movie.id)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'foreign key constraint failed')
+    )
   })
 })

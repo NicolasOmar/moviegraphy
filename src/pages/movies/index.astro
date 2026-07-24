@@ -1,0 +1,13 @@
+---
+import { ReactMovieForm } from '@components/movies/ReactMovieForm'
+import MovieTable from '@islands/MovieTable/index.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
+---
+
+<BaseLayout>
+  <TwoColumnsLayout>
+    <ReactMovieForm client:visible />
+    <MovieTable />
+  </TwoColumnsLayout>
+</BaseLayout>
