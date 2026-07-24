@@ -18,7 +18,7 @@ export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),
   description: z.string().max(300).optional(),
   name: z.string().max(150),
-  releaseYear: z.string().min(1850).max(3000)
+  releaseYear: z.coerce.number().min(1850).max(3000)
 })
 
 export const MovieUpdateSchema = z.strictObject({

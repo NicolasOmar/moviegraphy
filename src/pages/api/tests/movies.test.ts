@@ -36,6 +36,8 @@ describe('POST', () => {
     formData.append('countryMade', movie.countryMade)
     formData.append('releaseYear', String(movie.releaseYear))
 
+    mockedCreateMovie.mockResolvedValue(movie)
+
     const response = await POST(buildContext(formData, 'POST'))
 
     expect(mockedCreateMovie).toHaveBeenCalledWith({
@@ -46,7 +48,7 @@ describe('POST', () => {
       releaseYear: movie.releaseYear
     })
     expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({ message: 'Success!' })
+    expect(await response.json()).toEqual({ message: movie })
   })
 })
 

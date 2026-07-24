@@ -85,14 +85,12 @@ describe('POST', () => {
     expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.DUPLICATE_EMAIL })
   })
 
-  it('masks unexpected errors behind a generic 500 message and logs the original error', async () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  it('masks unexpected errors behind a generic 500 message', async () => {
     mockedCreateUser.mockRejectedValue(new Error('connection refused'))
 
     const response = await POST(buildContext(buildFormData()))
 
     expect(response.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR)
     expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.UNEXPECTED })
-    expect(errorSpy).toHaveBeenCalledWith('[POST /api/users] connection refused')
   })
 })

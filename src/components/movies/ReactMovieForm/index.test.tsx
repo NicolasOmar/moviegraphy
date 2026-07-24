@@ -5,6 +5,7 @@ import {
 } from '@store/movie'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { API_URL } from '@ts/constants'
 import { movieMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -38,6 +39,16 @@ const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
 describe('ReactMovieForm', () => {
   it('creates a movie: submits a POST request, appends it to the movie list, and resets the form', async () => {
     const user = userEvent.setup()
+    const createdMovie = {
+      countryMade: 'USA',
+      description: 'A hacker learns the truth.',
+      id: 'fixed-test-id',
+      name: 'The Matrix',
+      releaseYear: '1999'
+    }
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: createdMovie }), { status: 200 })
+    )
     render(<ReactMovieForm />)
 
     await fillForm(user)
@@ -45,19 +56,11 @@ describe('ReactMovieForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        '/api/movie',
+        API_URL.MOVIES,
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
-    expect($contextMovieList.get()).toEqual([
-      {
-        countryMade: 'USA',
-        description: 'A hacker learns the truth.',
-        id: 'fixed-test-id',
-        name: 'The Matrix',
-        releaseYear: '1999'
-      }
-    ])
+    expect($contextMovieList.get()).toEqual([createdMovie])
     await waitFor(() => expect(screen.getByLabelText('Name')).toHaveValue(''))
   })
 
@@ -80,7 +83,7 @@ describe('ReactMovieForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        '/api/movie',
+        API_URL.MOVIES,
         expect.objectContaining({ body: expect.any(FormData), method: 'PATCH' })
       )
     )

@@ -1,6 +1,7 @@
 import { $contextMovieList, $contextSelectedMovie } from '@store/movie'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { API_URL } from '@ts/constants'
 import { movieMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -79,7 +80,7 @@ describe('ReactMovieTable', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        '/api/movie',
+        API_URL.MOVIES,
         expect.objectContaining({ body: expect.any(FormData), method: 'DELETE' })
       )
     )

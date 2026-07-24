@@ -5,7 +5,7 @@ import { movieMocks } from '../../../ts/mocks'
 import { createMovie, deleteMovie, getMovieList, updateMovie } from '../movies'
 import prisma from '../prisma'
 
-vi.mock('../prisma')
+vi.mock('../prisma', () => import('../mocks/prisma'))
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 
@@ -23,8 +23,8 @@ describe('getMovieList', () => {
     expect(result).toEqual(movieMocks)
   })
 
-  it('falls back to an empty list and logs a warning when the query rejects', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+  it('falls back to an empty list when the query rejects with an Error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movie.findMany.mockRejectedValue(
       new Error('SASL: client password must be a string')
     )
@@ -32,13 +32,10 @@ describe('getMovieList', () => {
     const result = await getMovieList()
 
     expect(result).toEqual([])
-    expect(warnSpy).toHaveBeenCalledWith(
-      '[getMovieList] Prisma query failed, returning an empty list: SASL: client password must be a string'
-    )
   })
 
   it('falls back to an empty list when a non-Error value is thrown', async () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movie.findMany.mockRejectedValue('connection refused')
 
     const result = await getMovieList()

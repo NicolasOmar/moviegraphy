@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     coverage: {
-      exclude: ['src/pages/api/**', '**/*.test.{ts,tsx}', '**/__mocks__/**'],
+      exclude: ['src/pages/api/**', '**/*.test.{ts,tsx}', '**/mocks/**'],
       include: ['src/**/*.{ts,tsx}', 'ts/parsers.ts'],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],

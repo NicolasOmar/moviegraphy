@@ -15,8 +15,8 @@ datasource db {
 model Movie {
   countryMade String
   description String? @db.VarChar(300)
-  id          String @id @unique
-  name        String @db.VarChar(150)
+  id          String  @id @unique
+  name        String  @db.VarChar(150)
   releaseYear Int
 }
 

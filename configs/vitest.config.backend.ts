@@ -12,7 +12,7 @@ export default defineConfig({
         'prisma/generated/**',
         'prisma/api/prisma.ts',
         '**/*.test.{ts,tsx}',
-        '**/__mocks__/**'
+        '**/mocks/**'
       ],
       include: ['prisma/api/**/*.ts', 'src/pages/api/**/*.ts', 'ts/parsers.ts'],
       provider: 'v8',

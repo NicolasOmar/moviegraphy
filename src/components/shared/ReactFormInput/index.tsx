@@ -12,8 +12,11 @@ interface ReactInputProps {
 }
 
 const ReactFormInput: FC<ReactInputProps> = ({ label, name, rules, type = 'text' }) => {
+  const normalize =
+    type === 'number' ? (value: string) => (value ? Number(value) : value) : undefined
+
   return (
-    <Form.Item label={label} name={name} rules={rules}>
+    <Form.Item label={label} name={name} normalize={normalize} rules={rules}>
       <Input type={type} />
     </Form.Item>
   )
