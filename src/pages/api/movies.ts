@@ -58,7 +58,7 @@ export const PATCH: APIRoute = async ({ request }) => {
 export const DELETE: APIRoute = async ({ request }) => {
   const deleteMovieFormData = await request.formData()
   const deleteMovieModel = parseFormDataToModel<{ id: string }>(deleteMovieFormData)
-  console.warn(deleteMovieModel)
+
   await deleteMovie(deleteMovieModel.id)
 
   return parseMessageToResponse(true, HTTP_STATUS.OK)

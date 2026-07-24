@@ -12,7 +12,7 @@ export const getMovieList: GetMany<MovieModel> = async () => {
   } catch (error) {
     const errorMessage = handleErrorMessage(error)
 
-    console.warn(`[getMovieList] Prisma query failed, returning an empty list: ${errorMessage}`)
+    console.error('[GET /api/movies]', { errorMessage })
 
     return []
   }

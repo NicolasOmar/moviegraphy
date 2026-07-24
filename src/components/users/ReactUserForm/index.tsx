@@ -22,7 +22,8 @@ const formInputs: FormInputList<UserFormModel> = [
     name: 'email',
     rules: [
       { message: 'Email is required', required: true },
-      { message: 'Please, provide a correct email format', type: 'email' }
+      { message: 'Please, provide a correct email format', type: 'email' },
+      { max: 50, message: 'Email must be 50 characters as much' }
     ]
   },
   {

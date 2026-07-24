@@ -5,13 +5,7 @@ import type { APIRoute } from 'astro'
 import { createUser } from '@api/users'
 import { UserCreateSchema } from '@schemas/user'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import {
-  handleErrorMessage,
-  parseFormDataToModel,
-  parseHttpErrorToResponse,
-  parseMessageToResponse
-} from '@ts/parsers'
-import { HttpError } from '@ts/types'
+import { parseFormDataToModel, parseHttpErrorToResponse, parseMessageToResponse } from '@ts/parsers'
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {
@@ -38,11 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
     const userCreated = await createUser({ email, id: v6(), name, password })
 
     return parseMessageToResponse(userCreated, HTTP_STATUS.OK)
-  } catch (apiCreateError) {
-    if (!(apiCreateError instanceof HttpError)) {
-      console.error(`[POST /api/users] ${handleErrorMessage(apiCreateError)}`)
-    }
-
-    return parseHttpErrorToResponse(apiCreateError)
+  } catch (error) {
+    return parseHttpErrorToResponse(error)
   }
 }

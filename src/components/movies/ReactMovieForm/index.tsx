@@ -16,10 +16,33 @@ import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
 
 const formInputs: FormInputList<MovieModel> = [
-  { label: 'Name', name: 'name' },
-  { label: 'Description', name: 'description' },
-  { label: 'Year of release', name: 'releaseYear' },
-  { label: 'Country', name: 'countryMade' }
+  {
+    label: 'Name',
+    name: 'name',
+    rules: [
+      { message: 'Name is required', required: true },
+      { max: 300, message: 'Name must be 150 characters as much' }
+    ]
+  },
+  {
+    label: 'Description',
+    name: 'description',
+    rules: [{ max: 300, message: 'Description must be 300 characters as much' }]
+  },
+  {
+    label: 'Year of release',
+    name: 'releaseYear',
+    rules: [
+      { message: 'Year of release is required', required: true },
+      { max: 3000, min: 1850, type: 'number' }
+    ],
+    type: 'number'
+  },
+  {
+    label: 'Country',
+    name: 'countryMade',
+    rules: [{ message: 'Country is required', required: true }]
+  }
 ]
 
 export const ReactMovieForm: FC = () => {
@@ -29,6 +52,12 @@ export const ReactMovieForm: FC = () => {
     () => (selectedMovieInContext ? 'Update' : 'Create'),
     [selectedMovieInContext]
   )
+
+  $contextSelectedMovie.listen(_movie => {
+    if (_movie) {
+      movieForm.setFieldsValue(_movie)
+    }
+  })
 
   const handleSubmit = async (_movieFormDataModel: MovieModel) => {
     if (selectedMovieInContext === null) {
@@ -79,11 +108,8 @@ export const ReactMovieForm: FC = () => {
     }
   }
 
-  $contextSelectedMovie.listen(_movie => {
-    if (_movie) {
-      movieForm.setFieldsValue(_movie)
-    }
-  })
+  const handleInvalidation = () =>
+    addMessageToContext({ content: 'Check the form messages', type: 'error' })
 
   return (
     <section>
@@ -98,14 +124,15 @@ export const ReactMovieForm: FC = () => {
           description: '',
           id: '',
           name: '',
-          releaseYear: 0
+          releaseYear: 2026
         }}
         layout="horizontal"
         onFinish={handleSubmit}
+        onFinishFailed={handleInvalidation}
         style={{ padding: '0 5%' }}
       >
-        {formInputs.map((_inputConfig, _index) => (
-          <ReactFormInput key={`movie-form-${_index}`} {..._inputConfig} />
+        {formInputs.map((_inputConfig, _inputIndex) => (
+          <ReactFormInput key={`movie-form-${_inputIndex}`} {..._inputConfig} />
         ))}
 
         <Form.Item>
