@@ -49,6 +49,8 @@ export const updateMovie: CreateOrUpdateOne<MovieModel> = async modifiedMovie =>
 
 export const deleteMovie: DeleteOne = async id => {
   try {
+    console.info('[DELETE /api/movies]', { id })
+
     await prismaInstance.movie.delete({ where: { id } })
 
     return new Promise(resolve => resolve(true))

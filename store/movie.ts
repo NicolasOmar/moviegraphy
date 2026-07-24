@@ -9,7 +9,7 @@ export const $contextSelectedMovie = atom<MovieModel | null>(null)
 export const setMovieListOnContext = (movieList: MovieModel[]) => $contextMovieList.set(movieList)
 
 export const addMovieToListContext = (newMovie: MovieModel) => {
-  $contextMovieList.set([...$contextMovieList.get(), { ...newMovie, id: v6() }])
+  $contextMovieList.set([...$contextMovieList.get(), newMovie])
 }
 
 export const updateMovieOnListContext = (updatedMovie: MovieModel) => {
