@@ -1,7 +1,6 @@
 import type { MovieModel } from '@models'
 
 import { atom } from 'nanostores'
-import { v6 } from 'uuid'
 
 export const $contextMovieList = atom<MovieModel[]>([])
 export const $contextSelectedMovie = atom<MovieModel | null>(null)

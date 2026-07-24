@@ -32,7 +32,7 @@ describe('POST', () => {
     const [movie] = movieMocks
     const formData = new FormData()
     formData.append('name', movie.name)
-    formData.append('description', movie.description)
+    formData.append('description', movie.description ?? '')
     formData.append('countryMade', movie.countryMade)
     formData.append('releaseYear', String(movie.releaseYear))
 
@@ -58,7 +58,7 @@ describe('PATCH', () => {
     const formData = new FormData()
     formData.append('id', movie.id)
     formData.append('name', movie.name)
-    formData.append('description', movie.description)
+    formData.append('description', movie.description ?? '')
     formData.append('countryMade', movie.countryMade)
     formData.append('releaseYear', String(movie.releaseYear))
 
