@@ -4,14 +4,15 @@ import type { InputEventHandler } from '@ts/types'
 
 import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'
+import { addMessageToContext } from '@store/message'
 import {
   $contextMovieList,
   deleteMovieOnListContext,
   setMovieListOnContext,
   updateSelectedMovieOnContext
 } from '@store/movie'
-import { API_METHODS, API_URL } from '@ts/constants'
-import { parseModelToFormData } from '@ts/parsers'
+import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
+import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Input, Typography } from 'antd'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
@@ -50,13 +51,19 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
   const handleDelete = async (id: string) => {
     const movieIdToDelete = parseModelToFormData({ id })
 
-    await fetch(API_URL.MOVIES, {
+    const movieDeleteResponse = await fetch(API_URL.MOVIES, {
       body: movieIdToDelete,
       method: API_METHODS.DELETE
     })
 
-    deleteMovieOnListContext(id)
-    updateSelectedMovieOnContext(null)
+    if (movieDeleteResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(movieDeleteResponse)
+      addMessageToContext({ content: errorMessage, type: 'error' })
+    } else {
+      deleteMovieOnListContext(id)
+      updateSelectedMovieOnContext(null)
+      addMessageToContext({ content: 'Movie deleted', type: 'success' })
+    }
   }
 
   return (

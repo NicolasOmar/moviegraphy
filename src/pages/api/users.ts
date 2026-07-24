@@ -27,22 +27,22 @@ export const POST: APIRoute = async ({ request }) => {
     return parseMessageToResponse(USER_ERROR_MESSAGES.PASSWORD_MISMATCH, HTTP_STATUS.BAD_REQUEST)
   }
 
+  const { error: zodError } = await UserCreateSchema.safeParseAsync(newUserModel)
+
+  if (zodError) {
+    const userCreateZodError = zodError.issues.map(({ message }) => message)
+    return parseMessageToResponse(userCreateZodError, HTTP_STATUS.BAD_REQUEST)
+  }
+
   try {
-    const { error } = await UserCreateSchema.safeParseAsync(newUserModel)
-
-    if (error) {
-      const userCreateZodMessage = error.issues.map(({ message }) => message)
-      return parseMessageToResponse(userCreateZodMessage, HTTP_STATUS.BAD_REQUEST)
-    }
-
     const userCreated = await createUser({ email, id: v6(), name, password })
 
     return parseMessageToResponse(userCreated, HTTP_STATUS.OK)
-  } catch (error) {
-    if (!(error instanceof HttpError)) {
-      console.error(`[POST /api/users] ${handleErrorMessage(error)}`)
+  } catch (apiCreateError) {
+    if (!(apiCreateError instanceof HttpError)) {
+      console.error(`[POST /api/users] ${handleErrorMessage(apiCreateError)}`)
     }
 
-    return parseHttpErrorToResponse(error)
+    return parseHttpErrorToResponse(apiCreateError)
   }
 }

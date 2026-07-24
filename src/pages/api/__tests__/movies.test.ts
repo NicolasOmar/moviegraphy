@@ -4,7 +4,7 @@ import { createMovie, deleteMovie, updateMovie } from '@api/movies'
 import { movieMocks } from '@ts/mocks'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { DELETE, PATCH, POST } from '../movie'
+import { DELETE, PATCH, POST } from '../movies'
 
 vi.mock('@api/movies', () => ({
   createMovie: vi.fn<typeof createMovie>(),

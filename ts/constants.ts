@@ -7,7 +7,7 @@ export enum API_METHODS {
 }
 
 enum API_ENTITIES {
-  MOVIE = 'movie',
+  MOVIE = 'movies',
   USERS = 'users'
 }
 

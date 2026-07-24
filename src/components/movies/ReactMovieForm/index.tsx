@@ -3,16 +3,17 @@ import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
+import { addMessageToContext } from '@store/message'
 import {
   $contextSelectedMovie,
   addMovieToListContext,
   updateMovieOnListContext,
   updateSelectedMovieOnContext
 } from '@store/movie'
-import { parseModelToFormData } from '@ts/parsers'
+import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Form, Typography } from 'antd'
 import { type FC, useMemo } from 'react'
-import { API_METHODS, API_URL } from 'ts/constants'
+import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
 
 const formInputs: FormInputList<MovieModel> = [
   { label: 'Name', name: 'name' },
@@ -33,32 +34,49 @@ export const ReactMovieForm: FC = () => {
     if (selectedMovieInContext === null) {
       const movieToCreate = parseModelToFormData(_movieFormDataModel)
 
-      await fetch(API_URL.MOVIES, {
+      const movieCreateResponse = await fetch(API_URL.MOVIES, {
         body: movieToCreate,
         method: API_METHODS.POST
       })
 
-      addMovieToListContext(_movieFormDataModel)
+      if (movieCreateResponse.status !== HTTP_STATUS.OK) {
+        const errorMessage = await parseResponseErrorToMessage(movieCreateResponse)
+        addMessageToContext({ content: errorMessage, type: 'error' })
+      } else {
+        const newMovieFinal = (await movieCreateResponse.json()).message as MovieModel
+
+        movieForm.resetFields()
+        addMovieToListContext(newMovieFinal)
+        addMessageToContext({ content: 'Movie created', type: 'success' })
+      }
     } else {
       const movieToUpdate = parseModelToFormData({
         ..._movieFormDataModel,
         id: selectedMovieInContext.id
       })
 
-      await fetch(API_URL.MOVIES, {
+      const movieUpdateResponse = await fetch(API_URL.MOVIES, {
         body: movieToUpdate,
         method: API_METHODS.PATCH
       })
 
-      updateMovieOnListContext({
-        ..._movieFormDataModel,
-        id: selectedMovieInContext.id
-      })
+      if (movieUpdateResponse.status !== HTTP_STATUS.OK) {
+        const errorMessage = await parseResponseErrorToMessage(movieUpdateResponse)
+        addMessageToContext({ content: errorMessage, type: 'error' })
+      } else {
+        movieForm.resetFields()
+        updateSelectedMovieOnContext(null)
+        updateMovieOnListContext({
+          ..._movieFormDataModel,
+          id: selectedMovieInContext.id
+        })
 
-      updateSelectedMovieOnContext(null)
+        addMessageToContext({
+          content: `Movie '${_movieFormDataModel.name}' updated`,
+          type: 'success'
+        })
+      }
     }
-
-    movieForm.resetFields()
   }
 
   $contextSelectedMovie.listen(_movie => {
