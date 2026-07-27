@@ -3,6 +3,7 @@ import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
+import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/message'
 import {
   $contextSelectedMovie,
@@ -12,7 +13,7 @@ import {
 } from '@store/movie'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Form, Typography } from 'antd'
-import { type FC, useMemo, useState } from 'react'
+import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
 
 const formInputs: FormInputList<MovieModel> = [
@@ -47,8 +48,9 @@ const formInputs: FormInputList<MovieModel> = [
 
 export const ReactMovieForm: FC = () => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
+  const isSystemLoading = useStore($contextLoading)
   const [movieForm] = Form.useForm<MovieModel>()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   const submitButtonText = useMemo(
     () => (selectedMovieInContext ? 'Update' : 'Create'),
     [selectedMovieInContext]
@@ -57,12 +59,12 @@ export const ReactMovieForm: FC = () => {
     () =>
       formInputs.map((_inputConfig, _inputIndex) => (
         <ReactFormInput
-          isDisabled={isLoading}
+          isDisabled={isSystemLoading}
           key={`movie-form-${_inputIndex}`}
           {..._inputConfig}
         />
       )),
-    [isLoading]
+    [isSystemLoading]
   )
 
   $contextSelectedMovie.listen(_movie => {
@@ -72,7 +74,7 @@ export const ReactMovieForm: FC = () => {
   })
 
   const handleSubmit = async (_movieFormDataModel: MovieModel) => {
-    setIsLoading(true)
+    setLoadingSystemState(true)
 
     if (selectedMovieInContext === null) {
       const movieToCreate = parseModelToFormData(_movieFormDataModel)
@@ -121,7 +123,7 @@ export const ReactMovieForm: FC = () => {
       }
     }
 
-    setIsLoading(false)
+    setLoadingSystemState(false)
   }
 
   const handleInvalidation = () =>
@@ -150,7 +152,7 @@ export const ReactMovieForm: FC = () => {
         {memoizedInputs}
 
         <Form.Item>
-          <Button disabled={isLoading} htmlType="submit">
+          <Button disabled={isSystemLoading} htmlType="submit">
             {submitButtonText}
           </Button>
         </Form.Item>
