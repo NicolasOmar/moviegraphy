@@ -1,13 +1,19 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro'
+import { ReactLoginForm } from '@components/users/ReactLoginForm'
+import BlankLayout from '@layouts/BlankLayout.astro'
 ---
 
-<BaseLayout>
-  <section class="title">Welcome to Moviegraphy</section>
-</BaseLayout>
+<BlankLayout>
+  <section class="login_content">
+    <ReactLoginForm client:visible />
+  </section>
+</BlankLayout>
 
 <style>
-  section.title {
-    text-align: center;
+  section.login_content {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    height: 100vh;
   }
 </style>
