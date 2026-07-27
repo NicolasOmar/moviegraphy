@@ -11,11 +11,12 @@ export const parseModelToFormData = <T extends object>(rawFormData: T): FormData
   return _formData
 }
 
-export const parseFormDataToModel = <T extends object>(_formData: FormData): T => {
-  return Array.from(_formData.entries()).reduce(
-    (prev, [key, value]) => ({
-      ...prev,
-      [key]: value
+export const parseRequestToModel = async <T extends object>(request: Request): Promise<T> => {
+  const extractedFormData = await request.formData()
+  return Array.from(extractedFormData.entries()).reduce(
+    (_finalModel, [_formDataKey, _formDataValue]) => ({
+      ..._finalModel,
+      [_formDataKey]: _formDataValue
     }),
     {} as T
   )
@@ -36,7 +37,7 @@ export const parseMessageToResponse = <T>(
 
 export const parseHttpErrorToResponse = (error: HttpError | unknown): Response => {
   if (error instanceof HttpError) {
-    return new Response(JSON.stringify({ message: error.message }), { status: error.status })
+    return parseMessageToResponse(error.message, error.status)
   }
 
   return parseMessageToResponse(USER_ERROR_MESSAGES.UNEXPECTED, HTTP_STATUS.INTERNAL_SERVER_ERROR)
