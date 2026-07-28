@@ -57,6 +57,10 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
   } catch (getUserByCredentialsError) {
     console.error('[POST /api/users]', { error: getUserByCredentialsError })
 
+    if (getUserByCredentialsError instanceof HttpError) {
+      throw getUserByCredentialsError
+    }
+
     const errorMessage = handleErrorMessage(getUserByCredentialsError)
 
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
