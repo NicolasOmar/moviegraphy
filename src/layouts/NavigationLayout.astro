@@ -25,10 +25,35 @@ const listOfLinks = [
   <BaseLayout>
     <header transition:persist>
       {listOfLinks.map(_link => <a href={_link.page}>{_link.label}</a>)}
+
+      <a id="logout_link">Logout</a>
     </header>
     <slot />
   </BaseLayout>
 </html>
+
+<script>
+  import { addMessageToContext } from '@store/message'
+  import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
+  import { parseResponseErrorToMessage } from '@ts/parsers'
+
+  const logoutLink = document.getElementById('logout_link')
+
+  if (logoutLink) {
+    logoutLink.addEventListener('click', async () => {
+      const logOutRespose = await fetch(API_URL.LOGIN, {
+        method: API_METHODS.DELETE
+      })
+
+      if (logOutRespose.status !== HTTP_STATUS.OK) {
+        const errorMessage = await parseResponseErrorToMessage(logOutRespose)
+        addMessageToContext({ content: errorMessage, type: 'error' })
+      } else {
+        window.location.href = PAGE_URL.HOME
+      }
+    })
+  }
+</script>
 
 <style>
   header {
@@ -45,5 +70,8 @@ const listOfLinks = [
   }
   header > a:hover {
     color: red;
+  }
+  header > a#testing {
+    justify-self: end;
   }
 </style>

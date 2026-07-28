@@ -1,7 +1,7 @@
-import type { UserLoginModel } from '@ts/entities'
+import type { UserLoginModel, UserWithToken } from '@ts/entities'
 import type { APIRoute } from 'astro'
 
-import { getUserByCredentials } from '@api/users'
+import { getUserByCredentials, logOutUser } from '@api/users'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
@@ -9,7 +9,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   const loginModel = await parseRequestToModel<UserLoginModel>(request)
 
   try {
-    const { token } = await getUserByCredentials(loginModel)
+    const { token } = (await getUserByCredentials(loginModel)) as UserWithToken
 
     cookies.set('refreshToken', token, {
       httpOnly: true,
@@ -23,4 +23,25 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   } catch (error) {
     return parseHttpErrorToResponse(error)
   }
+}
+
+export const DELETE: APIRoute = async ({ cookies }) => {
+  const loggedToken = cookies.get('refreshToken')
+
+  if (loggedToken) {
+    const result = await logOutUser(loggedToken?.value)
+    console.warn({ result })
+
+    try {
+      cookies.delete('refreshToken')
+      return parseMessageToResponse({ success: true }, HTTP_STATUS.OK)
+    } catch (error) {
+      return parseHttpErrorToResponse(error)
+    }
+  }
+
+  return parseHttpErrorToResponse({
+    message: 'No token provided',
+    status: HTTP_STATUS.BAD_REQUEST
+  })
 }
