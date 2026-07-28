@@ -5,13 +5,13 @@ import type { InputEventHandler } from '@ts/types'
 import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/message'
+import { addMessageToContext } from '@store/messages'
 import {
   $contextMovieList,
   deleteMovieOnListContext,
   setMovieListOnContext,
   updateSelectedMovieOnContext
-} from '@store/movie'
+} from '@store/movies'
 import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Input, Typography } from 'antd'

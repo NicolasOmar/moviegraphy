@@ -1,7 +1,7 @@
 import type { UserLoginModel, UserWithToken } from '@ts/entities'
 import type { APIRoute } from 'astro'
 
-import { getUserByCredentials, logOutUser } from '@api/users'
+import { loginUser, logoutUser } from '@api/sessions'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
@@ -9,7 +9,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   const loginModel = await parseRequestToModel<UserLoginModel>(request)
 
   try {
-    const { token } = (await getUserByCredentials(loginModel)) as UserWithToken
+    const { token } = (await loginUser(loginModel)) as UserWithToken
 
     cookies.set('refreshToken', token, {
       httpOnly: true,
@@ -29,8 +29,7 @@ export const DELETE: APIRoute = async ({ cookies }) => {
   const loggedToken = cookies.get('refreshToken')
 
   if (loggedToken) {
-    const result = await logOutUser(loggedToken?.value)
-    console.warn({ result })
+    await logoutUser(loggedToken?.value)
 
     try {
       cookies.delete('refreshToken')

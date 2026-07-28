@@ -2,7 +2,7 @@ import type { UserLoginModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
-import { addMessageToContext } from '@store/message'
+import { addMessageToContext } from '@store/messages'
 import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Flex, Form, Typography } from 'antd'
@@ -42,7 +42,7 @@ export const ReactLoginForm: FC = () => {
 
     const userToLogin = parseModelToFormData(_loginFormData)
 
-    const userCreateResponse = await fetch(API_URL.LOGIN, {
+    const userCreateResponse = await fetch(API_URL.SESSIONS, {
       body: userToLogin,
       method: API_METHODS.POST
     })

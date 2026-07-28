@@ -1,9 +1,9 @@
-import { $contextMessageList } from '@store/message'
+import { $contextMessageList } from '@store/messages'
 import {
   $contextMovieList,
   $contextSelectedMovie,
   updateSelectedMovieOnContext
-} from '@store/movie'
+} from '@store/movies'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URL } from '@ts/constants'

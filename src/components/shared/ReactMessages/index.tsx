@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 
-import { $contextMessageList } from '@store/message'
+import { $contextMessageList } from '@store/messages'
 import { message } from 'antd'
 
 export const ReactMessages: FC = () => {

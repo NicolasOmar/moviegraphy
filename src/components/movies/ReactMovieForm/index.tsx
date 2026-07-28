@@ -4,13 +4,13 @@ import type { FormInputList } from '@ts/types'
 import ReactFormInput from '@components/shared/ReactFormInput'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/message'
+import { addMessageToContext } from '@store/messages'
 import {
   $contextSelectedMovie,
   addMovieToListContext,
   updateMovieOnListContext,
   updateSelectedMovieOnContext
-} from '@store/movie'
+} from '@store/movies'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Form, Typography } from 'antd'
 import { type FC, useMemo } from 'react'

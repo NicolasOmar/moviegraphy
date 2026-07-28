@@ -1,4 +1,4 @@
-import { isRefreshTokenValid } from '@api/tokens'
+import { isSessionValid } from '@api/sessions'
 import { PAGE_URL } from '@ts/constants'
 import { defineMiddleware } from 'astro:middleware'
 
@@ -10,7 +10,7 @@ export const onRequest = defineMiddleware(async ({ cookies, redirect, url }, nex
   }
 
   const rawToken = cookies.get('refreshToken')?.value
-  const hasValidToken = rawToken ? await isRefreshTokenValid(rawToken) : false
+  const hasValidToken = rawToken ? await isSessionValid(rawToken) : false
   const isAuthExemptPage = AUTH_EXEMPT_PAGE_URLS.includes(url.pathname)
 
   if (!hasValidToken && !isAuthExemptPage) {

@@ -33,7 +33,7 @@ const listOfLinks = [
 </html>
 
 <script>
-  import { addMessageToContext } from '@store/message'
+  import { addMessageToContext } from '@store/messages'
   import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
   import { parseResponseErrorToMessage } from '@ts/parsers'
 
@@ -41,7 +41,7 @@ const listOfLinks = [
 
   if (logoutLink) {
     logoutLink.addEventListener('click', async () => {
-      const logOutRespose = await fetch(API_URL.LOGIN, {
+      const logOutRespose = await fetch(API_URL.SESSIONS, {
         method: API_METHODS.DELETE
       })
 
