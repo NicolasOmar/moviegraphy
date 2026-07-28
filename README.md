@@ -99,12 +99,12 @@ Lastly, create an `.env` file at your project's root with the following content.
 DATABASE_URL=HERE_GOES_YOUR_DATABASE_CONNECTION_STRING
 ```
 
-- You can use a string such as the follwing to start on your local database
+- You can use a string such as the following to start on your local database
   ```env
   postgresql://postgres:admin@localhost:5432/moviegraphy?schema=public
   ```
 
-  > In case you choose that option, DO NOT FORGET to run npm un `db:compile` before starting for first time
+  > In case you choose that option, DO NOT FORGET to run npm run `db:compile` before starting for the first time
 
 ## How to run it
 To run it, simply execute
@@ -120,8 +120,11 @@ npm start:prod
 In case you have cloned the repo, it will show you the following folders:
 - `.github:` [Github Actions](https://github.com/features/actions/) files used to run post-merge commits like unit test coverage collection.
 - `.husky:` Dedicated to [Husky](https://typicode.github.io/husky/) configuration files.
+- `backend:` Used to wrap the system's gateway to its database through Prisma through REST.
+  - `api:` Location of all front-end endpoints that communicate with Prisma.
+  - `prisma:` Location of the Prisma implementation with its `models/entities` and migrations to mirror the entity relationships in the database.
 - `configs:` Used to wrap all the configuration files related to local and third-party services (for a cleaner project organization).
-- `src:` Location of all used components partially following Astro guidance:
+- `src:` Location of all used components, partially following Astro guidance:
   - `assets:` SVG files for specific purposes.
   - `components:` Location of the used components, all based on React and TypeScript.
     - Those are separated by entity/feature usage, and the `/shaded` are the base ones to be reused on other implementations.
@@ -129,7 +132,6 @@ In case you have cloned the repo, it will show you the following folders:
   - `layouts:` User interfaces used to wrap the Astro pages in a common structure.
   - `pages:` Astro-specific pages that also work as routes.
   - `store:` Global-level data handling using nanostructures to handle common data through Astro and React components.
-- `prisma:` Location of prisma implementation with its `models/entities` and migrations to mirror the entity relationships in the database.
 - `store:` Global-level data handling using nanostructures to handle common data through Astro and React components.
 - `ts`: Location of shared pieces of reusable code such as functions and TypeScript types
 

@@ -1,5 +1,5 @@
 import type { ReactTableProps } from '@components/shared/ReactTable'
-import type { MovieModel } from '@models'
+import type { MoviesModel } from '@models'
 import type { InputEventHandler } from '@ts/types'
 
 import { ReactTable } from '@components/shared/ReactTable'
@@ -17,7 +17,7 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Input, Typography } from 'antd'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
-export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, dataSource }) => {
+export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dataSource }) => {
   const movieListInContext = useStore($contextMovieList)
   const isSystemLoading = useStore($contextLoading)
   const [searchParam, setSearchParam] = useState<string>('')
@@ -29,7 +29,7 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
         : movieListInContext
     const optionsColumn = {
       key: 'options',
-      render: (_singleMovie: MovieModel) => (
+      render: (_singleMovie: MoviesModel) => (
         <>
           <Button disabled={isSystemLoading} onClick={() => handleEdit(_singleMovie)}>
             E
@@ -56,7 +56,7 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
     [movieListInContext, isSystemLoading]
   )
 
-  const handleEdit = (_movieToEdit: MovieModel) => updateSelectedMovieOnContext(_movieToEdit)
+  const handleEdit = (_movieToEdit: MoviesModel) => updateSelectedMovieOnContext(_movieToEdit)
 
   const handleDelete = async (id: string) => {
     setLoadingSystemState(true)

@@ -1,4 +1,4 @@
-import type { MovieModel } from '@models'
+import type { MoviesModel } from '@models'
 
 import { HTTP_STATUS } from '@ts/constants'
 import { handleErrorMessage } from '@ts/parsers'
@@ -6,9 +6,9 @@ import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from 
 
 import prismaInstance from '../prisma'
 
-export const getMovieList: GetMany<MovieModel> = async () => {
+export const getMovieList: GetMany<MoviesModel> = async () => {
   try {
-    return await prismaInstance.movie.findMany()
+    return await prismaInstance.movies.findMany()
   } catch (error) {
     const errorMessage = handleErrorMessage(error)
 
@@ -18,9 +18,9 @@ export const getMovieList: GetMany<MovieModel> = async () => {
   }
 }
 
-export const createMovie: CreateOrUpdateOne<MovieModel> = async newMovie => {
+export const createMovie: CreateOrUpdateOne<MoviesModel> = async newMovie => {
   try {
-    return await prismaInstance.movie.create({ data: newMovie })
+    return await prismaInstance.movies.create({ data: newMovie })
   } catch (error) {
     console.error('[POST /api/movies]', { error })
 
@@ -30,11 +30,11 @@ export const createMovie: CreateOrUpdateOne<MovieModel> = async newMovie => {
   }
 }
 
-export const updateMovie: CreateOrUpdateOne<MovieModel> = async modifiedMovie => {
+export const updateMovie: CreateOrUpdateOne<MoviesModel> = async modifiedMovie => {
   const { id: movieId, ...dataToUpdate } = modifiedMovie
 
   try {
-    return await prismaInstance.movie.update({
+    return await prismaInstance.movies.update({
       data: dataToUpdate,
       where: { id: movieId }
     })
@@ -51,7 +51,7 @@ export const deleteMovie: DeleteOne = async id => {
   try {
     console.info('[DELETE /api/movies]', { id })
 
-    await prismaInstance.movie.delete({ where: { id } })
+    await prismaInstance.movies.delete({ where: { id } })
 
     return new Promise(resolve => resolve(true))
   } catch (error) {

@@ -1,4 +1,4 @@
-import type { MovieModel } from '@models'
+import type { MoviesModel } from '@models'
 import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
@@ -16,7 +16,7 @@ import { Button, Form, Typography } from 'antd'
 import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
 
-const formInputs: FormInputList<MovieModel> = [
+const formInputs: FormInputList<MoviesModel> = [
   {
     label: 'Name',
     name: 'name',
@@ -49,7 +49,7 @@ const formInputs: FormInputList<MovieModel> = [
 export const ReactMovieForm: FC = () => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
   const isSystemLoading = useStore($contextLoading)
-  const [movieForm] = Form.useForm<MovieModel>()
+  const [movieForm] = Form.useForm<MoviesModel>()
 
   const submitButtonText = useMemo(
     () => (selectedMovieInContext ? 'Update' : 'Create'),
@@ -73,7 +73,7 @@ export const ReactMovieForm: FC = () => {
     }
   })
 
-  const handleSubmit = async (_movieFormDataModel: MovieModel) => {
+  const handleSubmit = async (_movieFormDataModel: MoviesModel) => {
     setLoadingSystemState(true)
 
     if (selectedMovieInContext === null) {
@@ -88,7 +88,7 @@ export const ReactMovieForm: FC = () => {
         const errorMessage = await parseResponseErrorToMessage(movieCreateResponse)
         addMessageToContext({ content: errorMessage, type: 'error' })
       } else {
-        const newMovieFinal = (await movieCreateResponse.json()).message as MovieModel
+        const newMovieFinal = (await movieCreateResponse.json()).message as MoviesModel
 
         movieForm.resetFields()
         addMovieToListContext(newMovieFinal)

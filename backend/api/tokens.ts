@@ -6,7 +6,7 @@ import prismaInstance from '../prisma'
 export const isRefreshTokenValid = async (rawToken: string): Promise<boolean> => {
   try {
     const hashedToken = hashToken(rawToken)
-    const refreshToken = await prismaInstance.refreshToken.findFirst({
+    const refreshToken = await prismaInstance.sessions.findFirst({
       where: { expiresAt: { gt: new Date() }, token: hashedToken }
     })
 

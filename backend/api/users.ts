@@ -1,4 +1,4 @@
-import type { UserModel } from '@models'
+import type { UsersModel } from '@models'
 import type { UserLoginModel, UserWithToken } from '@ts/entities'
 import type { CreateOrUpdateOne, DeleteOne } from '@ts/types'
 
@@ -11,12 +11,12 @@ import { v6 } from 'uuid'
 import prismaInstance from '../prisma'
 import { Prisma } from '../prisma/generated/client'
 
-export const createUser: CreateOrUpdateOne<UserModel, UserWithToken> = async newUser => {
+export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async newUser => {
   try {
-    const createdUser = await prismaInstance.user.create({ data: newUser })
+    const createdUser = await prismaInstance.users.create({ data: newUser })
     const rawToken = createRefreshToken(createdUser.id)
     const hashedToken = hashToken(rawToken)
-    const tokenCreated = await prismaInstance.refreshToken.create({
+    const tokenCreated = await prismaInstance.sessions.create({
       data: {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         id: v6(),
@@ -55,7 +55,7 @@ export const getUserByCredentials: CreateOrUpdateOne<UserLoginModel, UserWithTok
   password
 }) => {
   try {
-    const user = await prismaInstance.user.findFirst({
+    const user = await prismaInstance.users.findFirst({
       where: { OR: [{ name }, { email: name }], password }
     })
 
@@ -66,7 +66,7 @@ export const getUserByCredentials: CreateOrUpdateOne<UserLoginModel, UserWithTok
     const rawToken = createRefreshToken(user.id)
     const hashedToken = hashToken(rawToken)
 
-    await prismaInstance.refreshToken.create({
+    await prismaInstance.sessions.create({
       data: {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         id: v6(),
@@ -92,7 +92,7 @@ export const logOutUser: DeleteOne = async token => {
   const hashedToken = hashToken(token)
 
   try {
-    await prismaInstance.refreshToken.delete({
+    await prismaInstance.sessions.delete({
       where: { token: hashedToken }
     })
 

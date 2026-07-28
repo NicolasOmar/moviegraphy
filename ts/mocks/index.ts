@@ -1,8 +1,8 @@
-import type { MovieModel, UserModel } from '@models'
+import type { MoviesModel, UsersModel } from '@models'
 
 import moviesFixture from './movies.mocks.json'
 import usersFixture from './users.mocks.json'
 
-export const movieMocks: MovieModel[] = moviesFixture
+export const movieMocks: MoviesModel[] = moviesFixture
 
-export const userMocks: UserModel[] = usersFixture
+export const userMocks: UsersModel[] = usersFixture

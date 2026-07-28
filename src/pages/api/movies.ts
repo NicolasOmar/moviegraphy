@@ -1,4 +1,4 @@
-import type { MovieModel } from '@models'
+import type { MoviesModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
@@ -8,7 +8,7 @@ import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel }
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {
-  const newMovieModel = await parseRequestToModel<MovieModel>(request)
+  const newMovieModel = await parseRequestToModel<MoviesModel>(request)
 
   const { error: zodError } = await MovieCreateSchema.safeParseAsync(newMovieModel)
 
@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
 }
 
 export const PATCH: APIRoute = async ({ request }) => {
-  const updateMovieModel = await parseRequestToModel<MovieModel>(request)
+  const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
 
   const { error: zodError } = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
 
