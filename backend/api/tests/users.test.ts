@@ -1,6 +1,7 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
+import bcrypt from 'bcrypt'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
@@ -23,7 +24,14 @@ describe('createUser', () => {
 
     const result = await createUser(user)
 
-    expect(mockedPrisma.users.create).toHaveBeenCalledWith({ data: user })
+    expect(mockedPrisma.users.create).toHaveBeenCalledWith({
+      data: { ...user, password: expect.any(String) }
+    })
+
+    const [[{ data: createdUserData }]] = mockedPrisma.users.create.mock.calls
+    expect(createdUserData.password).not.toBe(user.password)
+    await expect(bcrypt.compare(user.password, createdUserData.password)).resolves.toBe(true)
+
     expect(mockedPrisma.sessions.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         expiresAt: expect.any(Date),

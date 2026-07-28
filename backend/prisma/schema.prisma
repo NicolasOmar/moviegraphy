@@ -24,7 +24,7 @@ model Users {
   id       String     @id @unique
   name     String     @db.VarChar(25)
   email    String     @unique @db.VarChar(50)
-  password String     @db.VarChar(25)
+  password String     @db.Text
   tokens   Sessions[]
 }
 

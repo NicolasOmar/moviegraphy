@@ -88,7 +88,7 @@ describe('ReactLoginForm', () => {
     await waitFor(() =>
       expect(screen.getByText('Username or Email is required')).toBeInTheDocument()
     )
-    expect(screen.getByText('Password is required')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Password is required')).toBeInTheDocument())
     expect(fetch).not.toHaveBeenCalled()
   })
 })

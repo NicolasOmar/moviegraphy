@@ -1,16 +1,17 @@
 import type { UserLoginModel, UserWithToken } from '@ts/entities'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { createRefreshToken, hashToken } from '@ts/helpers'
+import { createToken, hashString } from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
 import { type CreateOrUpdateOne, type DeleteOne, HttpError } from '@ts/types'
+import bcrypt from 'bcrypt'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
 
 export const isSessionValid = async (rawToken: string): Promise<boolean> => {
   try {
-    const hashedToken = hashToken(rawToken)
+    const hashedToken = hashString(rawToken)
     const refreshToken = await prismaInstance.sessions.findFirst({
       where: { expiresAt: { gt: new Date() }, token: hashedToken }
     })
@@ -31,15 +32,21 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
 }) => {
   try {
     const user = await prismaInstance.users.findFirst({
-      where: { OR: [{ name }, { email: name }], password }
+      where: { OR: [{ name }, { email: name }] }
     })
 
     if (!user) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     }
 
-    const rawToken = createRefreshToken(user.id)
-    const hashedToken = hashToken(rawToken)
+    const passwordsMatch = await bcrypt.compare(password, user.password)
+
+    if (!passwordsMatch) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    }
+
+    const rawToken = createToken(user.id)
+    const hashedToken = hashString(rawToken)
 
     await prismaInstance.sessions.create({
       data: {
@@ -68,7 +75,7 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
 }
 
 export const logoutUser: DeleteOne = async token => {
-  const hashedToken = hashToken(token)
+  const hashedToken = hashString(token)
 
   try {
     await prismaInstance.sessions.delete({

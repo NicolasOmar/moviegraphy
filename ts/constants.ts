@@ -18,6 +18,10 @@ export enum API_URL {
   USERS = `${API_ROUTE_BASE}/${API_ENTITIES.USERS}`
 }
 
+export enum AUTH_CONSTANTS {
+  BCRYPT_SALT_ROUNDS = 10
+}
+
 export enum HTTP_STATUS {
   OK = 200,
   BAD_REQUEST = 400,

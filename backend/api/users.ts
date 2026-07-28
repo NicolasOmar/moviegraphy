@@ -2,10 +2,11 @@ import type { UsersModel } from '@models'
 import type { UserWithToken } from '@ts/entities'
 import type { CreateOrUpdateOne } from '@ts/types'
 
-import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { createRefreshToken, hashToken } from '@ts/helpers'
+import { AUTH_CONSTANTS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { createToken, hashString } from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
 import { HttpError } from '@ts/types'
+import bcrypt from 'bcrypt'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
@@ -13,9 +14,15 @@ import { Prisma } from '../prisma/generated/client'
 
 export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async newUser => {
   try {
-    const createdUser = await prismaInstance.users.create({ data: newUser })
-    const rawToken = createRefreshToken(createdUser.id)
-    const hashedToken = hashToken(rawToken)
+    const hashedPassword = await bcrypt.hash(newUser.password, AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS)
+    const createdUser = await prismaInstance.users.create({
+      data: {
+        ...newUser,
+        password: hashedPassword
+      }
+    })
+    const rawToken = createToken(createdUser.id)
+    const hashedToken = hashString(rawToken)
 
     await prismaInstance.sessions.create({
       data: {
