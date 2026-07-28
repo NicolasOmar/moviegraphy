@@ -25,6 +25,8 @@ jobs:
       run: npm run build
     - name: 5/7 | Run unit tests suite
       run: npm run test:coverage
+      env:
+        JWT_SECRET: TokenTest
     - name: 6/7 | Run Codecov Uploader
       uses: codecov/codecov-action@v7
       with:
