@@ -1,9 +1,8 @@
 export const prerender = false
-import type { UserFormModel } from '@ts/entities'
+import { UserCreateSchema, type UserFormModel } from '@ts/entities'
 import type { APIRoute } from 'astro'
 
 import { createUser } from '@api/users'
-import { UserCreateSchema } from '@schemas/user'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
