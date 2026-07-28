@@ -1,4 +1,3 @@
-export const prerender = false
 import type { UserLoginModel } from '@ts/entities'
 import type { APIRoute } from 'astro'
 

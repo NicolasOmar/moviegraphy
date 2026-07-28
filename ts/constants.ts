@@ -26,7 +26,11 @@ export enum HTTP_STATUS {
 }
 
 export enum PAGE_URL {
-  USERS = '/users'
+  HOME = '/',
+  LOGIN = '/login',
+  MOVIES = '/movies',
+  USERS = '/users',
+  USERS_CREATE = '/users/create'
 }
 
 export enum USER_ERROR_MESSAGES {

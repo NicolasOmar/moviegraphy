@@ -1,6 +1,7 @@
 ---
-import { ReactMessages } from '@components/shared/ReactMessages'
 import { ClientRouter } from 'astro:transitions'
+
+import BaseLayout from './BaseLayout.astro'
 ---
 
 <!doctype html>
@@ -15,10 +16,11 @@ import { ClientRouter } from 'astro:transitions'
 
     <ClientRouter />
   </head>
-  <body>
-    <slot />
-    <ReactMessages client:load transition:persist />
-  </body>
+  <BaseLayout>
+    <section class="focused_content">
+      <slot />
+    </section>
+  </BaseLayout>
 </html>
 
 <style>
@@ -31,19 +33,11 @@ import { ClientRouter } from 'astro:transitions'
       -apple-system, 'system-ui', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
       sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   }
-  header {
-    width: 100vw;
-    padding: 2em 0;
-    display: flex;
-    justify-content: space-evenly;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.88);
-    margin-bottom: 2em;
-  }
-  header > a {
-    color: black;
-    text-decoration: none;
-  }
-  header > a:hover {
-    color: red;
+
+  section.focused_content {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    height: 100vh;
   }
 </style>

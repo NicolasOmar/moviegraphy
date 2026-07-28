@@ -1,12 +1,6 @@
 ---
 import { ReactMessages } from '@components/shared/ReactMessages'
 import { ClientRouter } from 'astro:transitions'
-
-const listOfLinks = [
-  { label: 'Home', page: '/' },
-  { label: 'Movies', page: '/movies' },
-  { label: 'Users', page: '/users' }
-]
 ---
 
 <!doctype html>
@@ -22,9 +16,6 @@ const listOfLinks = [
     <ClientRouter />
   </head>
   <body>
-    <header transition:persist>
-      {listOfLinks.map(_link => <a href={_link.page}>{_link.label}</a>)}
-    </header>
     <slot />
     <ReactMessages client:load transition:persist />
   </body>
@@ -39,20 +30,5 @@ const listOfLinks = [
     font-family:
       -apple-system, 'system-ui', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
       sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  }
-  header {
-    width: 100vw;
-    padding: 2em 0;
-    display: flex;
-    justify-content: space-evenly;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.88);
-    margin-bottom: 2em;
-  }
-  header > a {
-    color: black;
-    text-decoration: none;
-  }
-  header > a:hover {
-    color: red;
   }
 </style>

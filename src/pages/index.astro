@@ -1,19 +1,7 @@
 ---
-import { ReactLoginForm } from '@components/users/ReactLoginForm'
-import BlankLayout from '@layouts/BlankLayout.astro'
+import NavigationLayout from '@layouts/NavigationLayout.astro'
 ---
 
-<BlankLayout>
-  <section class="login_content">
-    <ReactLoginForm client:visible />
-  </section>
-</BlankLayout>
-
-<style>
-  section.login_content {
-    display: grid;
-    align-content: center;
-    justify-content: center;
-    height: 100vh;
-  }
-</style>
+<NavigationLayout>
+  <section>Welcome to the main page</section>
+</NavigationLayout>

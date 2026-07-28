@@ -1,4 +1,3 @@
-export const prerender = false
 import type { MovieModel } from '@models'
 import type { APIRoute } from 'astro'
 

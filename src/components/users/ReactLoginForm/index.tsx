@@ -68,11 +68,11 @@ export const ReactLoginForm: FC = () => {
 
         <Form.Item>
           <Flex gap="medium">
-            <Button disabled={isLoading} htmlType="button" type="text">
-              <a href={PAGE_URL.USERS}>Sign Up</a>
-            </Button>
             <Button disabled={isLoading} htmlType="submit" type="primary">
               Log In
+            </Button>
+            <Button disabled={isLoading} htmlType="button" type="text">
+              <a href={PAGE_URL.USERS_CREATE}>Sign Up</a>
             </Button>
           </Flex>
         </Form.Item>
