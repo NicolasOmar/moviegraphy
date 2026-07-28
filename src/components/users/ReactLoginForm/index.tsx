@@ -1,11 +1,14 @@
-import type { UserFormModel } from '@ts/entities'
+import type { UserLoginModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
-import { Button, Form, Typography } from 'antd'
+import { addMessageToContext } from '@store/message'
+import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
+import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
+import { Button, Flex, Form, Typography } from 'antd'
 import { type FC, useMemo, useState } from 'react'
 
-const formInputs: FormInputList<UserFormModel> = [
+const userLoginInputs: FormInputList<UserLoginModel> = [
   {
     label: 'Username or Email',
     name: 'name',
@@ -24,17 +27,37 @@ const formInputs: FormInputList<UserFormModel> = [
 ]
 
 export const ReactLoginForm: FC = () => {
-  const [loginForm] = Form.useForm()
+  const [loginForm] = Form.useForm<UserLoginModel>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const memoizedInputs = useMemo(
     () =>
-      formInputs.map((_inputConfig, _inputIndex) => (
+      userLoginInputs.map((_inputConfig, _inputIndex) => (
         <ReactFormInput isDisabled={isLoading} key={`user-form-${_inputIndex}`} {..._inputConfig} />
       )),
     [isLoading]
   )
 
-  const handleSubmit = () => setIsLoading(true)
+  const handleSubmit = async (_loginFormData: UserLoginModel) => {
+    setIsLoading(true)
+
+    const userToLogin = parseModelToFormData(_loginFormData)
+
+    const userCreateResponse = await fetch(API_URL.LOGIN, {
+      body: userToLogin,
+      method: API_METHODS.POST
+    })
+
+    if (userCreateResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
+      addMessageToContext({ content: errorMessage, type: 'error' })
+    } else {
+      loginForm.resetFields()
+      addMessageToContext({ content: 'User logged', type: 'success' })
+      window.location.href = PAGE_URL.USERS
+    }
+
+    setIsLoading(false)
+  }
 
   return (
     <section>
@@ -44,12 +67,14 @@ export const ReactLoginForm: FC = () => {
         {memoizedInputs}
 
         <Form.Item>
-          <Button disabled={isLoading} htmlType="button">
-            <a href="/users">Sign Up</a>
-          </Button>
-          <Button disabled={isLoading} htmlType="submit">
-            Log In
-          </Button>
+          <Flex gap="medium">
+            <Button disabled={isLoading} htmlType="button" type="text">
+              <a href={PAGE_URL.USERS}>Sign Up</a>
+            </Button>
+            <Button disabled={isLoading} htmlType="submit" type="primary">
+              Log In
+            </Button>
+          </Flex>
         </Form.Item>
       </Form>
     </section>

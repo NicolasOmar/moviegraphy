@@ -11,15 +11,19 @@ export const parseModelToFormData = <T extends object>(rawFormData: T): FormData
   return _formData
 }
 
-export const parseRequestToModel = async <T extends object>(request: Request): Promise<T> => {
-  const extractedFormData = await request.formData()
-  return Array.from(extractedFormData.entries()).reduce(
+export const parseFormDataToModel = <T extends object>(_formData: FormData): T => {
+  return Array.from(_formData.entries()).reduce(
     (_finalModel, [_formDataKey, _formDataValue]) => ({
       ..._finalModel,
       [_formDataKey]: _formDataValue
     }),
     {} as T
   )
+}
+
+export const parseRequestToModel = async <T extends object>(request: Request): Promise<T> => {
+  const extractedFormData = await request.formData()
+  return parseFormDataToModel(extractedFormData)
 }
 
 export const handleErrorMessage = (error: unknown) =>

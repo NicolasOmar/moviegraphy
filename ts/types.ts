@@ -1,7 +1,7 @@
 import type { Rule } from 'antd/es/form'
 import type { ChangeEventHandler } from 'react'
 
-export type CreateOrUpdateOne<T> = (_entity: T) => Promise<T>
+export type CreateOrUpdateOne<T, S = boolean> = (_entity: T) => Promise<S | T>
 
 export type DeleteOne = (_id: string) => Promise<boolean>
 

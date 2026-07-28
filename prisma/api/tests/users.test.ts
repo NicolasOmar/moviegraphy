@@ -17,14 +17,21 @@ beforeEach(() => {
 })
 
 describe('createUser', () => {
-  it('creates a user forwarding the given entity as data and returns the created record', async () => {
+  it('creates a user, persists a hashed refresh token for it, and returns the email with a raw token', async () => {
     const [user] = userMocks
     mockedPrisma.user.create.mockResolvedValue(user)
 
     const result = await createUser(user)
 
     expect(mockedPrisma.user.create).toHaveBeenCalledWith({ data: user })
-    expect(result).toEqual(user)
+    expect(mockedPrisma.refreshToken.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        expiresAt: expect.any(Date),
+        token: expect.any(String),
+        userId: user.id
+      })
+    })
+    expect(result).toEqual({ email: user.email, token: expect.any(String) })
   })
 
   it('translates a P2002 unique-constraint error into a 409 duplicate-email HttpError', async () => {

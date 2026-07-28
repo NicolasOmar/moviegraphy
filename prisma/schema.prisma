@@ -21,8 +21,20 @@ model Movie {
 }
 
 model User {
-  id       String @id @unique
-  name     String @db.VarChar(25)
-  email    String @unique @db.VarChar(50)
-  password String @db.VarChar(25)
+  id       String         @id @unique
+  name     String         @db.VarChar(25)
+  email    String         @unique @db.VarChar(50)
+  password String         @db.VarChar(25)
+  tokens   RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

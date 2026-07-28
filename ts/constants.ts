@@ -7,11 +7,13 @@ export enum API_METHODS {
 }
 
 enum API_ENTITIES {
+  LOGIN = 'login',
   MOVIE = 'movies',
   USERS = 'users'
 }
 
 export enum API_URL {
+  LOGIN = `${API_ROUTE_BASE}/${API_ENTITIES.LOGIN}`,
   MOVIES = `${API_ROUTE_BASE}/${API_ENTITIES.MOVIE}`,
   USERS = `${API_ROUTE_BASE}/${API_ENTITIES.USERS}`
 }
@@ -23,8 +25,13 @@ export enum HTTP_STATUS {
   INTERNAL_SERVER_ERROR = 500
 }
 
+export enum PAGE_URL {
+  USERS = '/users'
+}
+
 export enum USER_ERROR_MESSAGES {
   DUPLICATE_EMAIL = 'A user with this email already exists',
+  INVALID_CREDENTIALS = 'Name or password is incorrect',
   MISSING_FIELDS = 'Name, email and password are required',
   PASSWORD_MISMATCH = 'Password and repeat password do not match',
   UNEXPECTED = 'Something went wrong while creating the user'

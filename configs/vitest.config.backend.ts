@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 import { sharedAlias } from './vitest.shared'
 
 export default defineConfig({
+  envPrefix: 'JWT_SECRET',
   resolve: {
     alias: sharedAlias
   },
