@@ -8,12 +8,13 @@
     "jsxImportSource": "react",
     "baseUrl": "./",
     "paths": {
-      "@api/*": ["prisma/api/*"],
+      "@api/*": ["backend/api/*"],
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@models": ["prisma/generated/models"],
+      "@models": ["backend/prisma/generated/models"],
+      "@prisma/*": ["backend/prisma/*"],
       "@store/*": ["store/*"],
       "@ts/*": ["ts/*"]
     }

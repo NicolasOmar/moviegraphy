@@ -1,7 +1,7 @@
 import { hashToken } from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
 
-import prismaInstance from './prisma'
+import prismaInstance from '../prisma'
 
 export const isRefreshTokenValid = async (rawToken: string): Promise<boolean> => {
   try {

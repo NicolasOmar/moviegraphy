@@ -1,6 +1,6 @@
 import { mockDeep } from 'vitest-mock-extended'
 
-import type { PrismaClient } from '../../generated/client'
+import type { PrismaClient } from '../../prisma/generated/client'
 
 const prisma = mockDeep<PrismaClient>()
 

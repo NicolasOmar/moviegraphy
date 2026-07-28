@@ -4,10 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
 import { movieMocks } from '../../../ts/mocks'
+import prisma from '../../prisma'
 import { createMovie, deleteMovie, getMovieList, updateMovie } from '../movies'
-import prisma from '../prisma'
 
-vi.mock('../prisma', () => import('../mocks/prisma'))
+vi.mock('../../prisma', () => import('../mocks/prisma'))
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 

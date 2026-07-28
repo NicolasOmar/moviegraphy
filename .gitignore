@@ -68,7 +68,7 @@ node_modules/
 dist
 .astro
 .netlify
-/prisma/generated
+/backend/prisma/generated
 
 # agents in general
 CLAUDE.md

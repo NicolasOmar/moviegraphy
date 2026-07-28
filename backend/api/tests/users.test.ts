@@ -4,11 +4,11 @@ import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
-import { Prisma } from '../../generated/client'
-import prisma from '../prisma'
+import prisma from '../../prisma'
+import { Prisma } from '../../prisma/generated/client'
 import { createUser } from '../users'
 
-vi.mock('../prisma', () => import('../mocks/prisma'))
+vi.mock('../../prisma', () => import('../mocks/prisma'))
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 

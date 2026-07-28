@@ -1,12 +1,13 @@
-import * as z from 'zod'
 import type { UserModel } from '@models'
+
+import * as z from 'zod'
 
 // ---------- USERS / INTERFACES ----------
 export interface UserFormModel extends Omit<UserModel, 'id'> {
   repeatPassword: string
 }
 
-export interface UserLoginModel extends Pick<UserModel, 'name' | 'password'> { }
+export type UserLoginModel = Pick<UserModel, 'name' | 'password'>
 
 export interface UserWithToken extends Pick<UserModel, 'email'> {
   token: string

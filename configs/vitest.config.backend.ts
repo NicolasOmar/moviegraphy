@@ -10,12 +10,12 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: [
-        'prisma/generated/**',
-        'prisma/api/prisma.ts',
+        'backend/prisma/generated/**',
+        'backend/prisma/index.ts',
         '**/*.test.{ts,tsx}',
         '**/mocks/**'
       ],
-      include: ['prisma/api/**/*.ts', 'src/pages/api/**/*.ts', 'ts/parsers.ts'],
+      include: ['backend/api/**/*.ts', 'src/pages/api/**/*.ts', 'ts/parsers.ts'],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],
       reportsDirectory: 'coverage/backend',
@@ -28,7 +28,7 @@ export default defineConfig({
     },
     environment: 'node',
     globals: false,
-    include: ['prisma/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/tests/**/*.test.ts'],
+    include: ['backend/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/tests/**/*.test.ts'],
     name: 'backend'
   }
 })

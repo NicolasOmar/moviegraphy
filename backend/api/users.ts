@@ -8,8 +8,8 @@ import { handleErrorMessage } from '@ts/parsers'
 import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
-import { Prisma } from '../generated/client'
-import prismaInstance from './prisma'
+import prismaInstance from '../prisma'
+import { Prisma } from '../prisma/generated/client'
 
 export const createUser: CreateOrUpdateOne<UserModel, UserWithToken> = async newUser => {
   try {

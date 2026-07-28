@@ -4,7 +4,7 @@ import { HTTP_STATUS } from '@ts/constants'
 import { handleErrorMessage } from '@ts/parsers'
 import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts/types'
 
-import prismaInstance from './prisma'
+import prismaInstance from '../prisma'
 
 export const getMovieList: GetMany<MovieModel> = async () => {
   try {
