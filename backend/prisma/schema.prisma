@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Movies {
+  countryMade String
+  description String? @db.VarChar(300)
+  id          String  @id @unique
+  name        String  @db.VarChar(150)
+  releaseYear Int
+}
+
+model Users {
+  id       String     @id @unique
+  name     String     @db.VarChar(25)
+  email    String     @unique @db.VarChar(50)
+  password String     @db.Text
+  tokens   Sessions[]
+}
+
+model Sessions {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.Text
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { $contextMessageList, addMessageToContext } from './message'
+import { $contextMessageList, addMessageToContext } from './messages'
 
 beforeEach(() => {
   $contextMessageList.set(null)

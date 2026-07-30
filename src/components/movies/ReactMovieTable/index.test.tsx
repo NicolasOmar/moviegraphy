@@ -1,5 +1,5 @@
-import { $contextMessageList } from '@store/message'
-import { $contextMovieList, $contextSelectedMovie } from '@store/movie'
+import { $contextMessageList } from '@store/messages'
+import { $contextMovieList, $contextSelectedMovie } from '@store/movies'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URL } from '@ts/constants'

@@ -2,10 +2,10 @@ import type { UserFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
-import { addMessageToContext } from '@store/message'
-import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
+import { addMessageToContext } from '@store/messages'
+import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
-import { Button, Form, Typography } from 'antd'
+import { Button, Flex, Form, Typography } from 'antd'
 import { type FC, useMemo, useState } from 'react'
 
 const formInputs: FormInputList<UserFormModel> = [
@@ -98,9 +98,14 @@ export const ReactUserForm: FC = () => {
         {memoizedInputs}
 
         <Form.Item>
-          <Button disabled={isLoading} htmlType="submit">
-            Create
-          </Button>
+          <Flex gap="medium">
+            <Button disabled={isLoading} htmlType="submit">
+              Create
+            </Button>
+            <Button disabled={isLoading} htmlType="button" type="text">
+              <a href={PAGE_URL.LOGIN}>Log In</a>
+            </Button>
+          </Flex>
         </Form.Item>
       </Form>
     </>

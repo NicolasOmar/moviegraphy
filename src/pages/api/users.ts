@@ -1,16 +1,13 @@
-export const prerender = false
-import type { UserFormModel } from '@ts/entities'
 import type { APIRoute } from 'astro'
 
 import { createUser } from '@api/users'
-import { UserCreateSchema } from '@schemas/user'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { parseFormDataToModel, parseHttpErrorToResponse, parseMessageToResponse } from '@ts/parsers'
+import { UserCreateSchema, type UserFormModel } from '@ts/entities'
+import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {
-  const newUserFormData = await request.formData()
-  const newUserModel = parseFormDataToModel<UserFormModel>(newUserFormData)
+  const newUserModel = await parseRequestToModel<UserFormModel>(request)
   const { email, name, password, repeatPassword } = newUserModel
 
   if (!name || !email || !password || !repeatPassword) {

@@ -1,16 +1,14 @@
-export const prerender = false
-import type { MovieModel } from '@models'
+import type { MoviesModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
-import { MovieCreateSchema, MovieUpdateSchema } from '@schemas/user'
 import { HTTP_STATUS } from '@ts/constants'
-import { parseFormDataToModel, parseHttpErrorToResponse, parseMessageToResponse } from '@ts/parsers'
+import { MovieCreateSchema, MovieUpdateSchema } from '@ts/entities'
+import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {
-  const newMovieFormData = await request.formData()
-  const newMovieModel = parseFormDataToModel<MovieModel>(newMovieFormData)
+  const newMovieModel = await parseRequestToModel<MoviesModel>(request)
 
   const { error: zodError } = await MovieCreateSchema.safeParseAsync(newMovieModel)
 
@@ -33,8 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
 }
 
 export const PATCH: APIRoute = async ({ request }) => {
-  const updateMovieFormData = await request.formData()
-  const updateMovieModel = parseFormDataToModel<MovieModel>(updateMovieFormData)
+  const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
 
   const { error: zodError } = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
 
@@ -56,8 +53,7 @@ export const PATCH: APIRoute = async ({ request }) => {
 }
 
 export const DELETE: APIRoute = async ({ request }) => {
-  const deleteMovieFormData = await request.formData()
-  const deleteMovieModel = parseFormDataToModel<{ id: string }>(deleteMovieFormData)
+  const deleteMovieModel = await parseRequestToModel<{ id: string }>(request)
 
   try {
     await deleteMovie(deleteMovieModel.id)

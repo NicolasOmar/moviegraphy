@@ -1,4 +1,4 @@
-import { $contextMessageList } from '@store/message'
+import { $contextMessageList } from '@store/messages'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URL } from '@ts/constants'

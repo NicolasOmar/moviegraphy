@@ -1,0 +1,77 @@
+---
+import { ClientRouter } from 'astro:transitions'
+
+import BaseLayout from './BaseLayout.astro'
+
+const listOfLinks = [
+  { label: 'Home', page: '/' },
+  { label: 'Movies', page: '/movies' },
+  { label: 'Users', page: '/users' }
+]
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width" name="viewport" />
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="/favicon.ico" rel="icon" />
+    <meta content={Astro.generator} name="generator" />
+    <title>Moviegraphy</title>
+
+    <ClientRouter />
+  </head>
+  <BaseLayout>
+    <header transition:persist>
+      {listOfLinks.map(_link => <a href={_link.page}>{_link.label}</a>)}
+
+      <a id="logout_link">Logout</a>
+    </header>
+    <slot />
+  </BaseLayout>
+</html>
+
+<script>
+  import { addMessageToContext } from '@store/messages'
+  import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
+  import { parseResponseErrorToMessage } from '@ts/parsers'
+
+  const logoutLink = document.getElementById('logout_link')
+
+  if (logoutLink) {
+    logoutLink.addEventListener('click', async () => {
+      const logOutRespose = await fetch(API_URL.SESSIONS, {
+        method: API_METHODS.DELETE
+      })
+
+      if (logOutRespose.status !== HTTP_STATUS.OK) {
+        const errorMessage = await parseResponseErrorToMessage(logOutRespose)
+        addMessageToContext({ content: errorMessage, type: 'error' })
+      } else {
+        window.location.href = PAGE_URL.HOME
+      }
+    })
+  }
+</script>
+
+<style>
+  header {
+    width: 100vw;
+    padding: 2em 0;
+    display: flex;
+    justify-content: space-evenly;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.88);
+    margin-bottom: 2em;
+  }
+  header > a {
+    color: black;
+    text-decoration: none;
+  }
+  header > a:hover {
+    color: red;
+  }
+  header > a#testing {
+    justify-self: end;
+  }
+</style>

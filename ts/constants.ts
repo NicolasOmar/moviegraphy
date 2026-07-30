@@ -8,12 +8,18 @@ export enum API_METHODS {
 
 enum API_ENTITIES {
   MOVIE = 'movies',
+  SESSIONS = 'sessions',
   USERS = 'users'
 }
 
 export enum API_URL {
   MOVIES = `${API_ROUTE_BASE}/${API_ENTITIES.MOVIE}`,
+  SESSIONS = `${API_ROUTE_BASE}/${API_ENTITIES.SESSIONS}`,
   USERS = `${API_ROUTE_BASE}/${API_ENTITIES.USERS}`
+}
+
+export enum AUTH_CONSTANTS {
+  BCRYPT_SALT_ROUNDS = 10
 }
 
 export enum HTTP_STATUS {
@@ -23,8 +29,17 @@ export enum HTTP_STATUS {
   INTERNAL_SERVER_ERROR = 500
 }
 
+export enum PAGE_URL {
+  HOME = '/',
+  LOGIN = '/login',
+  MOVIES = '/movies',
+  USERS = '/users',
+  USERS_CREATE = '/users/create'
+}
+
 export enum USER_ERROR_MESSAGES {
   DUPLICATE_EMAIL = 'A user with this email already exists',
+  INVALID_CREDENTIALS = 'Name or password is incorrect',
   MISSING_FIELDS = 'Name, email and password are required',
   PASSWORD_MISMATCH = 'Password and repeat password do not match',
   UNEXPECTED = 'Something went wrong while creating the user'

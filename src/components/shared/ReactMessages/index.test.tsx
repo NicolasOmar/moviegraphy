@@ -1,4 +1,4 @@
-import { $contextMessageList } from '@store/message'
+import { $contextMessageList } from '@store/messages'
 import { act, render } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 

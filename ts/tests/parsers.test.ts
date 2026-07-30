@@ -9,6 +9,7 @@ import {
   parseHttpErrorToResponse,
   parseMessageToResponse,
   parseModelToFormData,
+  parseRequestToModel,
   parseResponseErrorToMessage
 } from '../parsers'
 
@@ -50,6 +51,24 @@ describe('parseFormDataToModel', () => {
     const parsedModel = parseFormDataToModel<{ name: string }>(formData)
 
     expect(parsedModel).toEqual({ name: 'The Matrix Reloaded' })
+  })
+})
+
+describe('parseRequestToModel', () => {
+  it('extracts the request formData body into a plain model object', async () => {
+    const [movie] = movieMocks
+    const formData = parseModelToFormData(movie)
+    const request = new Request('http://localhost/api/movies', { body: formData, method: 'POST' })
+
+    const parsedModel = await parseRequestToModel<Record<string, string>>(request)
+
+    expect(parsedModel).toEqual({
+      countryMade: movie.countryMade,
+      description: movie.description,
+      id: movie.id,
+      name: movie.name,
+      releaseYear: String(movie.releaseYear)
+    })
   })
 })
 

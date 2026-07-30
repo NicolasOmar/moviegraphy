@@ -1,0 +1,43 @@
+---
+import { ClientRouter } from 'astro:transitions'
+
+import BaseLayout from './BaseLayout.astro'
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width" name="viewport" />
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="/favicon.ico" rel="icon" />
+    <meta content={Astro.generator} name="generator" />
+    <title>Moviegraphy</title>
+
+    <ClientRouter />
+  </head>
+  <BaseLayout>
+    <section class="focused_content">
+      <slot />
+    </section>
+  </BaseLayout>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    font-family:
+      -apple-system, 'system-ui', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+      sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+
+  section.focused_content {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    height: 100vh;
+  }
+</style>

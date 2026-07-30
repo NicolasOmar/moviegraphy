@@ -9,7 +9,7 @@ import {
   setMovieListOnContext,
   updateMovieOnListContext,
   updateSelectedMovieOnContext
-} from './movie'
+} from './movies'
 
 beforeEach(() => {
   $contextMovieList.set([])

@@ -1,24 +1,27 @@
 import type { ReactTableProps } from '@components/shared/ReactTable'
-import type { MovieModel } from '@models'
+import type { MoviesModel } from '@models'
 import type { InputEventHandler } from '@ts/types'
 
 import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'
-import { addMessageToContext } from '@store/message'
+import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { addMessageToContext } from '@store/messages'
 import {
   $contextMovieList,
   deleteMovieOnListContext,
   setMovieListOnContext,
   updateSelectedMovieOnContext
-} from '@store/movie'
+} from '@store/movies'
 import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Input, Typography } from 'antd'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
-export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, dataSource }) => {
+export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dataSource }) => {
   const movieListInContext = useStore($contextMovieList)
+  const isSystemLoading = useStore($contextLoading)
   const [searchParam, setSearchParam] = useState<string>('')
+
   const memoizedTable = useMemo(() => {
     const filteredDataSource =
       searchParam.length > 0
@@ -26,29 +29,37 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
         : movieListInContext
     const optionsColumn = {
       key: 'options',
-      render: (_singleMovie: MovieModel) => (
+      render: (_singleMovie: MoviesModel) => (
         <>
-          <Button onClick={() => handleEdit(_singleMovie)}>E</Button>
-          <Button onClick={() => handleDelete(_singleMovie.id)}>D</Button>
+          <Button disabled={isSystemLoading} onClick={() => handleEdit(_singleMovie)}>
+            E
+          </Button>
+          <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleMovie.id)}>
+            D
+          </Button>
         </>
       ),
       title: 'Options'
     }
 
     return <ReactTable columns={[...columns, optionsColumn]} dataSource={filteredDataSource} />
-  }, [movieListInContext, columns, searchParam])
+  }, [movieListInContext, columns, searchParam, isSystemLoading])
 
   useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
 
   const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
   const memoizedSeach = useMemo(
-    () => (movieListInContext.length > 0 ? <Input onChange={handleSearch} /> : null),
-    [movieListInContext]
+    () =>
+      movieListInContext.length > 0 ? (
+        <Input disabled={isSystemLoading} onChange={handleSearch} />
+      ) : null,
+    [movieListInContext, isSystemLoading]
   )
 
-  const handleEdit = (_movieToEdit: MovieModel) => updateSelectedMovieOnContext(_movieToEdit)
+  const handleEdit = (_movieToEdit: MoviesModel) => updateSelectedMovieOnContext(_movieToEdit)
 
   const handleDelete = async (id: string) => {
+    setLoadingSystemState(true)
     const movieIdToDelete = parseModelToFormData({ id })
 
     const movieDeleteResponse = await fetch(API_URL.MOVIES, {
@@ -64,6 +75,8 @@ export const ReactMovieTable: FC<ReactTableProps<MovieModel>> = ({ columns, data
       updateSelectedMovieOnContext(null)
       addMessageToContext({ content: 'Movie deleted', type: 'success' })
     }
+
+    setLoadingSystemState(false)
   }
 
   return (

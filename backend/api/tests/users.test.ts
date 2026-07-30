@@ -1,14 +1,15 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
+import bcrypt from 'bcrypt'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
-import { Prisma } from '../../generated/client'
-import prisma from '../prisma'
+import prisma from '../../prisma'
+import { Prisma } from '../../prisma/generated/client'
 import { createUser } from '../users'
 
-vi.mock('../prisma', () => import('../mocks/prisma'))
+vi.mock('../../prisma', () => import('../mocks/prisma'))
 
 const mockedPrisma = vi.mocked(prisma, { deep: true })
 
@@ -17,20 +18,34 @@ beforeEach(() => {
 })
 
 describe('createUser', () => {
-  it('creates a user forwarding the given entity as data and returns the created record', async () => {
+  it('creates a user, persists a hashed refresh token for it, and returns the email with a raw token', async () => {
     const [user] = userMocks
-    mockedPrisma.user.create.mockResolvedValue(user)
+    mockedPrisma.users.create.mockResolvedValue(user)
 
     const result = await createUser(user)
 
-    expect(mockedPrisma.user.create).toHaveBeenCalledWith({ data: user })
-    expect(result).toEqual(user)
+    expect(mockedPrisma.users.create).toHaveBeenCalledWith({
+      data: { ...user, password: expect.any(String) }
+    })
+
+    const [[{ data: createdUserData }]] = mockedPrisma.users.create.mock.calls
+    expect(createdUserData.password).not.toBe(user.password)
+    await expect(bcrypt.compare(user.password, createdUserData.password)).resolves.toBe(true)
+
+    expect(mockedPrisma.sessions.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        expiresAt: expect.any(Date),
+        token: expect.any(String),
+        userId: user.id
+      })
+    })
+    expect(result).toEqual({ email: user.email, token: expect.any(String) })
   })
 
   it('translates a P2002 unique-constraint error into a 409 duplicate-email HttpError', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
-    mockedPrisma.user.create.mockRejectedValue(
+    mockedPrisma.users.create.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError(
         'Unique constraint failed on the fields: (`email`)',
         {
@@ -48,7 +63,7 @@ describe('createUser', () => {
   it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
-    mockedPrisma.user.create.mockRejectedValue(new Error('connection refused'))
+    mockedPrisma.users.create.mockRejectedValue(new Error('connection refused'))
 
     await expect(createUser(user)).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
