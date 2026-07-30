@@ -1,0 +1,41 @@
+name: Deploy DB Migrations and Site
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1/7 | Checkout repo
+        uses: actions/checkout@v7
+      - name: 2/7 | Setup Node environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: latest
+      - name: 3/7 | Install dependencies
+        run: npm ci
+      - name: 4/7 | Backup database
+        run: pg_dump "${{ secrets.DATABASE_URL }}" -F c -f backup.dump
+      - name: 5/7 | Run migrations
+        id: migrate
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: 6/7 | Restore backup on failure
+        if: failure() && steps.migrate.outcome == 'failure'
+        run: pg_restore --clean --if-exists -d "${{ secrets.DATABASE_URL }}" backup.dump
+      - name: 7/7 | Upload backup artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: db-backup-${{ github.sha }}
+          path: backup.dump
+
+  deploy:
+    needs: migrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Netlify build
+        run: curl -sf -X POST -d '{}' "${{ secrets.NETLIFY_BUILD_HOOK }}"
