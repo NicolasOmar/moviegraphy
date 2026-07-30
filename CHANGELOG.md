@@ -1,3 +1,25 @@
+# [1.3.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.2.0...v1.3.0) (2026-07-30)
+
+
+### Bug Fixes
+
+* adding a system wide loading state for shared interface behaviour ([8361d14](https://github.com/NicolasOmar/moviegraphy/commit/8361d14522e6caaaa0f1c6c149a84c51b2d57eff))
+* moving prisma and api folder to an umbrella level called backend ([c371321](https://github.com/NicolasOmar/moviegraphy/commit/c3713212d5132dbfb6f76f74bea9c1c7c2f1bde3))
+* moving zod schemas into entities file ([6206d5e](https://github.com/NicolasOmar/moviegraphy/commit/6206d5e02bffb42456958f4777f80d995e956036))
+* renaming entities at prisma level and beyond to its correct names ([ccb36b1](https://github.com/NicolasOmar/moviegraphy/commit/ccb36b138e2c5949b915703add36fa5e979f57bd))
+* renaming files and vaiables related to user session management ([bac6801](https://github.com/NicolasOmar/moviegraphy/commit/bac6801e4d5b11c862c4359333725444201c20e8))
+* rewriting some parser functions. adding missing migration ([9754f62](https://github.com/NicolasOmar/moviegraphy/commit/9754f6201afd073da2c057a3e32da209a8f45ad7))
+
+
+### Features
+
+* adding migration and deployment script for db and app aligment ([7727e45](https://github.com/NicolasOmar/moviegraphy/commit/7727e45b3356634edef9b827707484fa0b1287fa))
+* adding token based authentication at route middleware level. layouts improved ([43313df](https://github.com/NicolasOmar/moviegraphy/commit/43313df3458fa46e12a4e9492445cf62848fdd15))
+* adding user password hashing for security ([23c25cb](https://github.com/NicolasOmar/moviegraphy/commit/23c25cb2f66850c1825e7e467804e14d6b050cff))
+* first implementation of logout feature ([727cfb3](https://github.com/NicolasOmar/moviegraphy/commit/727cfb355295b1e9d793b751a65f1c2f026c44f1))
+* first integration of login feature with improvements to add ([8e4469b](https://github.com/NicolasOmar/moviegraphy/commit/8e4469b6eba7487a1b5a3b9997786a3b3610cd7b))
+* first partial implementation of login form ([8b2f2a4](https://github.com/NicolasOmar/moviegraphy/commit/8b2f2a46524a76b4857bc1aa5ca27a9a4579e33d))
+
 # [1.2.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.1.1...v1.2.0) (2026-07-24)
 
 
