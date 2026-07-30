@@ -20,7 +20,7 @@ jobs:
         run: pg_dump "${{ secrets.DATABASE_URL }}" -F c -f backup.dump
       - name: 5/7 | Run migrations
         id: migrate
-        run: npx prisma migrate deploy
+        run: npm run db:migrate:prod
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: 6/7 | Restore backup on failure

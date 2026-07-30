@@ -28,6 +28,7 @@
     "db:compile": "npm run db:base -- format && npm run db:base -- generate",
     "db:push": "npm run db:base -- db push",
     "db:migrate": "npm run db:compile && npm run db:base -- migrate dev",
+    "db:migrate:prod": "npm run db:compile && npm run db:base -- migrate deploy",
     "db:seed": "npm run db:base -- db seed",
     "lint:base": "eslint --config configs/eslint.config.mjs src/**/*.{ts,tsx,astro} {backend,ts}/**/*.ts",
     "lint": "npm run lint:base -- --max-warnings 0",
