@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro'
 
 import { loginUser, logoutUser } from '@api/sessions'
-import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -52,7 +52,7 @@ describe('POST', () => {
 
     expect(mockedLoginUser).toHaveBeenCalledWith({ name: user.name, password: user.password })
     expect(context.cookies.set).toHaveBeenCalledWith(
-      'refreshToken',
+      SESSION_COOKIE_NAME,
       'raw-token',
       expect.objectContaining({ httpOnly: true, path: '/' })
     )
@@ -83,7 +83,7 @@ describe('DELETE', () => {
     const response = await DELETE(context)
 
     expect(mockedLogoutUser).toHaveBeenCalledWith('raw-token')
-    expect(context.cookies.delete).toHaveBeenCalledWith('refreshToken')
+    expect(context.cookies.delete).toHaveBeenCalledWith(SESSION_COOKIE_NAME)
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: { success: true } })
   })

@@ -44,3 +44,5 @@ export enum USER_ERROR_MESSAGES {
   PASSWORD_MISMATCH = 'Password and repeat password do not match',
   UNEXPECTED = 'Something went wrong while creating the user'
 }
+
+export const SESSION_COOKIE_NAME = 'session'
