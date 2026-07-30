@@ -34,7 +34,8 @@ export enum PAGE_URL {
   LOGIN = '/login',
   MOVIES = '/movies',
   USERS = '/users',
-  USERS_CREATE = '/users/create'
+  USERS_CREATE = '/users/create',
+  USERS_UPDATE = '/users/update'
 }
 
 export enum USER_ERROR_MESSAGES {

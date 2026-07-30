@@ -53,31 +53,31 @@ jobs:
     needs: lint_and_build
     runs-on: ubuntu-latest
     steps:
-      - name: 1/5 | Checkout repo
+      - name: 1/6 | Checkout repo
         uses: actions/checkout@v7
-      - name: 2/5 | Setup Node environment
+      - name: 2/6 | Setup Node environment
         uses: actions/setup-node@v7
-      - name: 3/5 | Restore cached dependencies
+      - name: 3/6 | Restore cached dependencies
         uses: actions/cache/restore@v6
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: 4/5 | Restore cached prisma build
+      - name: 4/6 | Restore cached prisma build
         uses: actions/cache/restore@v6
         with:
           path: backend/prisma/generated
           key: prisma-generated-${{ runner.os }}-${{ hashFiles('backend/prisma/schema.prisma') }}
-      - name: 5/5 | Run unit tests suite with coverage
+      - name: 5/6 | Run unit tests suite with coverage
         run: npm run test:coverage
         env:
           JWT_SECRET: TokenTest
-      - name: Upload coverage report
+      - name: 6/6 | Upload coverage report
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/
 
-  coverage:
+  coverage_and_quality:
     needs: test
     runs-on: ubuntu-latest
     steps:
