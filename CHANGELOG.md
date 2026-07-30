@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/NicolasOmar/moviegraphy/compare/v1.3.2...v1.3.3) (2026-07-30)
+
+
+### Bug Fixes
+
+* solving broken migration and release workflow ([be66f00](https://github.com/NicolasOmar/moviegraphy/commit/be66f00c7471dc8d9e62655c518a6ab3de5aef6a))
+
 ## [1.3.2](https://github.com/NicolasOmar/moviegraphy/compare/v1.3.1...v1.3.2) (2026-07-30)
 
 
