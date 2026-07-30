@@ -28,6 +28,31 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
     steps:
+      - name: 1/7 | Checkout repo
+        uses: actions/checkout@v7
+      - name: 2/7 | Setup Node environment
+        uses: actions/setup-node@v7
+      - name: 3/7 | Restore cached dependencies
+        uses: actions/cache/restore@v6
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: 4/7 | Run code styling script
+        run: npm run format:check
+      - name: 5/7 | Run static quality check script
+        run: npm run lint
+      - name: 6/7 | Run build package script
+        run: npm run build
+      - name: 7/7 | Cache prisma build
+        uses: actions/cache@v6
+        with:
+          path: backend/prisma/generated
+          key: prisma-generated-${{ runner.os }}-${{ hashFiles('backend/prisma/schema.prisma') }}
+
+  test:
+    needs: lint_and_build
+    runs-on: ubuntu-latest
+    steps:
       - name: 1/5 | Checkout repo
         uses: actions/checkout@v7
       - name: 2/5 | Setup Node environment
@@ -37,27 +62,12 @@ jobs:
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: 4/5 | Run code styling and static quality check scripts
-        run: |
-          npm run format:check
-          npm run lint
-      - name: 5/5 | Run build package script
-        run: npm run build
-
-  test:
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - name: 1/4 | Checkout repo
-        uses: actions/checkout@v7
-      - name: 2/4 | Setup Node environment
-        uses: actions/setup-node@v7
-      - name: 3/4 | Restore cached dependencies
+      - name: 4/5 | Restore cached prisma build
         uses: actions/cache/restore@v6
         with:
-          path: node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: 4/4 | Run unit tests suite with coverage
+          path: backend/prisma/generated
+          key: prisma-generated-${{ runner.os }}-${{ hashFiles('backend/prisma/schema.prisma') }}
+      - name: 5/5 | Run unit tests suite with coverage
         run: npm run test:coverage
         env:
           JWT_SECRET: TokenTest
