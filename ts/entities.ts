@@ -2,6 +2,12 @@ import type { UsersModel } from '@models'
 
 import * as z from 'zod'
 
+export interface PasswordChangeModel {
+  new: string
+  old: string
+  repeatNew: string
+}
+
 // ---------- USERS / INTERFACES ----------
 export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string

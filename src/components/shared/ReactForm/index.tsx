@@ -1,38 +1,37 @@
-import type { UserLoginModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import { Button, type ButtonProps, Flex, Form, type FormInstance, Typography } from 'antd'
-import React, { type FC, useMemo } from 'react'
+import React, { useMemo } from 'react'
 
 import ReactFormInput from '../ReactFormInput'
 
-export interface ReactFormButton {
+export interface ReactFormButtonProps {
   htmlType: ButtonProps['htmlType']
   title: string
   type: ButtonProps['type']
 }
 
-export interface ReactFormProps {
-  formButtons: ReactFormButton[]
-  formInputs: FormInputList<UserLoginModel>
+export interface ReactFormProps<T> {
+  formButtons: ReactFormButtonProps[]
+  formInputs: FormInputList<T>
   formInstance: FormInstance
   formTitle?: string
   isLoading?: boolean
-  onSubmit: (submittedForm: UserLoginModel) => void
+  onSubmit: (submittedForm: T) => void
   onSubmitFailed: () => void
   styles?: React.CSSProperties
 }
 
-export const ReactForm: FC<ReactFormProps> = ({
+export const ReactForm = <T,>({
   formButtons,
   formInputs,
   formInstance,
   formTitle,
-  isLoading,
+  isLoading = false,
   onSubmit,
   onSubmitFailed,
   styles
-}) => {
+}: ReactFormProps<T>): React.ReactElement => {
   const memoizedInputs = useMemo(
     () =>
       formInputs.map((_inputConfig, _inputIndex) => (

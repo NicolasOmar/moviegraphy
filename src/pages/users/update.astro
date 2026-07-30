@@ -1,7 +1,8 @@
 ---
-import FocusedLayout from '@layouts/FocusedLayout.astro'
+import { ReactPasswordForm } from '@components/users/ReactPasswordForm'
+import NavigationLayout from '@layouts/NavigationLayout.astro'
 ---
 
-<FocusedLayout>
-  <section>Welcome to user edition page</section>
-</FocusedLayout>
+<NavigationLayout>
+  <ReactPasswordForm client:visible />
+</NavigationLayout>
