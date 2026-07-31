@@ -25,7 +25,6 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 
   const { error: zodError } = await PasswordChangeSchema.safeParseAsync(passwordsModel)
 
-  console.warn(zodError)
   if (zodError) {
     const passwordUpdateZodMessage = zodError.issues.map(({ message }) => message)
 

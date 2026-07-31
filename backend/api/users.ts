@@ -90,6 +90,10 @@ export const updatePassword: CreateOrUpdateOne<
   } catch (updatePasswordError) {
     console.error('[POST /api/users]', { error: updatePasswordError })
 
+    if (updatePasswordError instanceof HttpError) {
+      throw updatePasswordError
+    }
+
     const errorMessage = handleErrorMessage(updatePasswordError)
 
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)

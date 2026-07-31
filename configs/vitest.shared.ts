@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 const resolvePath = (relativePath: string): string => fileURLToPath(new URL(relativePath, import.meta.url))
 
 export const sharedAlias = {
+  'astro:middleware': resolvePath('./mocks/astro-middleware'),
   '@api': resolvePath('../backend/api'),
   '@assets': resolvePath('../src/assets'),
   '@components': resolvePath('../src/components'),

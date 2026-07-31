@@ -1,13 +1,13 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { compareHashed } from '@ts/helpers'
-import { userMocks } from '@ts/mocks'
+import { compareHashed, hashString } from '@ts/helpers'
+import { sessionMocks, userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
 import prisma from '../../prisma'
 import { Prisma } from '../../prisma/generated/client'
-import { createUser } from '../users'
+import { createUser, updatePassword } from '../users'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 
@@ -66,6 +66,83 @@ describe('createUser', () => {
     mockedPrisma.users.create.mockRejectedValue(new Error('connection refused'))
 
     await expect(createUser(user)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
+    )
+  })
+})
+
+describe('updatePassword', () => {
+  const buildPasswords = (overrides: Partial<Parameters<typeof updatePassword>[0]> = {}) => ({
+    newPassword: 'brandNewPassword123',
+    oldPassword: userMocks[0].password,
+    sessionToken: 'some-raw-token',
+    ...overrides
+  })
+
+  it('hashes and persists the new password when the session and old password are valid', async () => {
+    const [user] = userMocks
+    const [session] = sessionMocks
+    const hashedOldPassword = await hashString(user.password)
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue({ ...user, password: hashedOldPassword })
+
+    const result = await updatePassword(buildPasswords())
+
+    expect(mockedPrisma.users.findUnique).toHaveBeenCalledWith({ where: { id: session.userId } })
+    expect(mockedPrisma.users.update).toHaveBeenCalledWith({
+      data: { password: expect.any(String) },
+      where: { id: user.id }
+    })
+
+    const [[{ data: updatedData }]] = mockedPrisma.users.update.mock.calls
+    expect(typeof updatedData.password).toBe('string')
+    await expect(
+      compareHashed('brandNewPassword123', updatedData.password as string)
+    ).resolves.toBe(true)
+    expect(result).toBe(true)
+  })
+
+  it('rejects with a 400 invalid-credentials HttpError when no session matches the token', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
+
+    await expect(updatePassword(buildPasswords())).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.users.update).not.toHaveBeenCalled()
+  })
+
+  it('rejects with a 400 invalid-credentials HttpError when the session has no matching user', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [session] = sessionMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue(null)
+
+    await expect(updatePassword(buildPasswords())).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.users.update).not.toHaveBeenCalled()
+  })
+
+  it('rejects with a 400 invalid-credentials HttpError when the old password does not match', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [user] = userMocks
+    const [session] = sessionMocks
+    const hashedOldPassword = await hashString(user.password)
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue({ ...user, password: hashedOldPassword })
+
+    await expect(updatePassword(buildPasswords({ oldPassword: 'wrong-password' }))).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.users.update).not.toHaveBeenCalled()
+  })
+
+  it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedPrisma.sessions.findFirst.mockRejectedValue(new Error('connection refused'))
+
+    await expect(updatePassword(buildPasswords())).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })
