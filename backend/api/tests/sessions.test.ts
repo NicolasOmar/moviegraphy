@@ -1,7 +1,7 @@
-import { AUTH_CONSTANTS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { hashString } from '@ts/helpers'
 import { sessionMocks, userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
-import bcrypt from 'bcrypt'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
@@ -51,7 +51,7 @@ describe('isSessionValid', () => {
 describe('loginUser', () => {
   it('returns the email and a raw token, persisting a hashed session for the matched user', async () => {
     const [user] = userMocks
-    const hashedPassword = await bcrypt.hash(user.password, AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS)
+    const hashedPassword = await hashString(user.password)
     mockedPrisma.users.findFirst.mockResolvedValue({ ...user, password: hashedPassword })
 
     const result = await loginUser({ name: user.name, password: user.password })
@@ -80,7 +80,7 @@ describe('loginUser', () => {
 
   it('rejects with a 400 invalid-credentials HttpError when the password does not match', async () => {
     const [user] = userMocks
-    const hashedPassword = await bcrypt.hash(user.password, AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS)
+    const hashedPassword = await hashString(user.password)
     mockedPrisma.users.findFirst.mockResolvedValue({ ...user, password: hashedPassword })
 
     await expect(loginUser({ name: user.name, password: 'wrong-password' })).rejects.toEqual(
