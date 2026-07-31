@@ -18,7 +18,7 @@ export const onRequest = defineMiddleware(async ({ cookies, redirect, url }, nex
   }
 
   if (hasValidToken && isAuthExemptPage) {
-    return redirect(PAGE_URL.MOVIES)
+    return redirect(PAGE_URL.HOME)
   }
 
   return next()

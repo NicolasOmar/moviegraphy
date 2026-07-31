@@ -32,6 +32,12 @@ export const UserUpdateSchema = z.strictObject({
   id: z.uuid()
 })
 
+export const PasswordChangeSchema = z.strictObject({
+  new: z.string(),
+  old: z.string(),
+  repeatNew: z.string()
+})
+
 // ---------- MOVIES / SCHEMAS ----------
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),

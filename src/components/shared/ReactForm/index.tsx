@@ -17,7 +17,7 @@ export interface ReactFormProps<T> {
   formInstance: FormInstance
   formTitle?: string
   isLoading?: boolean
-  onSubmit: (submittedForm: T) => void
+  onSubmit: (submittedFormData: T) => void
   onSubmitFailed: () => void
   styles?: React.CSSProperties
 }
