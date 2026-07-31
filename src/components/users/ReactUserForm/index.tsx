@@ -2,11 +2,13 @@ import type { UserFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import ReactFormInput from '@components/shared/ReactFormInput'
+import { useStore } from '@nanostores/react'
+import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
 import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Flex, Form, Typography } from 'antd'
-import { type FC, useMemo, useState } from 'react'
+import { type FC, useMemo } from 'react'
 
 const formInputs: FormInputList<UserFormModel> = [
   {
@@ -50,17 +52,21 @@ const formInputs: FormInputList<UserFormModel> = [
 
 export const ReactUserForm: FC = () => {
   const [userForm] = Form.useForm<UserFormModel>()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const isSystemLoading = useStore($contextLoading)
   const memoizedInputs = useMemo(
     () =>
       formInputs.map((_inputConfig, _inputIndex) => (
-        <ReactFormInput isDisabled={isLoading} key={`user-form-${_inputIndex}`} {..._inputConfig} />
+        <ReactFormInput
+          isDisabled={isSystemLoading}
+          key={`user-form-${_inputIndex}`}
+          {..._inputConfig}
+        />
       )),
-    [isLoading]
+    [isSystemLoading]
   )
 
   const handleSubmit = async (_userFormDataModel: UserFormModel) => {
-    setIsLoading(true)
+    setLoadingSystemState(true)
 
     const userToCreate = parseModelToFormData(_userFormDataModel)
 
@@ -77,7 +83,7 @@ export const ReactUserForm: FC = () => {
       addMessageToContext({ content: 'User created', type: 'success' })
     }
 
-    setIsLoading(false)
+    setLoadingSystemState(false)
   }
 
   const handleInvalidation = () =>
@@ -99,10 +105,10 @@ export const ReactUserForm: FC = () => {
 
         <Form.Item>
           <Flex gap="medium">
-            <Button disabled={isLoading} htmlType="submit">
+            <Button disabled={isSystemLoading} htmlType="submit">
               Create
             </Button>
-            <Button disabled={isLoading} htmlType="button" type="text">
+            <Button disabled={isSystemLoading} htmlType="button" type="text">
               <a href={PAGE_URL.LOGIN}>Log In</a>
             </Button>
           </Flex>
