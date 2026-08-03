@@ -93,4 +93,23 @@ describe('ReactForm', () => {
     expect(onSubmit).not.toHaveBeenCalled()
     expect(onSubmitFailed).toHaveBeenCalled()
   })
+
+  it('calls onValuesChange with the updated values when a field changes', async () => {
+    const onValuesChange = vi.fn()
+    const user = userEvent.setup()
+    render(<Wrapper onValuesChange={onValuesChange} />)
+
+    await user.type(screen.getByLabelText('Username or Email'), 'n')
+
+    expect(onValuesChange).toHaveBeenCalledWith({ name: 'n' })
+  })
+
+  it('does not throw when a field changes and onValuesChange is omitted', async () => {
+    const user = userEvent.setup()
+    render(<Wrapper />)
+
+    await user.type(screen.getByLabelText('Username or Email'), 'n')
+
+    expect(screen.getByLabelText('Username or Email')).toHaveValue('n')
+  })
 })

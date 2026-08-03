@@ -77,4 +77,17 @@ describe('ReactPasswordForm', () => {
     )
     expect(fetch).not.toHaveBeenCalled()
   })
+
+  it('flags a mismatch between the new and repeated passwords and never calls fetch', async () => {
+    const user = userEvent.setup()
+    render(<ReactPasswordForm />)
+
+    await user.type(screen.getByLabelText('Old password'), 'currentPassword123')
+    await user.type(screen.getByLabelText('New password'), 'brandNewPassword123')
+    await user.type(screen.getByLabelText('Repeat new password'), 'somethingElse123')
+    await user.click(screen.getByRole('button', { name: 'Update' }))
+
+    expect(await screen.findAllByText('Both passwords do not match')).toHaveLength(1)
+    expect(fetch).not.toHaveBeenCalled()
+  })
 })
