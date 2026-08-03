@@ -1,7 +1,7 @@
 import type { MoviesModel } from '@models'
 import type { FormInputList } from '@ts/types'
 
-import ReactFormInput from '@components/shared/ReactFormInput'
+import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
@@ -12,11 +12,12 @@ import {
   updateSelectedMovieOnContext
 } from '@store/movies'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
-import { Button, Form, Typography } from 'antd'
+import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
 
-const formInputs: FormInputList<MoviesModel> = [
+const movieFormTitle = 'Create a new movie'
+const movieFormInputs: FormInputList<MoviesModel> = [
   {
     label: 'Name',
     name: 'name',
@@ -51,21 +52,13 @@ export const ReactMovieForm: FC = () => {
   const isSystemLoading = useStore($contextLoading)
   const [movieForm] = Form.useForm<MoviesModel>()
 
-  const submitButtonText = useMemo(
-    () => (selectedMovieInContext ? 'Update' : 'Create'),
-    [selectedMovieInContext]
-  )
-  const memoizedInputs = useMemo(
-    () =>
-      formInputs.map((_inputConfig, _inputIndex) => (
-        <ReactFormInput
-          isDisabled={isSystemLoading}
-          key={`movie-form-${_inputIndex}`}
-          {..._inputConfig}
-        />
-      )),
-    [isSystemLoading]
-  )
+  const movieFormButtons = useMemo(() => {
+    const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
+
+    return [
+      { htmlType: 'submit', title: submitButtonText, type: 'primary' }
+    ] as ReactFormButtonProps[]
+  }, [selectedMovieInContext])
 
   $contextSelectedMovie.listen(_movie => {
     if (_movie) {
@@ -130,33 +123,14 @@ export const ReactMovieForm: FC = () => {
     addMessageToContext({ content: 'Check the form messages', type: 'error' })
 
   return (
-    <section>
-      <Typography.Title level={2} style={{ textAlign: 'center' }}>
-        Create a new movie
-      </Typography.Title>
-
-      <Form
-        form={movieForm}
-        initialValues={{
-          countryMade: '',
-          description: '',
-          id: '',
-          name: '',
-          releaseYear: 2026
-        }}
-        layout="horizontal"
-        onFinish={handleSubmit}
-        onFinishFailed={handleInvalidation}
-        style={{ padding: '0 5%' }}
-      >
-        {memoizedInputs}
-
-        <Form.Item>
-          <Button disabled={isSystemLoading} htmlType="submit">
-            {submitButtonText}
-          </Button>
-        </Form.Item>
-      </Form>
-    </section>
+    <ReactForm
+      formButtons={movieFormButtons}
+      formInputs={movieFormInputs}
+      formInstance={movieForm}
+      formTitle={movieFormTitle}
+      isLoading={isSystemLoading}
+      onSubmit={handleSubmit}
+      onSubmitFailed={handleInvalidation}
+    />
   )
 }

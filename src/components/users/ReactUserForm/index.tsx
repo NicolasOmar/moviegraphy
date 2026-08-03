@@ -1,17 +1,18 @@
 import type { UserFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
-import ReactFormInput from '@components/shared/ReactFormInput'
+import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
-import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL, USER_ERROR_MESSAGES } from '@ts/constants'
+import { API_METHODS, API_URL, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { passwordsAreEqual } from '@ts/misc'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
-import { Button, Flex, Form, Typography } from 'antd'
-import { type FC, useMemo } from 'react'
+import { Form } from 'antd'
+import { type FC } from 'react'
 
-const formInputs: FormInputList<UserFormModel> = [
+const userFormTitle = 'Welcome to the User section'
+const userFormInputs: FormInputList<UserFormModel> = [
   {
     label: 'Username',
     name: 'name',
@@ -78,21 +79,14 @@ const formInputs: FormInputList<UserFormModel> = [
     type: 'password'
   }
 ]
+const userFormButtons: ReactFormButtonProps[] = [
+  { htmlType: 'submit', title: 'Create', type: 'primary' },
+  { children: <a href="/login">Log In</a>, htmlType: 'button', type: 'text' }
+]
 
 export const ReactUserForm: FC = () => {
   const [userForm] = Form.useForm<UserFormModel>()
   const isSystemLoading = useStore($contextLoading)
-  const memoizedInputs = useMemo(
-    () =>
-      formInputs.map((_inputConfig, _inputIndex) => (
-        <ReactFormInput
-          isDisabled={isSystemLoading}
-          key={`user-form-${_inputIndex}`}
-          {..._inputConfig}
-        />
-      )),
-    [isSystemLoading]
-  )
 
   const handleSubmit = async (_userFormDataModel: UserFormModel) => {
     setLoadingSystemState(true)
@@ -119,30 +113,14 @@ export const ReactUserForm: FC = () => {
     addMessageToContext({ content: 'Check the form messages', type: 'error' })
 
   return (
-    <>
-      <Typography.Title style={{ textAlign: 'center' }}>
-        Welcome to the User section
-      </Typography.Title>
-
-      <Form
-        form={userForm}
-        onFinish={handleSubmit}
-        onFinishFailed={handleInvalidation}
-        style={{ padding: '0 5%' }}
-      >
-        {memoizedInputs}
-
-        <Form.Item>
-          <Flex gap="medium">
-            <Button disabled={isSystemLoading} htmlType="submit">
-              Create
-            </Button>
-            <Button disabled={isSystemLoading} htmlType="button" type="text">
-              <a href={PAGE_URL.LOGIN}>Log In</a>
-            </Button>
-          </Flex>
-        </Form.Item>
-      </Form>
-    </>
+    <ReactForm
+      formButtons={userFormButtons}
+      formInputs={userFormInputs}
+      formInstance={userForm}
+      formTitle={userFormTitle}
+      isLoading={isSystemLoading}
+      onSubmit={handleSubmit}
+      onSubmitFailed={handleInvalidation}
+    />
   )
 }

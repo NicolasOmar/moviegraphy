@@ -6,8 +6,9 @@ import React, { useMemo } from 'react'
 import ReactFormInput from '../ReactFormInput'
 
 export interface ReactFormButtonProps {
+  children?: React.ReactNode
   htmlType: ButtonProps['htmlType']
-  title: string
+  title?: string
   type: ButtonProps['type']
 }
 
@@ -18,7 +19,7 @@ export interface ReactFormProps<T> {
   formTitle?: string
   isLoading?: boolean
   onSubmit: (submittedFormData: T) => void
-  onSubmitFailed: () => void
+  onSubmitFailed?: () => void
   onValuesChange?: (updatedValues: T) => void
   styles?: React.CSSProperties
 }
@@ -45,16 +46,22 @@ export const ReactForm = <T,>({
     () => (
       <Form.Item>
         <Flex gap="medium">
-          {formButtons.map((_buttonConfig, _buttonIndex) => (
-            <Button
-              disabled={isLoading}
-              htmlType={_buttonConfig.htmlType}
-              key={`button-form-${_buttonIndex}`}
-              type={_buttonConfig.type}
-            >
-              <a href="/users">{_buttonConfig.title}</a>
-            </Button>
-          ))}
+          {formButtons.map((_buttonConfig, _buttonIndex) => {
+            const buttonChild = React.isValidElement(_buttonConfig.children)
+              ? _buttonConfig.children
+              : _buttonConfig.title
+
+            return (
+              <Button
+                disabled={isLoading}
+                htmlType={_buttonConfig.htmlType}
+                key={`button-form-${_buttonIndex}`}
+                type={_buttonConfig.type}
+              >
+                {buttonChild}
+              </Button>
+            )
+          })}
         </Flex>
       </Form.Item>
     ),

@@ -1,14 +1,17 @@
 import type { UserLoginModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
-import ReactFormInput from '@components/shared/ReactFormInput'
+import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { useStore } from '@nanostores/react'
+import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
 import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
-import { Button, Flex, Form, Typography } from 'antd'
-import { type FC, useMemo, useState } from 'react'
+import { Form } from 'antd'
+import { type FC } from 'react'
 
-const userLoginInputs: FormInputList<UserLoginModel> = [
+const loginFormTitle = 'Welcome to Moviegraphy'
+const loginFormInputs: FormInputList<UserLoginModel> = [
   {
     label: 'Username or Email',
     name: 'name',
@@ -25,20 +28,17 @@ const userLoginInputs: FormInputList<UserLoginModel> = [
     type: 'password'
   }
 ]
+const loginFormButtons: ReactFormButtonProps[] = [
+  { htmlType: 'submit', title: 'Log In', type: 'primary' },
+  { children: <a href={PAGE_URL.USERS_CREATE}>Sign Up</a>, htmlType: 'submit', type: 'text' }
+]
 
 export const ReactLoginForm: FC = () => {
   const [loginForm] = Form.useForm<UserLoginModel>()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const memoizedInputs = useMemo(
-    () =>
-      userLoginInputs.map((_inputConfig, _inputIndex) => (
-        <ReactFormInput isDisabled={isLoading} key={`user-form-${_inputIndex}`} {..._inputConfig} />
-      )),
-    [isLoading]
-  )
+  const isSystemLoading = useStore($contextLoading)
 
   const handleSubmit = async (_loginFormData: UserLoginModel) => {
-    setIsLoading(true)
+    setLoadingSystemState(true)
 
     const userToLogin = parseModelToFormData(_loginFormData)
 
@@ -56,27 +56,17 @@ export const ReactLoginForm: FC = () => {
       window.location.href = PAGE_URL.USERS
     }
 
-    setIsLoading(false)
+    setLoadingSystemState(false)
   }
 
   return (
-    <section>
-      <Typography.Title>Welcome to Moviegraphy</Typography.Title>
-
-      <Form form={loginForm} onFinish={handleSubmit}>
-        {memoizedInputs}
-
-        <Form.Item>
-          <Flex gap="medium">
-            <Button disabled={isLoading} htmlType="submit" type="primary">
-              Log In
-            </Button>
-            <Button disabled={isLoading} htmlType="button" type="text">
-              <a href={PAGE_URL.USERS_CREATE}>Sign Up</a>
-            </Button>
-          </Flex>
-        </Form.Item>
-      </Form>
-    </section>
+    <ReactForm
+      formButtons={loginFormButtons}
+      formInputs={loginFormInputs}
+      formInstance={loginForm}
+      formTitle={loginFormTitle}
+      isLoading={isSystemLoading}
+      onSubmit={handleSubmit}
+    />
   )
 }
