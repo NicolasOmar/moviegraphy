@@ -19,6 +19,7 @@ export interface ReactFormProps<T> {
   isLoading?: boolean
   onSubmit: (submittedFormData: T) => void
   onSubmitFailed: () => void
+  onValuesChange?: (updatedValues: T) => void
   styles?: React.CSSProperties
 }
 
@@ -30,6 +31,7 @@ export const ReactForm = <T,>({
   isLoading = false,
   onSubmit,
   onSubmitFailed,
+  onValuesChange,
   styles
 }: ReactFormProps<T>): React.ReactElement => {
   const memoizedInputs = useMemo(
@@ -39,6 +41,25 @@ export const ReactForm = <T,>({
       )),
     [formInputs, isLoading]
   )
+  const memoizedButtons = useMemo(
+    () => (
+      <Form.Item>
+        <Flex gap="medium">
+          {formButtons.map((_buttonConfig, _buttonIndex) => (
+            <Button
+              disabled={isLoading}
+              htmlType={_buttonConfig.htmlType}
+              key={`button-form-${_buttonIndex}`}
+              type={_buttonConfig.type}
+            >
+              <a href="/users">{_buttonConfig.title}</a>
+            </Button>
+          ))}
+        </Flex>
+      </Form.Item>
+    ),
+    [formButtons, isLoading]
+  )
 
   return (
     <section>
@@ -46,23 +67,18 @@ export const ReactForm = <T,>({
         <Typography.Title style={{ textAlign: 'center' }}>{formTitle}</Typography.Title>
       ) : null}
 
-      <Form form={formInstance} onFinish={onSubmit} onFinishFailed={onSubmitFailed} style={styles}>
+      <Form
+        form={formInstance}
+        onFinish={onSubmit}
+        onFinishFailed={onSubmitFailed}
+        onValuesChange={(_, _updatedValues) =>
+          onValuesChange ? onValuesChange(_updatedValues) : null
+        }
+        style={styles}
+      >
         {memoizedInputs}
 
-        <Form.Item>
-          <Flex gap="medium">
-            {formButtons.map((_buttonConfig, _buttonIndex) => (
-              <Button
-                disabled={isLoading}
-                htmlType={_buttonConfig.htmlType}
-                key={`button-form-${_buttonIndex}`}
-                type={_buttonConfig.type}
-              >
-                <a href="/users">{_buttonConfig.title}</a>
-              </Button>
-            ))}
-          </Flex>
-        </Form.Item>
+        {memoizedButtons}
       </Form>
     </section>
   )

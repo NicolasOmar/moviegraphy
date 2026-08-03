@@ -133,7 +133,7 @@ describe('updatePassword', () => {
     mockedPrisma.users.findUnique.mockResolvedValue({ ...user, password: hashedOldPassword })
 
     await expect(updatePassword(buildPasswords({ oldPassword: 'wrong-password' }))).rejects.toEqual(
-      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
     )
     expect(mockedPrisma.users.update).not.toHaveBeenCalled()
   })

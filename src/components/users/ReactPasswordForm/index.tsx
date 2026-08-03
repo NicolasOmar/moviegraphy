@@ -2,11 +2,12 @@ import type { PasswordChangeModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 import type { FC } from 'react'
 
-import { ReactForm } from '@components/shared/ReactForm'
+import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
-import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
+import { API_METHODS, API_URL, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { passwordsAreEqual } from '@ts/misc'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
@@ -28,7 +29,21 @@ const formInputs: FormInputList<PasswordChangeModel> = [
     rules: [
       { message: 'The password is required', required: true },
       { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'The password must be 25 characters as much' }
+      { max: 25, message: 'The password must be 25 characters as much' },
+      formInstace => {
+        return {
+          validator: (_, newPassword) => {
+            const repeatNewValue = formInstace.getFieldValue('repeatNew')
+            const passwordMatch = passwordsAreEqual(repeatNewValue, newPassword)
+
+            if (passwordMatch) {
+              return Promise.resolve()
+            }
+
+            return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
+          }
+        }
+      }
     ],
     type: 'password'
   },
@@ -38,10 +53,27 @@ const formInputs: FormInputList<PasswordChangeModel> = [
     rules: [
       { message: 'The password is required', required: true },
       { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'The password must be 25 characters as much' }
+      { max: 25, message: 'The password must be 25 characters as much' },
+      formInstace => {
+        return {
+          validator: (_, repeatedPassword) => {
+            const firstNewPassword = formInstace.getFieldValue('new')
+            const passwordMatch = passwordsAreEqual(firstNewPassword, repeatedPassword)
+
+            if (passwordMatch) {
+              return Promise.resolve()
+            }
+
+            return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
+          }
+        }
+      }
     ],
     type: 'password'
   }
+]
+const formButtons: ReactFormButtonProps[] = [
+  { htmlType: 'submit', title: 'Update', type: 'primary' }
 ]
 
 export const ReactPasswordForm: FC = () => {
@@ -75,7 +107,7 @@ export const ReactPasswordForm: FC = () => {
 
   return (
     <ReactForm
-      formButtons={[{ htmlType: 'submit', title: 'Update', type: 'primary' }]}
+      formButtons={formButtons}
       formInputs={formInputs}
       formInstance={passwordForm}
       formTitle={title}

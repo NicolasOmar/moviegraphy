@@ -1,7 +1,13 @@
 import type { UserLoginModel, UserWithToken } from '@ts/entities'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { compareHashed, createToken, hashToken } from '@ts/helpers'
+import {
+  compareHashed,
+  createToken,
+  getCurrentISODate,
+  getISODateWithDaysOffset,
+  hashToken
+} from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
 import { type CreateOrUpdateOne, type DeleteOne, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
@@ -12,7 +18,7 @@ export const isSessionValid = async (rawToken: string): Promise<boolean> => {
   try {
     const hashedToken = hashToken(rawToken)
     const refreshToken = await prismaInstance.sessions.findFirst({
-      where: { expiresAt: { gt: new Date() }, token: hashedToken }
+      where: { expiresAt: { gt: getCurrentISODate() }, token: hashedToken }
     })
 
     return Boolean(refreshToken)
@@ -49,7 +55,7 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
 
     await prismaInstance.sessions.create({
       data: {
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        expiresAt: getISODateWithDaysOffset(7),
         id: v6(),
         token: hashedToken,
         userId: user.id

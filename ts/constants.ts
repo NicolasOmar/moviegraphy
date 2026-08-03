@@ -40,7 +40,7 @@ export enum USER_ERROR_MESSAGES {
   DUPLICATE_EMAIL = 'A user with this email already exists',
   INVALID_CREDENTIALS = 'Name or password is incorrect',
   MISSING_FIELDS = 'Name, email and password are required',
-  PASSWORD_MISMATCH = 'Password and repeat password do not match',
+  PASSWORD_MISMATCH = 'Both passwords do not match',
   UNEXPECTED = 'Something went wrong while creating the user'
 }
 

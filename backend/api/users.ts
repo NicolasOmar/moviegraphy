@@ -3,7 +3,13 @@ import type { UserWithToken } from '@ts/entities'
 import type { CreateOrUpdateOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { compareHashed, createToken, hashString, hashToken } from '@ts/helpers'
+import {
+  compareHashed,
+  createToken,
+  getISODateWithDaysOffset,
+  hashString,
+  hashToken
+} from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
 import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
@@ -25,7 +31,7 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async ne
 
     await prismaInstance.sessions.create({
       data: {
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        expiresAt: getISODateWithDaysOffset(7),
         id: v6(),
         token: hashedToken,
         userId: createdUser.id
@@ -76,7 +82,7 @@ export const updatePassword: CreateOrUpdateOne<
     const areSamePasswords = await compareHashed(passwords.oldPassword, loggedUser.password)
 
     if (!areSamePasswords) {
-      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
     }
 
     const hashedNewPassword = await hashString(passwords.newPassword)
