@@ -84,4 +84,19 @@ describe('ReactUserForm', () => {
     )
     expect(fetch).not.toHaveBeenCalled()
   })
+
+  it('flags a mismatch between the password and repeat password fields and never calls fetch', async () => {
+    const [user1] = userMocks
+    const user = userEvent.setup()
+    render(<ReactUserForm />)
+
+    await user.type(screen.getByLabelText('Username'), user1.name)
+    await user.type(screen.getByLabelText('Email'), user1.email)
+    await user.type(screen.getByLabelText('Password'), user1.password)
+    await user.type(screen.getByLabelText('Repeat Password'), 'somethingElse123')
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    expect(await screen.findAllByText('Both passwords do not match')).toHaveLength(1)
+    expect(fetch).not.toHaveBeenCalled()
+  })
 })

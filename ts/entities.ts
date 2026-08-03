@@ -2,6 +2,12 @@ import type { UsersModel } from '@models'
 
 import * as z from 'zod'
 
+export interface PasswordChangeModel {
+  new: string
+  old: string
+  repeatNew: string
+}
+
 // ---------- USERS / INTERFACES ----------
 export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string
@@ -24,6 +30,12 @@ export const UserCreateSchema = z.strictObject({
 export const UserUpdateSchema = z.strictObject({
   ...UserCreateSchema.shape,
   id: z.uuid()
+})
+
+export const PasswordChangeSchema = z.strictObject({
+  new: z.string(),
+  old: z.string(),
+  repeatNew: z.string()
 })
 
 // ---------- MOVIES / SCHEMAS ----------

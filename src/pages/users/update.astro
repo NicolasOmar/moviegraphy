@@ -1,0 +1,17 @@
+---
+import { ReactPasswordForm } from '@components/users/ReactPasswordForm'
+import NavigationLayout from '@layouts/NavigationLayout.astro'
+---
+
+<NavigationLayout>
+  <section class="testing">
+    <ReactPasswordForm client:visible />
+  </section>
+</NavigationLayout>
+
+<style>
+  section.testing {
+    display: grid;
+    margin: 0 2.5%;
+  }
+</style>

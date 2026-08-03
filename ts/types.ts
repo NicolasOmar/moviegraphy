@@ -7,7 +7,7 @@ export type DeleteOne = (_identifier: string) => Promise<boolean>
 
 export type FormInput<T> = {
   label: string
-  name: keyof T
+  name: Extract<keyof T, string>
   rules?: Rule[]
   type?: InputType
 }

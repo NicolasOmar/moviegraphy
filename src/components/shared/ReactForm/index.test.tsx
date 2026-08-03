@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import { Form } from 'antd'
 import { describe, expect, it, vi } from 'vitest'
 
-import { ReactForm, type ReactFormButton, type ReactFormProps } from './index'
+import { ReactForm, type ReactFormButtonProps, type ReactFormProps } from './index'
 
 const formInputs: FormInputList<UserLoginModel> = [
   {
@@ -23,9 +23,11 @@ const formInputs: FormInputList<UserLoginModel> = [
   }
 ]
 
-const formButtons: ReactFormButton[] = [{ htmlType: 'submit', title: 'Log In', type: 'primary' }]
+const formButtons: ReactFormButtonProps[] = [
+  { htmlType: 'submit', title: 'Log In', type: 'primary' }
+]
 
-const Wrapper: FC<Partial<ReactFormProps>> = props => {
+const Wrapper: FC<Partial<ReactFormProps<UserLoginModel>>> = props => {
   const [formInstance] = Form.useForm<UserLoginModel>()
 
   return (
@@ -90,5 +92,24 @@ describe('ReactForm', () => {
 
     expect(onSubmit).not.toHaveBeenCalled()
     expect(onSubmitFailed).toHaveBeenCalled()
+  })
+
+  it('calls onValuesChange with the updated values when a field changes', async () => {
+    const onValuesChange = vi.fn()
+    const user = userEvent.setup()
+    render(<Wrapper onValuesChange={onValuesChange} />)
+
+    await user.type(screen.getByLabelText('Username or Email'), 'n')
+
+    expect(onValuesChange).toHaveBeenCalledWith({ name: 'n' })
+  })
+
+  it('does not throw when a field changes and onValuesChange is omitted', async () => {
+    const user = userEvent.setup()
+    render(<Wrapper />)
+
+    await user.type(screen.getByLabelText('Username or Email'), 'n')
+
+    expect(screen.getByLabelText('Username or Email')).toHaveValue('n')
   })
 })

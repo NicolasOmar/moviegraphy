@@ -2,11 +2,16 @@ import type { UsersModel } from '@models'
 import type { UserWithToken } from '@ts/entities'
 import type { CreateOrUpdateOne } from '@ts/types'
 
-import { AUTH_CONSTANTS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { createToken, hashString } from '@ts/helpers'
+import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import {
+  compareHashed,
+  createToken,
+  getISODateWithDaysOffset,
+  hashString,
+  hashToken
+} from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
 import { HttpError } from '@ts/types'
-import bcrypt from 'bcrypt'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
@@ -14,7 +19,7 @@ import { Prisma } from '../prisma/generated/client'
 
 export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async newUser => {
   try {
-    const hashedPassword = await bcrypt.hash(newUser.password, AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS)
+    const hashedPassword = await hashString(newUser.password)
     const createdUser = await prismaInstance.users.create({
       data: {
         ...newUser,
@@ -22,11 +27,11 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async ne
       }
     })
     const rawToken = createToken(createdUser.id)
-    const hashedToken = hashString(rawToken)
+    const hashedToken = hashToken(rawToken)
 
     await prismaInstance.sessions.create({
       data: {
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        expiresAt: getISODateWithDaysOffset(7),
         id: v6(),
         token: hashedToken,
         userId: createdUser.id
@@ -48,6 +53,54 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async ne
     }
 
     const errorMessage = handleErrorMessage(createUserError)
+
+    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  }
+}
+
+export const updatePassword: CreateOrUpdateOne<
+  { newPassword: string; oldPassword: string; sessionToken: string },
+  boolean
+> = async passwords => {
+  const hashedToken = hashToken(passwords.sessionToken)
+
+  try {
+    const refreshToken = await prismaInstance.sessions.findFirst({
+      where: { token: hashedToken }
+    })
+
+    if (!refreshToken) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    }
+
+    const loggedUser = await prismaInstance.users.findUnique({ where: { id: refreshToken.userId } })
+
+    if (!loggedUser) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    }
+
+    const areSamePasswords = await compareHashed(passwords.oldPassword, loggedUser.password)
+
+    if (!areSamePasswords) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
+    }
+
+    const hashedNewPassword = await hashString(passwords.newPassword)
+
+    await prismaInstance.users.update({
+      data: { password: hashedNewPassword },
+      where: { id: loggedUser.id }
+    })
+
+    return true
+  } catch (updatePasswordError) {
+    console.error('[POST /api/users]', { error: updatePasswordError })
+
+    if (updatePasswordError instanceof HttpError) {
+      throw updatePasswordError
+    }
+
+    const errorMessage = handleErrorMessage(updatePasswordError)
 
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }
