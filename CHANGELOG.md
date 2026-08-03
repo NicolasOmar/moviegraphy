@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.3.3...v1.4.0) (2026-08-03)
+
+
+### Bug Fixes
+
+* added password validation logic on user creation and password change forms. iso dates added ([85173cb](https://github.com/NicolasOmar/moviegraphy/commit/85173cb784778ce8e7526624018fbcb649a84f91))
+* moving forms to instances of reactform ([555b4ec](https://github.com/NicolasOmar/moviegraphy/commit/555b4ec858f00de5c1153ee1d972b53a1bbda3ad))
+* navigation layout refactored for better visuals and account dropdown. removing old workflows ([73bdb8d](https://github.com/NicolasOmar/moviegraphy/commit/73bdb8d6f244a023627217b7c215b0d30931063b))
+
+
+### Features
+
+* first implementation end to end of password update form ([3394be1](https://github.com/NicolasOmar/moviegraphy/commit/3394be1aef193626b6adb2c77de4be5308119cd7))
+* first iteration of password change form using shared reactform ([8de68fe](https://github.com/NicolasOmar/moviegraphy/commit/8de68fe7464256af57ded8b1871d7fbe0559d570))
+
 ## [1.3.3](https://github.com/NicolasOmar/moviegraphy/compare/v1.3.2...v1.3.3) (2026-07-30)
 
 
