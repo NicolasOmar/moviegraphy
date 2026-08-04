@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro'
 
 import { createUser } from '@api/users'
-import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -22,8 +22,9 @@ beforeEach(() => {
 
 const buildContext = (formData: FormData): APIContext =>
   ({
+    cookies: { delete: vi.fn(), get: vi.fn(), set: vi.fn() },
     request: new Request('http://localhost/api/users', { body: formData, method: 'POST' })
-  }) as APIContext
+  }) as unknown as APIContext
 
 const buildFormData = (overrides: Record<string, string> = {}) => {
   const [user] = userMocks
@@ -39,11 +40,13 @@ const buildFormData = (overrides: Record<string, string> = {}) => {
 }
 
 describe('POST', () => {
-  it('creates a user, generates an id, and returns 200 with the created record', async () => {
+  it('creates a user, generates an id, sets a refreshToken cookie, and returns 200', async () => {
     const [user] = userMocks
-    mockedCreateUser.mockResolvedValue(user)
+    const createdUser = { ...user, token: 'raw-token' }
+    mockedCreateUser.mockResolvedValue(createdUser)
+    const context = buildContext(buildFormData())
 
-    const response = await POST(buildContext(buildFormData()))
+    const response = await POST(context)
 
     expect(mockedCreateUser).toHaveBeenCalledWith({
       email: user.email,
@@ -52,8 +55,13 @@ describe('POST', () => {
       password: user.password,
       username: user.username
     })
+    expect(context.cookies.set).toHaveBeenCalledWith(
+      SESSION_COOKIE_NAME,
+      'raw-token',
+      expect.objectContaining({ httpOnly: true, path: '/' })
+    )
     expect(response.status).toBe(HTTP_STATUS.OK)
-    expect(await response.json()).toEqual({ message: user })
+    expect(await response.json()).toEqual({ message: createdUser })
   })
 
   it('returns 400 without calling createUser when a required field is missing', async () => {

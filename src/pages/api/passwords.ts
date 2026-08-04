@@ -8,6 +8,7 @@ import { HttpError } from '@ts/types'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
   const loggedToken = cookies.get(SESSION_COOKIE_NAME)
+
   if (!loggedToken) {
     return parseHttpErrorToResponse(new HttpError(HTTP_STATUS.BAD_REQUEST, 'No token provided'))
   }
@@ -39,7 +40,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     })) as boolean
 
     return parseMessageToResponse(updatedPassword, HTTP_STATUS.OK)
-  } catch (apiUpdateError) {
-    return parseHttpErrorToResponse(apiUpdateError)
+  } catch (apiError) {
+    return parseHttpErrorToResponse(apiError)
   }
 }

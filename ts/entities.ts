@@ -22,9 +22,13 @@ export interface UserWithToken extends Pick<UsersModel, 'email'> {
 }
 
 // ---------- USERS / SCHEMAS ----------
-export const UserCreateSchema = z.strictObject({
+export const UserBaseSchema = z.strictObject({
   email: z.email().max(50),
-  name: z.string().max(25).optional(),
+  name: z.string().max(25).optional()
+})
+
+export const UserCreateSchema = z.strictObject({
+  ...UserBaseSchema.shape,
   password: z.string().min(4).max(25),
   repeatPassword: z.string().min(4).max(25),
   username: z.string().max(50)

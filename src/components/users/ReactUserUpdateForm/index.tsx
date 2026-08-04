@@ -4,8 +4,10 @@ import type { FC } from 'react'
 
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading } from '@store/loading'
+import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
+import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
+import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const updateFormTitle = 'Update user data'
@@ -32,7 +34,25 @@ export const ReactUserUpdateForm: FC = () => {
   const [userUpdateForm] = Form.useForm<UserUpdateFormModel>()
   const isSystemLoading = useStore($contextLoading)
 
-  const handleSubmit = (_formData: UserUpdateFormModel) => console.warn(_formData)
+  const handleSubmit = async (_userUpdateFormData: UserUpdateFormModel) => {
+    setLoadingSystemState(true)
+
+    const userToUpdate = parseModelToFormData(_userUpdateFormData)
+
+    const userUpdateResponse = await fetch(API_URL.USERS, {
+      body: userToUpdate,
+      method: API_METHODS.PATCH
+    })
+
+    if (userUpdateResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(userUpdateResponse)
+      addMessageToContext({ content: errorMessage, type: 'error' })
+    } else {
+      addMessageToContext({ content: 'User correctly updated ', type: 'success' })
+    }
+
+    setLoadingSystemState(false)
+  }
 
   const handleInvalidation = () =>
     addMessageToContext({ content: 'Check the form messages', type: 'error' })
