@@ -1,11 +1,13 @@
 import { $contextMessageList } from '@store/messages'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { API_URL } from '@ts/constants'
+import { API_URL, PAGE_URL } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReactUserForm } from './index'
+
+const originalLocation = window.location
 
 beforeEach(() => {
   $contextMessageList.set(null)
@@ -15,22 +17,32 @@ beforeEach(() => {
       .fn()
       .mockResolvedValue(new Response(JSON.stringify({ message: 'Success!' }), { status: 200 }))
   )
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    value: { ...originalLocation, href: '' },
+    writable: true
+  })
 })
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    value: originalLocation,
+    writable: true
+  })
 })
 
 const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
   const [user1] = userMocks
-  await user.type(screen.getByLabelText('Username'), user1.name)
+  await user.type(screen.getByLabelText('Username'), user1.username)
   await user.type(screen.getByLabelText('Email'), user1.email)
   await user.type(screen.getByLabelText('Password'), user1.password)
   await user.type(screen.getByLabelText('Repeat Password'), user1.password)
 }
 
 describe('ReactUserForm', () => {
-  it('creates a user: submits a POST request and resets the form on success', async () => {
+  it('creates a user: submits a POST request and redirects to the home page on success', async () => {
     const user = userEvent.setup()
     render(<ReactUserForm />)
 
@@ -43,10 +55,8 @@ describe('ReactUserForm', () => {
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
-    await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({ content: 'User created', type: 'success' })
-    )
-    expect(screen.getByLabelText('Username')).toHaveValue('')
+    await waitFor(() => expect(window.location.href).toBe(PAGE_URL.HOME))
+    expect($contextMessageList.get()).toBeNull()
   })
 
   it('shows an error message and keeps the form filled when creation fails', async () => {
@@ -67,7 +77,7 @@ describe('ReactUserForm', () => {
         type: 'error'
       })
     )
-    expect(screen.getByLabelText('Username')).toHaveValue(userMocks[0].name)
+    expect(screen.getByLabelText('Username')).toHaveValue(userMocks[0].username)
   })
 
   it('shows a generic invalidation message and never calls fetch when required fields are empty', async () => {
@@ -90,7 +100,7 @@ describe('ReactUserForm', () => {
     const user = userEvent.setup()
     render(<ReactUserForm />)
 
-    await user.type(screen.getByLabelText('Username'), user1.name)
+    await user.type(screen.getByLabelText('Username'), user1.username)
     await user.type(screen.getByLabelText('Email'), user1.email)
     await user.type(screen.getByLabelText('Password'), user1.password)
     await user.type(screen.getByLabelText('Repeat Password'), 'somethingElse123')

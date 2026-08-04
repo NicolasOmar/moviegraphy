@@ -1,6 +1,6 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { compareHashed, hashString } from '@ts/helpers'
 import { sessionMocks, userMocks } from '@ts/mocks'
+import { compareHashed, hashString } from '@ts/tokens'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'

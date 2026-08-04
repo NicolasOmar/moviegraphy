@@ -3,14 +3,9 @@ import type { UserWithToken } from '@ts/entities'
 import type { CreateOrUpdateOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import {
-  compareHashed,
-  createToken,
-  getISODateWithDaysOffset,
-  hashString,
-  hashToken
-} from '@ts/helpers'
+import { getISODateWithDaysOffset } from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
+import { compareHashed, createToken, hashString, hashToken } from '@ts/tokens'
 import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 

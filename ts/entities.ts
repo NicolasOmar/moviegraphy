@@ -13,7 +13,9 @@ export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string
 }
 
-export type UserLoginModel = Pick<UsersModel, 'name' | 'password'>
+export type UserLoginModel = Pick<UsersModel, 'password' | 'username'>
+
+export type UserUpdateFormModel = Omit<UsersModel, 'email' | 'id' | 'password'>
 
 export interface UserWithToken extends Pick<UsersModel, 'email'> {
   token: string
@@ -22,9 +24,10 @@ export interface UserWithToken extends Pick<UsersModel, 'email'> {
 // ---------- USERS / SCHEMAS ----------
 export const UserCreateSchema = z.strictObject({
   email: z.email().max(50),
-  name: z.string().max(25),
+  name: z.string().max(25).optional(),
   password: z.string().min(4).max(25),
-  repeatPassword: z.string().min(4).max(25)
+  repeatPassword: z.string().min(4).max(25),
+  username: z.string().max(50)
 })
 
 export const UserUpdateSchema = z.strictObject({

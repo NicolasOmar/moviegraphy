@@ -8,9 +8,9 @@ import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {
   const newUserModel = await parseRequestToModel<UserFormModel>(request)
-  const { email, name, password, repeatPassword } = newUserModel
+  const { email, name, password, repeatPassword, username } = newUserModel
 
-  if (!name || !email || !password || !repeatPassword) {
+  if (!username || !email || !password || !repeatPassword) {
     return parseMessageToResponse(USER_ERROR_MESSAGES.MISSING_FIELDS, HTTP_STATUS.BAD_REQUEST)
   }
 
@@ -26,7 +26,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const userCreated = await createUser({ email, id: v6(), name, password })
+    const userCreated = await createUser({ email, id: v6(), name, password, username })
 
     return parseMessageToResponse(userCreated, HTTP_STATUS.OK)
   } catch (error) {

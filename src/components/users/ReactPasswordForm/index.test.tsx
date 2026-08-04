@@ -47,7 +47,9 @@ describe('ReactPasswordForm', () => {
   it('shows an error message and keeps the form filled when the update fails', async () => {
     const user = userEvent.setup()
     vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ message: 'Name or password is incorrect' }), { status: 400 })
+      new Response(JSON.stringify({ message: 'Username or password is incorrect' }), {
+        status: 400
+      })
     )
     render(<ReactPasswordForm />)
 
@@ -56,7 +58,7 @@ describe('ReactPasswordForm', () => {
 
     await waitFor(() =>
       expect($contextMessageList.get()).toEqual({
-        content: 'Name or password is incorrect',
+        content: 'Username or password is incorrect',
         type: 'error'
       })
     )

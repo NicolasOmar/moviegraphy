@@ -12,7 +12,7 @@ import { ReactForm, type ReactFormButtonProps, type ReactFormProps } from './ind
 const formInputs: FormInputList<UserLoginModel> = [
   {
     label: 'Username or Email',
-    name: 'name',
+    name: 'username',
     rules: [{ message: 'Username or Email is required', required: true }]
   },
   {
@@ -79,7 +79,7 @@ describe('ReactForm', () => {
     await user.type(screen.getByLabelText('Password'), 'wakeUpNeo123')
     await user.click(screen.getByRole('button', { name: 'Log In' }))
 
-    expect(onSubmit).toHaveBeenCalledWith({ name: 'neo', password: 'wakeUpNeo123' })
+    expect(onSubmit).toHaveBeenCalledWith({ password: 'wakeUpNeo123', username: 'neo' })
   })
 
   it('calls onSubmitFailed instead of onSubmit when a required field is left empty', async () => {
@@ -101,7 +101,7 @@ describe('ReactForm', () => {
 
     await user.type(screen.getByLabelText('Username or Email'), 'n')
 
-    expect(onValuesChange).toHaveBeenCalledWith({ name: 'n' })
+    expect(onValuesChange).toHaveBeenCalledWith({ username: 'n' })
   })
 
   it('does not throw when a field changes and onValuesChange is omitted', async () => {

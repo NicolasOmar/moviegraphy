@@ -29,7 +29,8 @@ const buildFormData = (overrides: Record<string, string> = {}) => {
   const [user] = userMocks
   const formData = new FormData()
 
-  formData.append('name', overrides.name ?? user.name)
+  formData.append('name', overrides.name ?? user.name ?? '')
+  formData.append('username', overrides.username ?? user.username)
   formData.append('email', overrides.email ?? user.email)
   formData.append('password', overrides.password ?? user.password)
   formData.append('repeatPassword', overrides.repeatPassword ?? user.password)
@@ -48,7 +49,8 @@ describe('POST', () => {
       email: user.email,
       id: 'fixed-test-id',
       name: user.name,
-      password: user.password
+      password: user.password,
+      username: user.username
     })
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: user })

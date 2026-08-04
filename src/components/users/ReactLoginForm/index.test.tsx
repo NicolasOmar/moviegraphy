@@ -37,7 +37,7 @@ afterEach(() => {
 
 const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
   const [user1] = userMocks
-  await user.type(screen.getByLabelText('Username or Email'), user1.name)
+  await user.type(screen.getByLabelText('Username or Email'), user1.username)
   await user.type(screen.getByLabelText('Password'), user1.password)
 }
 
@@ -56,13 +56,15 @@ describe('ReactLoginForm', () => {
       )
     )
     await waitFor(() => expect(window.location.href).toBe(PAGE_URL.USERS))
-    expect($contextMessageList.get()).toEqual({ content: 'User logged', type: 'success' })
+    expect($contextMessageList.get()).toBeNull()
   })
 
   it('shows an error message and keeps the form filled when login fails', async () => {
     const user = userEvent.setup()
     vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ message: 'Name or password is incorrect' }), { status: 400 })
+      new Response(JSON.stringify({ message: 'Username or password is incorrect' }), {
+        status: 400
+      })
     )
     render(<ReactLoginForm />)
 
@@ -71,11 +73,11 @@ describe('ReactLoginForm', () => {
 
     await waitFor(() =>
       expect($contextMessageList.get()).toEqual({
-        content: 'Name or password is incorrect',
+        content: 'Username or password is incorrect',
         type: 'error'
       })
     )
-    expect(screen.getByLabelText('Username or Email')).toHaveValue(userMocks[0].name)
+    expect(screen.getByLabelText('Username or Email')).toHaveValue(userMocks[0].username)
     expect(window.location.href).toBe('')
   })
 

@@ -22,7 +22,8 @@ model Movies {
 
 model Users {
   id       String     @id @unique
-  name     String     @db.VarChar(25)
+  name     String?    @db.VarChar(25)
+  username String     @unique @db.VarChar(50)
   email    String     @unique @db.VarChar(50)
   password String     @db.Text
   tokens   Sessions[]
