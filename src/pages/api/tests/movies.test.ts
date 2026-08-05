@@ -107,6 +107,17 @@ describe('POST', () => {
 })
 
 describe('PATCH', () => {
+  it('returns 400 without calling updateMovie when the session token is invalid', async () => {
+    mockedIsSessionValid.mockResolvedValue(false)
+    const formData = new FormData()
+
+    const response = await PATCH(buildContext(formData, 'PATCH'))
+
+    expect(mockedUpdateMovie).not.toHaveBeenCalled()
+    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+    expect(await response.json()).toEqual({ message: 'No token provided' })
+  })
+
   it('parses form data and coerces releaseYear to a number before forwarding to updateMovie', async () => {
     const [movie] = movieMocks
     const formData = new FormData()
@@ -166,6 +177,17 @@ describe('PATCH', () => {
 })
 
 describe('DELETE', () => {
+  it('returns 400 without calling deleteMovie when the session token is invalid', async () => {
+    mockedIsSessionValid.mockResolvedValue(false)
+    const formData = new FormData()
+
+    const response = await DELETE(buildContext(formData, 'DELETE'))
+
+    expect(mockedDeleteMovie).not.toHaveBeenCalled()
+    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+    expect(await response.json()).toEqual({ message: 'No token provided' })
+  })
+
   it('parses just the id and forwards it to deleteMovie, returning 200', async () => {
     const [movie] = movieMocks
     const formData = new FormData()

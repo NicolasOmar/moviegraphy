@@ -64,10 +64,11 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
   }
 
   const userUpdateModel = await parseRequestToModel<UserUpdateModel>(request)
-  const userUpdateSchema = await UserUpdateSchema.safeParseAsync(userUpdateModel)
+  const { error: zodError } = await UserUpdateSchema.safeParseAsync(userUpdateModel)
 
-  if (userUpdateSchema.error) {
-    return parseMessageToResponse(userUpdateSchema.error, HTTP_STATUS.BAD_REQUEST)
+  if (zodError) {
+    const userUpdateZodError = zodError.issues.map(({ message }) => message)
+    return parseMessageToResponse(userUpdateZodError, HTTP_STATUS.BAD_REQUEST)
   }
 
   try {

@@ -17,6 +17,12 @@ beforeEach(() => {
 })
 
 describe('isSessionValid', () => {
+  it('returns false without querying the database when no token is given', async () => {
+    expect(await isSessionValid(undefined)).toBe(false)
+    expect(await isSessionValid(null)).toBe(false)
+    expect(mockedPrisma.sessions.findFirst).not.toHaveBeenCalled()
+  })
+
   it('returns true when a non-expired session matches the given raw token', async () => {
     const [session] = sessionMocks
     mockedPrisma.sessions.findFirst.mockResolvedValue(session)

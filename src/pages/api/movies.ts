@@ -67,7 +67,14 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
   }
 }
 
-export const DELETE: APIRoute = async ({ request }) => {
+export const DELETE: APIRoute = async ({ cookies, request }) => {
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
+  const tokenResponse = await isSessionValid(sessionToken)
+
+  if (!tokenResponse) {
+    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
+  }
+
   const deleteMovieModel = await parseRequestToModel<{ id: string }>(request)
 
   try {
