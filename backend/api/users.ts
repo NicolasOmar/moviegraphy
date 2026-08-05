@@ -1,6 +1,6 @@
 import type { UsersModel } from '@models'
-import type { UserWithToken } from '@ts/entities'
-import type { CreateOrUpdateOne } from '@ts/types'
+import type { UserUpdateModel, UserWithToken } from '@ts/entities'
+import type { CreateOrUpdateOne, FindOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getISODateWithDaysOffset } from '@ts/helpers'
@@ -35,7 +35,7 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async ne
 
     return {
       email: createdUser.email,
-      token: rawToken
+      sessionToken: rawToken
     }
   } catch (createUserError) {
     console.error('[POST /api/users]', { error: createUserError })
@@ -48,6 +48,33 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async ne
     }
 
     const errorMessage = handleErrorMessage(createUserError)
+
+    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  }
+}
+
+export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name, username }) => {
+  try {
+    const dataToUpdate = name ? { name, username } : { username }
+    const updateUserResponse = await prismaInstance.users.update({
+      data: dataToUpdate,
+      where: { id: id }
+    })
+
+    return {
+      email: updateUserResponse.email,
+      id,
+      name: updateUserResponse.name,
+      username: updateUserResponse.username
+    }
+  } catch (updateUserError) {
+    console.error('[POST /api/users]', { error: updateUserError })
+
+    if (updateUserError instanceof HttpError) {
+      throw updateUserError
+    }
+
+    const errorMessage = handleErrorMessage(updateUserError)
 
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }
@@ -96,6 +123,52 @@ export const updatePassword: CreateOrUpdateOne<
     }
 
     const errorMessage = handleErrorMessage(updatePasswordError)
+
+    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  }
+}
+
+export const findUserByUsername: FindOne<UsersModel, { username: string }> = async ({
+  username
+}) => {
+  try {
+    const findedUser = await prismaInstance.users.findUnique({ where: { username } })
+
+    return Promise.resolve(findedUser !== null)
+  } catch (findUserByUsernameError) {
+    console.error('[GET /api/users]', { error: findUserByUsernameError })
+
+    if (findUserByUsernameError instanceof HttpError) {
+      throw findUserByUsernameError
+    }
+
+    const errorMessage = handleErrorMessage(findUserByUsernameError)
+
+    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  }
+}
+
+export const findUserBySession = async (sessionToken: string) => {
+  const hashedToken = hashToken(sessionToken)
+
+  try {
+    const refreshToken = await prismaInstance.sessions.findFirst({
+      where: { token: hashedToken }
+    })
+
+    if (!refreshToken) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    }
+
+    return refreshToken.userId
+  } catch (findUserBySessionError) {
+    console.error('[GET /api/users]', { error: findUserBySessionError })
+
+    if (findUserBySessionError instanceof HttpError) {
+      throw findUserBySessionError
+    }
+
+    const errorMessage = handleErrorMessage(findUserBySessionError)
 
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }

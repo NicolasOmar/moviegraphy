@@ -66,7 +66,7 @@ describe('loginUser', () => {
         userId: user.id
       })
     })
-    expect(result).toEqual({ email: user.email, token: expect.any(String) })
+    expect(result).toEqual({ email: user.email, sessionToken: expect.any(String) })
   })
 
   it('rejects with a 400 invalid-credentials HttpError when no user matches', async () => {

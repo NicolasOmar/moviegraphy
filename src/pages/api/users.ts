@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro'
 
-import { createUser } from '@api/users'
+import { createUser, findUserBySession, findUserByUsername, updateUser } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import {
-  UserBaseSchema,
   UserCreateSchema,
   type UserFormModel,
-  type UserUpdateFormModel,
+  UserPatchSchema,
+  type UserUpdateModel,
   type UserWithToken
 } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
       username
     })) as UserWithToken
 
-    cookies.set(SESSION_COOKIE_NAME, userCreated.token, {
+    cookies.set(SESSION_COOKIE_NAME, userCreated.sessionToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
@@ -62,28 +62,37 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
     return parseHttpErrorToResponse(new HttpError(HTTP_STATUS.BAD_REQUEST, 'No token provided'))
   }
 
-  const userUpdateModel = await parseRequestToModel<UserUpdateFormModel>(request)
+  const userUpdateModel = await parseRequestToModel<UserUpdateModel>(request)
 
-  const zod = await UserBaseSchema.safeParseAsync(userUpdateModel)
+  const zod = await UserPatchSchema.safeParseAsync(userUpdateModel)
 
   if (zod.error) {
-    return parseMessageToResponse('NO PATCH USER', HTTP_STATUS.BAD_REQUEST)
-  }
-
-  const alreadyExistsUser = true
-
-  if (alreadyExistsUser) {
-    return parseMessageToResponse('NO PATCH USER', HTTP_STATUS.BAD_REQUEST)
-  }
-
-  const findedUser = true
-
-  if (!findedUser) {
-    return parseMessageToResponse('NO PATCH USER', HTTP_STATUS.BAD_REQUEST)
+    return parseMessageToResponse(zod.error, HTTP_STATUS.BAD_REQUEST)
   }
 
   try {
-    const updatedUser = true
+    const isUserNameAlreadyUser = (await findUserByUsername({
+      username: userUpdateModel.username
+    })) as boolean
+
+    if (isUserNameAlreadyUser) {
+      return parseMessageToResponse(
+        `Username '${userUpdateModel.username}' already taken`,
+        HTTP_STATUS.BAD_REQUEST
+      )
+    }
+
+    const findedUserId = await findUserBySession(loggedToken.value)
+
+    if (!findedUserId) {
+      return parseMessageToResponse('NO PATCH USER', HTTP_STATUS.BAD_REQUEST)
+    }
+
+    const updatedUser = updateUser({
+      id: findedUserId,
+      name: userUpdateModel.name,
+      username: userUpdateModel.username
+    })
 
     return parseMessageToResponse(updatedUser, HTTP_STATUS.OK)
   } catch (apiError) {

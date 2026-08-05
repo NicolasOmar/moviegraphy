@@ -59,7 +59,7 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
 
     return {
       email: user.email,
-      token: rawToken
+      sessionToken: rawToken
     }
   } catch (getUserByCredentialsError) {
     console.error('[POST /api/users]', { error: getUserByCredentialsError })

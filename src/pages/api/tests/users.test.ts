@@ -42,7 +42,7 @@ const buildFormData = (overrides: Record<string, string> = {}) => {
 describe('POST', () => {
   it('creates a user, generates an id, sets a refreshToken cookie, and returns 200', async () => {
     const [user] = userMocks
-    const createdUser = { ...user, token: 'raw-token' }
+    const createdUser = { ...user, sessionToken: 'raw-token' }
     mockedCreateUser.mockResolvedValue(createdUser)
     const context = buildContext(buildFormData())
 

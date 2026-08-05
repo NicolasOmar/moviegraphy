@@ -15,10 +15,12 @@ export interface UserFormModel extends Omit<UsersModel, 'id'> {
 
 export type UserLoginModel = Pick<UsersModel, 'password' | 'username'>
 
-export type UserUpdateFormModel = Omit<UsersModel, 'email' | 'id' | 'password'>
+export type UserUpdateModel = Omit<UsersModel, 'email' | 'password'>
 
-export interface UserWithToken extends Pick<UsersModel, 'email'> {
-  token: string
+export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
+
+interface TokenModel {
+  sessionToken: string
 }
 
 // ---------- USERS / SCHEMAS ----------
@@ -37,6 +39,11 @@ export const UserCreateSchema = z.strictObject({
 export const UserUpdateSchema = z.strictObject({
   ...UserCreateSchema.shape,
   id: z.uuid()
+})
+
+export const UserPatchSchema = z.strictObject({
+  name: z.string().max(25).optional(),
+  username: z.string().max(50)
 })
 
 export const PasswordChangeSchema = z.strictObject({
