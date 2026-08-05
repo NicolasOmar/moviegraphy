@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro'
 
+import { isSessionValid } from '@api/sessions'
 import { updatePassword } from '@api/users'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { HttpError } from '@ts/types'
@@ -11,10 +12,16 @@ vi.mock('@api/users', () => ({
   updatePassword: vi.fn<typeof updatePassword>()
 }))
 
+vi.mock('@api/sessions', () => ({
+  isSessionValid: vi.fn<typeof isSessionValid>()
+}))
+
 const mockedUpdatePassword = vi.mocked(updatePassword)
+const mockedIsSessionValid = vi.mocked(isSessionValid)
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockedIsSessionValid.mockResolvedValue(true)
 })
 
 const buildFormData = (overrides: Record<string, string | undefined> = {}) => {
@@ -49,6 +56,7 @@ const buildContext = (
 
 describe('POST', () => {
   it('returns 400 without calling updatePassword when no session cookie is present', async () => {
+    mockedIsSessionValid.mockResolvedValue(false)
     const context = buildContext({ cookies: { get: vi.fn().mockReturnValue(undefined) } })
 
     const response = await POST(context)

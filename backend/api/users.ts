@@ -55,18 +55,12 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async ne
 
 export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name, username }) => {
   try {
-    const dataToUpdate = name ? { name, username } : { username }
-    const updateUserResponse = await prismaInstance.users.update({
-      data: dataToUpdate,
+    await prismaInstance.users.update({
+      data: { name: name ?? null, username },
       where: { id: id }
     })
 
-    return {
-      email: updateUserResponse.email,
-      id,
-      name: updateUserResponse.name,
-      username: updateUserResponse.username
-    }
+    return true
   } catch (updateUserError) {
     console.error('[POST /api/users]', { error: updateUserError })
 
@@ -148,7 +142,7 @@ export const findUserByUsername: FindOne<UsersModel, { username: string }> = asy
   }
 }
 
-export const findUserBySession = async (sessionToken: string) => {
+export const findUserBySession: FindOne<string, string> = async (sessionToken: string) => {
   const hashedToken = hashToken(sessionToken)
 
   try {

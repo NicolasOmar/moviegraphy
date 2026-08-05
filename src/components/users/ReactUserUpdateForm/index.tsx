@@ -48,7 +48,7 @@ export const ReactUserUpdateForm: FC = () => {
       const errorMessage = await parseResponseErrorToMessage(userUpdateResponse)
       addMessageToContext({ content: errorMessage, type: 'error' })
     } else {
-      addMessageToContext({ content: 'User correctly updated ', type: 'success' })
+      addMessageToContext({ content: 'User correctly updated', type: 'success' })
     }
 
     setLoadingSystemState(false)

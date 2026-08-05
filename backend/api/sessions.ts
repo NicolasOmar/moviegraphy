@@ -9,7 +9,11 @@ import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
 
-export const isSessionValid = async (rawToken: string): Promise<boolean> => {
+export const isSessionValid = async (rawToken?: null | string): Promise<boolean> => {
+  if (rawToken === undefined || rawToken === null) {
+    return false
+  }
+
   try {
     const hashedToken = hashToken(rawToken)
     const refreshToken = await prismaInstance.sessions.findFirst({

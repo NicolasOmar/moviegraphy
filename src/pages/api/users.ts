@@ -1,16 +1,16 @@
 import type { APIRoute } from 'astro'
 
+import { isSessionValid } from '@api/sessions'
 import { createUser, findUserBySession, findUserByUsername, updateUser } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import {
   UserCreateSchema,
   type UserFormModel,
-  UserPatchSchema,
   type UserUpdateModel,
+  UserUpdateSchema,
   type UserWithToken
 } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
-import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
@@ -56,18 +56,18 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 }
 
 export const PATCH: APIRoute = async ({ cookies, request }) => {
-  const loggedToken = cookies.get(SESSION_COOKIE_NAME)
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
+  const tokenResponse = await isSessionValid(sessionToken)
 
-  if (!loggedToken) {
-    return parseHttpErrorToResponse(new HttpError(HTTP_STATUS.BAD_REQUEST, 'No token provided'))
+  if (!tokenResponse) {
+    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
   }
 
   const userUpdateModel = await parseRequestToModel<UserUpdateModel>(request)
+  const userUpdateSchema = await UserUpdateSchema.safeParseAsync(userUpdateModel)
 
-  const zod = await UserPatchSchema.safeParseAsync(userUpdateModel)
-
-  if (zod.error) {
-    return parseMessageToResponse(zod.error, HTTP_STATUS.BAD_REQUEST)
+  if (userUpdateSchema.error) {
+    return parseMessageToResponse(userUpdateSchema.error, HTTP_STATUS.BAD_REQUEST)
   }
 
   try {
@@ -77,24 +77,24 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
 
     if (isUserNameAlreadyUser) {
       return parseMessageToResponse(
-        `Username '${userUpdateModel.username}' already taken`,
+        `Username '${userUpdateModel.username}' is already taken`,
         HTTP_STATUS.BAD_REQUEST
       )
     }
 
-    const findedUserId = await findUserBySession(loggedToken.value)
+    const findedUserId = await findUserBySession(sessionToken!)
 
     if (!findedUserId) {
       return parseMessageToResponse('NO PATCH USER', HTTP_STATUS.BAD_REQUEST)
     }
 
-    const updatedUser = updateUser({
-      id: findedUserId,
+    const updatedUserResponse = (await updateUser({
+      id: findedUserId as string,
       name: userUpdateModel.name,
       username: userUpdateModel.username
-    })
+    })) as boolean
 
-    return parseMessageToResponse(updatedUser, HTTP_STATUS.OK)
+    return parseMessageToResponse(updatedUserResponse, HTTP_STATUS.OK)
   } catch (apiError) {
     return parseHttpErrorToResponse(apiError)
   }

@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 
+import { isSessionValid } from '@api/sessions'
 import { updatePassword } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
 import { type PasswordChangeModel, PasswordChangeSchema } from '@ts/entities'
@@ -7,10 +8,11 @@ import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel }
 import { HttpError } from '@ts/types'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
-  const loggedToken = cookies.get(SESSION_COOKIE_NAME)
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
+  const tokenResponse = await isSessionValid(sessionToken)
 
-  if (!loggedToken) {
-    return parseHttpErrorToResponse(new HttpError(HTTP_STATUS.BAD_REQUEST, 'No token provided'))
+  if (!tokenResponse) {
+    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
   }
 
   const passwordsModel = await parseRequestToModel<PasswordChangeModel>(request)
@@ -36,7 +38,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     const updatedPassword = (await updatePassword({
       newPassword: passwordsModel.new,
       oldPassword: passwordsModel.old,
-      sessionToken: loggedToken.value
+      sessionToken: sessionToken!
     })) as boolean
 
     return parseMessageToResponse(updatedPassword, HTTP_STATUS.OK)
