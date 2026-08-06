@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro'
 
-import { isSessionValid } from '@api/sessions'
 import { createUser, findUserBySession, findUserByUsername, updateUser } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import {
@@ -56,12 +55,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 }
 
 export const PATCH: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const tokenResponse = await isSessionValid(sessionToken)
-
-  if (!tokenResponse) {
-    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
-  }
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
 
   const userUpdateModel = await parseRequestToModel<UserUpdateModel>(request)
   const { error: zodError } = await UserUpdateSchema.safeParseAsync(userUpdateModel)
@@ -83,7 +77,7 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
       )
     }
 
-    const findedUserId = await findUserBySession(sessionToken!)
+    const findedUserId = await findUserBySession(sessionToken)
 
     if (!findedUserId) {
       return parseMessageToResponse('NO PATCH USER', HTTP_STATUS.BAD_REQUEST)

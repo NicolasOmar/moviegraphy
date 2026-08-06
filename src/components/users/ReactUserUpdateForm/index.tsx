@@ -7,6 +7,7 @@ import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
 import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
+import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
@@ -39,7 +40,7 @@ export const ReactUserUpdateForm: FC = () => {
 
     const userToUpdate = parseModelToFormData(_userUpdateFormData)
 
-    const userUpdateResponse = await fetch(API_URL.USERS, {
+    const userUpdateResponse = await fetchWithAuth(API_URL.USERS, {
       body: userToUpdate,
       method: API_METHODS.PATCH
     })

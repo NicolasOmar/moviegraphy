@@ -23,6 +23,7 @@ export enum API_URL {
 export enum HTTP_STATUS {
   OK = 200,
   BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
   CONFLICT = 409,
   INTERNAL_SERVER_ERROR = 500
 }
@@ -41,6 +42,7 @@ export enum USER_ERROR_MESSAGES {
   INVALID_CREDENTIALS = 'Username or password is incorrect',
   MISSING_FIELDS = 'Username, email and password are required',
   PASSWORD_MISMATCH = 'Both passwords do not match',
+  SESSION_EXPIRED = 'Session expired, please log in again',
   UNEXPECTED = 'Something went wrong while creating the user'
 }
 

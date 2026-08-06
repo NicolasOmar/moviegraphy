@@ -7,7 +7,7 @@ import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
 import { API_METHODS, API_URL, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { passwordsAreEqual } from '@ts/helpers'
+import { fetchWithAuth, passwordsAreEqual } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
@@ -85,7 +85,7 @@ export const ReactPasswordForm: FC = () => {
 
     const passwordToUpdate = parseModelToFormData(_formData)
 
-    const passwordUpdateResponse = await fetch(API_URL.PASSWORDS, {
+    const passwordUpdateResponse = await fetchWithAuth(API_URL.PASSWORDS, {
       body: passwordToUpdate,
       method: API_METHODS.POST
     })

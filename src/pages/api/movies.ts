@@ -2,20 +2,12 @@ import type { MoviesModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
-import { isSessionValid } from '@api/sessions'
-import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
+import { HTTP_STATUS } from '@ts/constants'
 import { MovieCreateSchema, MovieUpdateSchema } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 
-export const POST: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const tokenResponse = await isSessionValid(sessionToken)
-
-  if (!tokenResponse) {
-    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
-  }
-
+export const POST: APIRoute = async ({ request }) => {
   const newMovieModel = await parseRequestToModel<MoviesModel>(request)
 
   const { error: zodError } = await MovieCreateSchema.safeParseAsync(newMovieModel)
@@ -38,14 +30,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }
 }
 
-export const PATCH: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const tokenResponse = await isSessionValid(sessionToken)
-
-  if (!tokenResponse) {
-    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
-  }
-
+export const PATCH: APIRoute = async ({ request }) => {
   const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
 
   const { error: zodError } = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
@@ -67,14 +52,7 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
   }
 }
 
-export const DELETE: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const tokenResponse = await isSessionValid(sessionToken)
-
-  if (!tokenResponse) {
-    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
-  }
-
+export const DELETE: APIRoute = async ({ request }) => {
   const deleteMovieModel = await parseRequestToModel<{ id: string }>(request)
 
   try {

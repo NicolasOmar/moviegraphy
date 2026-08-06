@@ -1,6 +1,5 @@
 import type { APIContext } from 'astro'
 
-import { isSessionValid } from '@api/sessions'
 import { createUser, findUserBySession, findUserByUsername, updateUser } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
@@ -16,21 +15,15 @@ vi.mock('@api/users', () => ({
   updateUser: vi.fn<typeof updateUser>()
 }))
 
-vi.mock('@api/sessions', () => ({
-  isSessionValid: vi.fn<typeof isSessionValid>()
-}))
-
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 
 const mockedCreateUser = vi.mocked(createUser)
 const mockedFindUserBySession = vi.mocked(findUserBySession)
 const mockedFindUserByUsername = vi.mocked(findUserByUsername)
 const mockedUpdateUser = vi.mocked(updateUser)
-const mockedIsSessionValid = vi.mocked(isSessionValid)
 
 beforeEach(() => {
   vi.clearAllMocks()
-  mockedIsSessionValid.mockResolvedValue(true)
 })
 
 const buildContext = (formData: FormData, method = 'POST'): APIContext =>
@@ -145,17 +138,6 @@ describe('POST', () => {
 })
 
 describe('PATCH', () => {
-  it('returns 400 without calling findUserByUsername when the session token is invalid', async () => {
-    mockedIsSessionValid.mockResolvedValue(false)
-    const context = buildContext(buildPatchFormData(), 'PATCH')
-
-    const response = await PATCH(context)
-
-    expect(mockedFindUserByUsername).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({ message: 'No token provided' })
-  })
-
   it('returns 400 with the joined Zod issue messages when the username fails schema validation', async () => {
     const context = buildContext(buildPatchFormData({ username: 'a'.repeat(51) }), 'PATCH')
 

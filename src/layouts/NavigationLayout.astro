@@ -73,13 +73,14 @@ const currentPath = Astro.url.pathname.replace(/(.+)\/$/, '$1')
 <script>
   import { addMessageToContext } from '@store/messages'
   import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
+  import { fetchWithAuth } from '@ts/helpers'
   import { parseResponseErrorToMessage } from '@ts/parsers'
 
   const logoutLink = document.getElementById('logout_link')
 
   if (logoutLink) {
     logoutLink.addEventListener('click', async () => {
-      const logOutRespose = await fetch(API_URL.SESSIONS, {
+      const logOutRespose = await fetchWithAuth(API_URL.SESSIONS, {
         method: API_METHODS.DELETE
       })
 

@@ -1,7 +1,6 @@
 import type { APIContext } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
-import { isSessionValid } from '@api/sessions'
 import { HTTP_STATUS } from '@ts/constants'
 import { movieMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
@@ -15,20 +14,14 @@ vi.mock('@api/movies', () => ({
   updateMovie: vi.fn<typeof updateMovie>()
 }))
 
-vi.mock('@api/sessions', () => ({
-  isSessionValid: vi.fn<typeof isSessionValid>()
-}))
-
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 
 const mockedCreateMovie = vi.mocked(createMovie)
 const mockedUpdateMovie = vi.mocked(updateMovie)
 const mockedDeleteMovie = vi.mocked(deleteMovie)
-const mockedIsSessionValid = vi.mocked(isSessionValid)
 
 beforeEach(() => {
   vi.clearAllMocks()
-  mockedIsSessionValid.mockResolvedValue(true)
 })
 
 const buildContext = (formData: FormData, method: string): APIContext =>
@@ -38,17 +31,6 @@ const buildContext = (formData: FormData, method: string): APIContext =>
   }) as unknown as APIContext
 
 describe('POST', () => {
-  it('returns 400 without calling createMovie when the session token is invalid', async () => {
-    mockedIsSessionValid.mockResolvedValue(false)
-    const formData = new FormData()
-
-    const response = await POST(buildContext(formData, 'POST'))
-
-    expect(mockedCreateMovie).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({ message: 'No token provided' })
-  })
-
   it('parses form data, generates an id, coerces releaseYear to a number, and returns 200', async () => {
     const [movie] = movieMocks
     const formData = new FormData()
@@ -107,17 +89,6 @@ describe('POST', () => {
 })
 
 describe('PATCH', () => {
-  it('returns 400 without calling updateMovie when the session token is invalid', async () => {
-    mockedIsSessionValid.mockResolvedValue(false)
-    const formData = new FormData()
-
-    const response = await PATCH(buildContext(formData, 'PATCH'))
-
-    expect(mockedUpdateMovie).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({ message: 'No token provided' })
-  })
-
   it('parses form data and coerces releaseYear to a number before forwarding to updateMovie', async () => {
     const [movie] = movieMocks
     const formData = new FormData()
@@ -177,17 +148,6 @@ describe('PATCH', () => {
 })
 
 describe('DELETE', () => {
-  it('returns 400 without calling deleteMovie when the session token is invalid', async () => {
-    mockedIsSessionValid.mockResolvedValue(false)
-    const formData = new FormData()
-
-    const response = await DELETE(buildContext(formData, 'DELETE'))
-
-    expect(mockedDeleteMovie).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({ message: 'No token provided' })
-  })
-
   it('parses just the id and forwards it to deleteMovie, returning 200', async () => {
     const [movie] = movieMocks
     const formData = new FormData()

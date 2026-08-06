@@ -1,6 +1,5 @@
 import type { APIContext } from 'astro'
 
-import { isSessionValid } from '@api/sessions'
 import { updatePassword } from '@api/users'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { HttpError } from '@ts/types'
@@ -12,16 +11,10 @@ vi.mock('@api/users', () => ({
   updatePassword: vi.fn<typeof updatePassword>()
 }))
 
-vi.mock('@api/sessions', () => ({
-  isSessionValid: vi.fn<typeof isSessionValid>()
-}))
-
 const mockedUpdatePassword = vi.mocked(updatePassword)
-const mockedIsSessionValid = vi.mocked(isSessionValid)
 
 beforeEach(() => {
   vi.clearAllMocks()
-  mockedIsSessionValid.mockResolvedValue(true)
 })
 
 const buildFormData = (overrides: Record<string, string | undefined> = {}) => {
@@ -42,12 +35,9 @@ const buildFormData = (overrides: Record<string, string | undefined> = {}) => {
   return formData
 }
 
-const buildContext = (
-  { cookies }: { cookies?: Partial<APIContext['cookies']> } = {},
-  formData?: FormData
-): APIContext =>
+const buildContext = (formData?: FormData): APIContext =>
   ({
-    cookies: { get: vi.fn().mockReturnValue({ value: 'raw-token' }), ...cookies },
+    cookies: { get: vi.fn().mockReturnValue({ value: 'raw-token' }) },
     request: new Request('http://localhost/api/passwords', {
       body: formData ?? buildFormData(),
       method: 'POST'
@@ -55,20 +45,8 @@ const buildContext = (
   }) as unknown as APIContext
 
 describe('POST', () => {
-  it('returns 400 without calling updatePassword when no session cookie is present', async () => {
-    mockedIsSessionValid.mockResolvedValue(false)
-    const context = buildContext({ cookies: { get: vi.fn().mockReturnValue(undefined) } })
-
-    const response = await POST(context)
-
-    expect(mockedUpdatePassword).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({ message: 'No token provided' })
-  })
-
   it('returns 400 without calling updatePassword when the new password matches the old one', async () => {
     const context = buildContext(
-      undefined,
       buildFormData({ new: 'samePassword', old: 'samePassword', repeatNew: 'samePassword' })
     )
 
@@ -80,7 +58,7 @@ describe('POST', () => {
   })
 
   it('returns 400 without calling updatePassword when the repeated password does not match', async () => {
-    const context = buildContext(undefined, buildFormData({ repeatNew: 'somethingElse' }))
+    const context = buildContext(buildFormData({ repeatNew: 'somethingElse' }))
 
     const response = await POST(context)
 
@@ -90,7 +68,7 @@ describe('POST', () => {
   })
 
   it('returns 400 with the joined Zod issue messages when a required field is missing', async () => {
-    const context = buildContext(undefined, buildFormData({ old: undefined }))
+    const context = buildContext(buildFormData({ old: undefined }))
 
     const response = await POST(context)
 
