@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: ['src/pages/api/**', '**/*.test.{ts,tsx}', '**/mocks/**'],
-      include: ['src/**/*.{ts,tsx}', 'ts/parsers.ts'],
+      include: ['src/**/*.{ts,tsx}', 'store/**/*.ts', 'ts/helpers.ts', 'ts/parsers.ts'],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],
       reportsDirectory: 'coverage/frontend',

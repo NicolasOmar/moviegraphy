@@ -15,7 +15,13 @@ export default defineConfig({
         '**/*.test.{ts,tsx}',
         '**/mocks/**'
       ],
-      include: ['backend/api/**/*.ts', 'src/pages/api/**/*.ts', 'ts/parsers.ts'],
+      include: [
+        'backend/api/**/*.ts',
+        'src/pages/api/**/*.ts',
+        'ts/helpers.ts',
+        'ts/parsers.ts',
+        'ts/tokens.ts'
+      ],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],
       reportsDirectory: 'coverage/backend',

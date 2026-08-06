@@ -1,8 +1,8 @@
-import { atom } from "nanostores";
+import { atom } from 'nanostores'
 
 interface Message {
   content: string
-  type: 'success' | 'warning' | 'error' | 'info'
+  type: 'error' | 'info' | 'success' | 'warning'
 }
 
 export const $contextMessageList = atom<Message | null>(null)

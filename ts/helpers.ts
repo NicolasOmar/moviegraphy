@@ -19,7 +19,7 @@ export const fetchWithAuth = async (
   return response
 }
 
-export const passwordsAreEqual = (_firstPassword?: string, _secondPassword?: string): boolean => {
+export const arePassworsEqual = (_firstPassword?: string, _secondPassword?: string): boolean => {
   if (_firstPassword && _secondPassword) {
     return _firstPassword === _secondPassword
   }

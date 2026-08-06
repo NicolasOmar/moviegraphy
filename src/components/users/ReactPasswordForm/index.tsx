@@ -7,7 +7,7 @@ import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
 import { API_METHODS, API_URL, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { fetchWithAuth, passwordsAreEqual } from '@ts/helpers'
+import { arePassworsEqual, fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
@@ -34,7 +34,7 @@ const formInputs: FormInputList<PasswordChangeModel> = [
         return {
           validator: (_, newPassword) => {
             const repeatNewValue = formInstace.getFieldValue('repeatNew')
-            const passwordMatch = passwordsAreEqual(repeatNewValue, newPassword)
+            const passwordMatch = arePassworsEqual(repeatNewValue, newPassword)
 
             if (passwordMatch) {
               return Promise.resolve()
@@ -58,7 +58,7 @@ const formInputs: FormInputList<PasswordChangeModel> = [
         return {
           validator: (_, repeatedPassword) => {
             const firstNewPassword = formInstace.getFieldValue('new')
-            const passwordMatch = passwordsAreEqual(firstNewPassword, repeatedPassword)
+            const passwordMatch = arePassworsEqual(firstNewPassword, repeatedPassword)
 
             if (passwordMatch) {
               return Promise.resolve()

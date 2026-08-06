@@ -18,10 +18,11 @@ export const onRequest = defineMiddleware(async ({ cookies, redirect, request, u
   const hasValidToken = await isSessionValid(rawToken)
 
   if (url.pathname.startsWith(API_PATH)) {
-    const isLoginPath = url.pathname === API_URL.SESSIONS && request.method === API_METHODS.POST
-    const isUserCreatePath = url.pathname === API_URL.USERS && request.method === API_METHODS.POST
+    const isLoginEndpoint = url.pathname === API_URL.SESSIONS && request.method === API_METHODS.POST
+    const isUserCreateEndpoint =
+      url.pathname === API_URL.USERS && request.method === API_METHODS.POST
 
-    if (!hasValidToken && !isLoginPath && !isUserCreatePath) {
+    if (!hasValidToken && !isLoginEndpoint && !isUserCreateEndpoint) {
       cookies.delete(SESSION_COOKIE_NAME)
       return parseMessageToResponse(USER_ERROR_MESSAGES.SESSION_EXPIRED, HTTP_STATUS.UNAUTHORIZED)
     }
