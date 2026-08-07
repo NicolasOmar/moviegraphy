@@ -1,20 +1,19 @@
 import type { UserLoginModel, UserWithToken } from '@ts/entities'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import {
-  compareHashed,
-  createToken,
-  getCurrentISODate,
-  getISODateWithDaysOffset,
-  hashToken
-} from '@ts/helpers'
+import { getCurrentISODate, getISODateWithDaysOffset } from '@ts/helpers'
 import { handleErrorMessage } from '@ts/parsers'
+import { compareHashed, createToken, hashToken } from '@ts/tokens'
 import { type CreateOrUpdateOne, type DeleteOne, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
 
-export const isSessionValid = async (rawToken: string): Promise<boolean> => {
+export const isSessionValid = async (rawToken?: null | string): Promise<boolean> => {
+  if (rawToken === undefined || rawToken === null) {
+    return false
+  }
+
   try {
     const hashedToken = hashToken(rawToken)
     const refreshToken = await prismaInstance.sessions.findFirst({
@@ -32,12 +31,12 @@ export const isSessionValid = async (rawToken: string): Promise<boolean> => {
 }
 
 export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async ({
-  name,
-  password
+  password,
+  username
 }) => {
   try {
     const user = await prismaInstance.users.findFirst({
-      where: { OR: [{ name }, { email: name }] }
+      where: { OR: [{ username }, { email: username }] }
     })
 
     if (!user) {
@@ -64,7 +63,7 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
 
     return {
       email: user.email,
-      token: rawToken
+      sessionToken: rawToken
     }
   } catch (getUserByCredentialsError) {
     console.error('[POST /api/users]', { error: getUserByCredentialsError })

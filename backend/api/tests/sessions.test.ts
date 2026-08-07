@@ -1,6 +1,6 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { hashString } from '@ts/helpers'
 import { sessionMocks, userMocks } from '@ts/mocks'
+import { hashString } from '@ts/tokens'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
@@ -17,6 +17,12 @@ beforeEach(() => {
 })
 
 describe('isSessionValid', () => {
+  it('returns false without querying the database when no token is given', async () => {
+    expect(await isSessionValid(undefined)).toBe(false)
+    expect(await isSessionValid(null)).toBe(false)
+    expect(mockedPrisma.sessions.findFirst).not.toHaveBeenCalled()
+  })
+
   it('returns true when a non-expired session matches the given raw token', async () => {
     const [session] = sessionMocks
     mockedPrisma.sessions.findFirst.mockResolvedValue(session)
@@ -54,10 +60,10 @@ describe('loginUser', () => {
     const hashedPassword = await hashString(user.password)
     mockedPrisma.users.findFirst.mockResolvedValue({ ...user, password: hashedPassword })
 
-    const result = await loginUser({ name: user.name, password: user.password })
+    const result = await loginUser({ password: user.password, username: user.username })
 
     expect(mockedPrisma.users.findFirst).toHaveBeenCalledWith({
-      where: { OR: [{ name: user.name }, { email: user.name }] }
+      where: { OR: [{ username: user.username }, { email: user.username }] }
     })
     expect(mockedPrisma.sessions.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -66,13 +72,13 @@ describe('loginUser', () => {
         userId: user.id
       })
     })
-    expect(result).toEqual({ email: user.email, token: expect.any(String) })
+    expect(result).toEqual({ email: user.email, sessionToken: expect.any(String) })
   })
 
   it('rejects with a 400 invalid-credentials HttpError when no user matches', async () => {
     mockedPrisma.users.findFirst.mockResolvedValue(null)
 
-    await expect(loginUser({ name: 'ghost', password: 'whatever' })).rejects.toEqual(
+    await expect(loginUser({ password: 'whatever', username: 'ghost' })).rejects.toEqual(
       new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     )
     expect(mockedPrisma.sessions.create).not.toHaveBeenCalled()
@@ -83,7 +89,9 @@ describe('loginUser', () => {
     const hashedPassword = await hashString(user.password)
     mockedPrisma.users.findFirst.mockResolvedValue({ ...user, password: hashedPassword })
 
-    await expect(loginUser({ name: user.name, password: 'wrong-password' })).rejects.toEqual(
+    await expect(
+      loginUser({ password: 'wrong-password', username: user.username })
+    ).rejects.toEqual(
       new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     )
     expect(mockedPrisma.sessions.create).not.toHaveBeenCalled()
@@ -94,7 +102,7 @@ describe('loginUser', () => {
     const [user] = userMocks
     mockedPrisma.users.findFirst.mockRejectedValue(new Error('connection refused'))
 
-    await expect(loginUser({ name: user.name, password: user.password })).rejects.toEqual(
+    await expect(loginUser({ password: user.password, username: user.username })).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })

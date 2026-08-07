@@ -5,6 +5,8 @@ export type CreateOrUpdateOne<T, S = boolean> = (_entity: T) => Promise<S | T>
 
 export type DeleteOne = (_identifier: string) => Promise<boolean>
 
+export type FindOne<T, S> = (finder: S) => Promise<boolean | T>
+
 export type FormInput<T> = {
   label: string
   name: Extract<keyof T, string>

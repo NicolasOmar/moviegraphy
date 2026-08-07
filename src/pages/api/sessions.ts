@@ -10,9 +10,9 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   const loginModel = await parseRequestToModel<UserLoginModel>(request)
 
   try {
-    const { token } = (await loginUser(loginModel)) as UserWithToken
+    const { sessionToken } = (await loginUser(loginModel)) as UserWithToken
 
-    cookies.set(SESSION_COOKIE_NAME, token, {
+    cookies.set(SESSION_COOKIE_NAME, sessionToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',

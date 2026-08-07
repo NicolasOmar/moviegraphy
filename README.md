@@ -84,36 +84,53 @@ Also, I want to use this tool as a process to master several libraries, patterns
 ## What do I need?
 Before cloning this repo, I recommend installing the following software:
 - [Node](https://nodejs.org/en/download/) >= `24.4.0` to install packages.
-- A [PostgreSQL database](https://www.postgresql.org/download/) on your local machine or in a cloud service.
+- A [PostgreSQL instance](https://www.postgresql.org/download/) on your local machine or in a cloud service.
 
 ## Setup
 After cloning the repo, install the Node packages in the project's root directory.
 ```sh
 git clone https://github.com/NicolasOmar/moviegraphy.git
 cd moviegraphy
+```
+
+From this point, you have two options for configuring it.
+
+### One-command method (recommended)
+
+Only run the following setup script.
+```sh
 npm run setup
 ```
 
-Lastly, create an `.env` file at your project's root with the following content.
+That will:
+- Install all the packages (with husky hooks for future development)
+- Generate an `.env` file with a reference to a default local database url
+- Execute all the migrations from the `backend/prisma/migrations` folder
+
+### Manual method
+
+First, install all the dependencies.
+```sh
+npm ci
+```
+
+Then, create an `.env` file at your project's root with the following content.
 ```env
 DATABASE_URL=HERE_GOES_YOUR_DATABASE_CONNECTION_STRING
+JWT_SECRET=HERE_GOES_YOUR_JWT_SECRET
 ```
 
-- You can use a string such as the following to start on your local database
-  ```env
-  postgresql://postgres:admin@localhost:5432/moviegraphy?schema=public
-  ```
+> If you want to run with a test database, copy and paste the following connection string: `postgresql://postgres:admin@localhost:5432/moviegraphy?schema=public`
 
-  > In case you choose that option, DO NOT FORGET to run npm run `db:compile` before starting for the first time
+Lastly, once you have inserted the database url to work on the project, execute the following script to apply all the needed migrations.
+```sh
+npm run db:migrate
+```
 
 ## How to run it
-To run it, simply execute
+Once you install all the needed dependencies, simply execute
 ```sh
 npm start
-```
-In case you want to execute it as a single instance (using a production-like build)
-```sh
-npm start:prod
 ```
 
 ## Folder structure

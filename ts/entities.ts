@@ -8,28 +8,37 @@ export interface PasswordChangeModel {
   repeatNew: string
 }
 
-// ---------- USERS / INTERFACES ----------
 export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string
 }
 
-export type UserLoginModel = Pick<UsersModel, 'name' | 'password'>
+export type UserLoginModel = Pick<UsersModel, 'password' | 'username'>
 
-export interface UserWithToken extends Pick<UsersModel, 'email'> {
-  token: string
+export type UserUpdateModel = Omit<UsersModel, 'email' | 'password'>
+
+export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
+
+// ---------- USERS / INTERFACES ----------
+interface TokenModel {
+  sessionToken: string
 }
 
 // ---------- USERS / SCHEMAS ----------
-export const UserCreateSchema = z.strictObject({
+export const UserBaseSchema = z.strictObject({
   email: z.email().max(50),
-  name: z.string().max(25),
+  name: z.string().max(25).optional()
+})
+
+export const UserCreateSchema = z.strictObject({
+  ...UserBaseSchema.shape,
   password: z.string().min(4).max(25),
-  repeatPassword: z.string().min(4).max(25)
+  repeatPassword: z.string().min(4).max(25),
+  username: z.string().max(50)
 })
 
 export const UserUpdateSchema = z.strictObject({
-  ...UserCreateSchema.shape,
-  id: z.uuid()
+  name: z.string().max(25).optional(),
+  username: z.string().max(50)
 })
 
 export const PasswordChangeSchema = z.strictObject({

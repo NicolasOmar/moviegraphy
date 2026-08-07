@@ -1,28 +1,30 @@
-import argon2 from 'argon2'
-import jwt from 'jsonwebtoken'
-import { createHash } from 'node:crypto'
-
-export const createToken = (userId: string) => {
-  const token = jwt.sign({ userId }, import.meta.env.JWT_SECRET!, { expiresIn: '7d' })
-  return token
-}
-
-export const hashString = async (_stringToHash: string) => {
-  return await argon2.hash(_stringToHash)
-}
-
-export const compareHashed = async (rawString: string, hashedString: string) => {
-  return await argon2.verify(hashedString, rawString)
-}
+import { HTTP_STATUS, PAGE_URL } from './constants'
 
 /**
- * Deterministic hash for session tokens. Unlike `hashString` (argon2, salted,
- * non-deterministic, used for passwords), session tokens are already
- * high-entropy JWTs, so a stable digest is used instead to allow direct
- * equality lookups against the stored value.
+ * `fetch` wrapper for API calls that require an authenticated session. A plain `fetch` would
+ * silently follow a 401-turned-redirect and resolve with the login page's HTML, leaving the
+ * browser on the current page. This checks the status itself and navigates to the login page
+ * when the session is invalid or expired, instead of relying on the fetch redirect chain.
  */
-export const hashToken = (rawToken: string) => {
-  return createHash('sha256').update(rawToken).digest('hex')
+export const fetchWithAuth = async (
+  input: RequestInfo | URL,
+  init?: RequestInit
+): Promise<Response> => {
+  const response = await fetch(input, init)
+
+  if (response.status === HTTP_STATUS.UNAUTHORIZED) {
+    window.location.assign(PAGE_URL.LOGIN)
+  }
+
+  return response
+}
+
+export const arePassworsEqual = (_firstPassword?: string, _secondPassword?: string): boolean => {
+  if (_firstPassword && _secondPassword) {
+    return _firstPassword === _secondPassword
+  }
+
+  return true
 }
 
 /**

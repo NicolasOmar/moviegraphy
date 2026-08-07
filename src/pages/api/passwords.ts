@@ -7,11 +7,7 @@ import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel }
 import { HttpError } from '@ts/types'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
-  const loggedToken = cookies.get(SESSION_COOKIE_NAME)
-  if (!loggedToken) {
-    return parseHttpErrorToResponse(new HttpError(HTTP_STATUS.BAD_REQUEST, 'No token provided'))
-  }
-
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
   const passwordsModel = await parseRequestToModel<PasswordChangeModel>(request)
 
   if (
@@ -35,11 +31,11 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     const updatedPassword = (await updatePassword({
       newPassword: passwordsModel.new,
       oldPassword: passwordsModel.old,
-      sessionToken: loggedToken.value
+      sessionToken: sessionToken!
     })) as boolean
 
     return parseMessageToResponse(updatedPassword, HTTP_STATUS.OK)
-  } catch (apiUpdateError) {
-    return parseHttpErrorToResponse(apiUpdateError)
+  } catch (apiError) {
+    return parseHttpErrorToResponse(apiError)
   }
 }

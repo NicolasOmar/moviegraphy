@@ -14,7 +14,7 @@ const loginFormTitle = 'Welcome to Moviegraphy'
 const loginFormInputs: FormInputList<UserLoginModel> = [
   {
     label: 'Username or Email',
-    name: 'name',
+    name: 'username',
     rules: [{ message: 'Username or Email is required', required: true }]
   },
   {
@@ -51,8 +51,6 @@ export const ReactLoginForm: FC = () => {
       const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
       addMessageToContext({ content: errorMessage, type: 'error' })
     } else {
-      loginForm.resetFields()
-      addMessageToContext({ content: 'User logged', type: 'success' })
       window.location.href = PAGE_URL.USERS
     }
 

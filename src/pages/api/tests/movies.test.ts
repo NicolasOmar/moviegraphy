@@ -26,8 +26,9 @@ beforeEach(() => {
 
 const buildContext = (formData: FormData, method: string): APIContext =>
   ({
+    cookies: { get: vi.fn().mockReturnValue({ value: 'raw-token' }) },
     request: new Request('http://localhost/api/movie', { body: formData, method })
-  }) as APIContext
+  }) as unknown as APIContext
 
 describe('POST', () => {
   it('parses form data, generates an id, coerces releaseYear to a number, and returns 200', async () => {

@@ -5,20 +5,25 @@ import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactFo
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
-import { API_METHODS, API_URL, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { passwordsAreEqual } from '@ts/misc'
+import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL, USER_ERROR_MESSAGES } from '@ts/constants'
+import { arePassworsEqual } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC } from 'react'
 
-const userFormTitle = 'Welcome to the User section'
+const userFormTitle = 'Sign up'
 const userFormInputs: FormInputList<UserFormModel> = [
   {
-    label: 'Username',
+    label: 'Name',
     name: 'name',
+    rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
+  },
+  {
+    label: 'Username',
+    name: 'username',
     rules: [
       { message: 'Username is required', required: true },
-      { max: 25, message: 'Username must be 25 characters as much' }
+      { max: 50, message: 'Username must be 50 characters as much' }
     ]
   },
   {
@@ -41,7 +46,7 @@ const userFormInputs: FormInputList<UserFormModel> = [
         return {
           validator: (_, passwordValue) => {
             const repeatedPassword = formInstace.getFieldValue('repeatPassword')
-            const passwordMatch = passwordsAreEqual(repeatedPassword, passwordValue)
+            const passwordMatch = arePassworsEqual(repeatedPassword, passwordValue)
 
             if (passwordMatch) {
               return Promise.resolve()
@@ -65,7 +70,7 @@ const userFormInputs: FormInputList<UserFormModel> = [
         return {
           validator: (_, repeatPassword) => {
             const passwordValue = formInstace.getFieldValue('password')
-            const passwordMatch = passwordsAreEqual(passwordValue, repeatPassword)
+            const passwordMatch = arePassworsEqual(passwordValue, repeatPassword)
 
             if (passwordMatch) {
               return Promise.resolve()
@@ -102,8 +107,7 @@ export const ReactUserForm: FC = () => {
       const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
       addMessageToContext({ content: errorMessage, type: 'error' })
     } else {
-      userForm.resetFields()
-      addMessageToContext({ content: 'User created', type: 'success' })
+      window.location.href = PAGE_URL.HOME
     }
 
     setLoadingSystemState(false)
