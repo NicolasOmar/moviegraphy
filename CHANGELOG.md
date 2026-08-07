@@ -1,3 +1,19 @@
+# [1.5.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.4.0...v1.5.0) (2026-08-07)
+
+
+### Bug Fixes
+
+* fixed user created not automatically logged. first implementation of api at astro layer ([1eb8439](https://github.com/NicolasOmar/moviegraphy/commit/1eb8439b71c49ec81480c023f397a070fb2b516f))
+* improved setup script and updated the readme file ([ca8db47](https://github.com/NicolasOmar/moviegraphy/commit/ca8db474d6199c0faf1fa1cd717bc43b7c649ae2))
+* moving cookie session token logic to pages/api layer ([533c861](https://github.com/NicolasOmar/moviegraphy/commit/533c86154e09b248b4c2787001fb43eb47d2f5ba))
+* moving session cookie token authorization to middleware ([b40f763](https://github.com/NicolasOmar/moviegraphy/commit/b40f763a1a0d16ec7049b2fe54b9291a9f9b7fd7))
+
+
+### Features
+
+* first implementation of user update form and user entity restructure ([a97a0c0](https://github.com/NicolasOmar/moviegraphy/commit/a97a0c0db9ec65d4b498056a19f78915eb16b7e5))
+* first integration of front and back end for user update flow ([1905138](https://github.com/NicolasOmar/moviegraphy/commit/19051386d867d23206f4757e1e25f05858219b34))
+
 # [1.4.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.3.3...v1.4.0) (2026-08-03)
 
 
