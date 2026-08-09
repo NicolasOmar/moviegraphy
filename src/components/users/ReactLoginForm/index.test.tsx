@@ -1,7 +1,7 @@
 import { $contextMessageList } from '@store/messages'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { API_URL, PAGE_URL } from '@ts/constants'
+import { API_URLS, PAGE_URL } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -42,7 +42,7 @@ const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
 }
 
 describe('ReactLoginForm', () => {
-  it('logs a user in: submits a POST request and redirects to the users page on success', async () => {
+  it('logs a user in: submits a POST request and redirects to the home page on success', async () => {
     const user = userEvent.setup()
     render(<ReactLoginForm />)
 
@@ -51,11 +51,11 @@ describe('ReactLoginForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        API_URL.SESSIONS,
+        API_URLS.SESSIONS,
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
-    await waitFor(() => expect(window.location.href).toBe(PAGE_URL.USERS))
+    await waitFor(() => expect(window.location.href).toBe(PAGE_URL.HOME))
     expect($contextMessageList.get()).toBeNull()
   })
 

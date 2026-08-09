@@ -15,7 +15,7 @@ import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
-import { API_METHODS, API_URL, HTTP_STATUS } from 'ts/constants'
+import { API_METHODS, API_URLS, HTTP_STATUS } from 'ts/constants'
 
 const movieFormTitle = 'Create a new movie'
 const movieFormInputs: FormInputList<MoviesModel> = [
@@ -73,7 +73,7 @@ export const ReactMovieForm: FC = () => {
     if (selectedMovieInContext === null) {
       const movieToCreate = parseModelToFormData(_movieFormDataModel)
 
-      const movieCreateResponse = await fetchWithAuth(API_URL.MOVIES, {
+      const movieCreateResponse = await fetchWithAuth(API_URLS.MOVIES, {
         body: movieToCreate,
         method: API_METHODS.POST
       })
@@ -94,7 +94,7 @@ export const ReactMovieForm: FC = () => {
         id: selectedMovieInContext.id
       })
 
-      const movieUpdateResponse = await fetchWithAuth(API_URL.MOVIES, {
+      const movieUpdateResponse = await fetchWithAuth(API_URLS.MOVIES, {
         body: movieToUpdate,
         method: API_METHODS.PATCH
       })
@@ -106,6 +106,7 @@ export const ReactMovieForm: FC = () => {
         movieForm.resetFields()
         updateSelectedMovieOnContext(null)
         updateMovieOnListContext({
+          ...selectedMovieInContext,
           ..._movieFormDataModel,
           id: selectedMovieInContext.id
         })

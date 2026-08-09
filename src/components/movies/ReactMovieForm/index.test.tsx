@@ -6,7 +6,7 @@ import {
 } from '@store/movies'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { API_URL } from '@ts/constants'
+import { API_URLS } from '@ts/constants'
 import { movieMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -58,7 +58,7 @@ describe('ReactMovieForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        API_URL.MOVIES,
+        API_URLS.MOVIES,
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
@@ -102,7 +102,7 @@ describe('ReactMovieForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        API_URL.MOVIES,
+        API_URLS.MOVIES,
         expect.objectContaining({ body: expect.any(FormData), method: 'PATCH' })
       )
     )

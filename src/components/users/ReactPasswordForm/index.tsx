@@ -6,13 +6,13 @@ import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactFo
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
-import { API_METHODS, API_URL, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
+import { API_METHODS, API_URLS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual, fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
-const title = 'Change password'
-const formInputs: FormInputList<PasswordChangeModel> = [
+const passwordChangeTitle = 'Change password'
+const passwordChangeInputs: FormInputList<PasswordChangeModel> = [
   {
     label: 'Old password',
     name: 'old',
@@ -72,7 +72,7 @@ const formInputs: FormInputList<PasswordChangeModel> = [
     type: 'password'
   }
 ]
-const formButtons: ReactFormButtonProps[] = [
+const passwordChangeButtons: ReactFormButtonProps[] = [
   { htmlType: 'submit', title: 'Update', type: 'primary' }
 ]
 
@@ -85,7 +85,7 @@ export const ReactPasswordForm: FC = () => {
 
     const passwordToUpdate = parseModelToFormData(_formData)
 
-    const passwordUpdateResponse = await fetchWithAuth(API_URL.PASSWORDS, {
+    const passwordUpdateResponse = await fetchWithAuth(API_URLS.PASSWORDS, {
       body: passwordToUpdate,
       method: API_METHODS.POST
     })
@@ -107,10 +107,10 @@ export const ReactPasswordForm: FC = () => {
 
   return (
     <ReactForm
-      formButtons={formButtons}
-      formInputs={formInputs}
+      formButtons={passwordChangeButtons}
+      formInputs={passwordChangeInputs}
       formInstance={passwordForm}
-      formTitle={title}
+      formTitle={passwordChangeTitle}
       isLoading={isSystemLoading}
       onSubmit={handleSubmit}
       onSubmitFailed={handleInvalidation}

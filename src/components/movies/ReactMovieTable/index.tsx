@@ -12,7 +12,7 @@ import {
   setMovieListOnContext,
   updateSelectedMovieOnContext
 } from '@store/movies'
-import { API_METHODS, API_URL, HTTP_STATUS } from '@ts/constants'
+import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Input, Typography } from 'antd'
@@ -63,7 +63,7 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
     setLoadingSystemState(true)
     const movieIdToDelete = parseModelToFormData({ id })
 
-    const movieDeleteResponse = await fetchWithAuth(API_URL.MOVIES, {
+    const movieDeleteResponse = await fetchWithAuth(API_URLS.MOVIES, {
       body: movieIdToDelete,
       method: API_METHODS.DELETE
     })

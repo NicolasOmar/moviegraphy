@@ -7,7 +7,7 @@ import BaseLayout from './BaseLayout.astro'
 const listOfLinks = [
   { label: 'Home', page: PAGE_URL.HOME },
   { label: 'Movies', page: PAGE_URL.MOVIES },
-  { label: 'Users', page: PAGE_URL.USERS }
+  { label: 'Genres', page: PAGE_URL.GENRES }
 ]
 
 enum NAVIGATION_LABELS {
@@ -52,19 +52,19 @@ const currentPath = Astro.url.pathname.replace(/(.+)\/$/, '$1')
         }
       </nav>
 
-      <div class="dropdown">
+      <section class="dropdown">
         <span aria-controls="account_menu" aria-haspopup="menu" class="dropdown__trigger">
           {NAVIGATION_LABELS.ACCOUNT}
         </span>
-        <div class="dropdown__menu" id="account_menu" role="menu">
+        <section class="dropdown__menu" id="account_menu" role="menu">
           <a href={PAGE_URL.USERS_UPDATE} role="menuitem">
             {NAVIGATION_LABELS.SETTINGS}
           </a>
           <a id="logout_link" role="menuitem">
             {NAVIGATION_LABELS.LOGOUT}
           </a>
-        </div>
-      </div>
+        </section>
+      </section>
     </header>
     <slot />
   </BaseLayout>
@@ -72,7 +72,7 @@ const currentPath = Astro.url.pathname.replace(/(.+)\/$/, '$1')
 
 <script>
   import { addMessageToContext } from '@store/messages'
-  import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
+  import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL } from '@ts/constants'
   import { fetchWithAuth } from '@ts/helpers'
   import { parseResponseErrorToMessage } from '@ts/parsers'
 
@@ -80,7 +80,7 @@ const currentPath = Astro.url.pathname.replace(/(.+)\/$/, '$1')
 
   if (logoutLink) {
     logoutLink.addEventListener('click', async () => {
-      const logOutRespose = await fetchWithAuth(API_URL.SESSIONS, {
+      const logOutRespose = await fetchWithAuth(API_URLS.SESSIONS, {
         method: API_METHODS.DELETE
       })
 

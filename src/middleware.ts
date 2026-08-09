@@ -1,7 +1,7 @@
 import { isSessionValid } from '@api/sessions'
 import {
   API_METHODS,
-  API_URL,
+  API_URLS,
   HTTP_STATUS,
   PAGE_URL,
   SESSION_COOKIE_NAME,
@@ -12,17 +12,17 @@ import { defineMiddleware } from 'astro:middleware'
 
 const API_PATH = '/api'
 const AUTH_EXEMPT_PAGE_URLS: string[] = [PAGE_URL.LOGIN, PAGE_URL.USERS_CREATE]
+const AUTH_EXEMPT_API_URLS: string[] = [API_URLS.USERS, API_URLS.SESSIONS]
 
 export const onRequest = defineMiddleware(async ({ cookies, redirect, request, url }, next) => {
   const rawToken = cookies.get(SESSION_COOKIE_NAME)?.value
   const hasValidToken = await isSessionValid(rawToken)
 
   if (url.pathname.startsWith(API_PATH)) {
-    const isLoginEndpoint = url.pathname === API_URL.SESSIONS && request.method === API_METHODS.POST
-    const isUserCreateEndpoint =
-      url.pathname === API_URL.USERS && request.method === API_METHODS.POST
+    const isLoginOrUserCreateEndpoint =
+      AUTH_EXEMPT_API_URLS.includes(url.pathname) && request.method === API_METHODS.POST
 
-    if (!hasValidToken && !isLoginEndpoint && !isUserCreateEndpoint) {
+    if (!hasValidToken && !isLoginOrUserCreateEndpoint) {
       cookies.delete(SESSION_COOKIE_NAME)
       return parseMessageToResponse(USER_ERROR_MESSAGES.SESSION_EXPIRED, HTTP_STATUS.UNAUTHORIZED)
     }

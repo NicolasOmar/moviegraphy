@@ -5,7 +5,7 @@ import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactFo
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
-import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL, USER_ERROR_MESSAGES } from '@ts/constants'
+import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
@@ -98,7 +98,7 @@ export const ReactUserForm: FC = () => {
 
     const userToCreate = parseModelToFormData(_userFormDataModel)
 
-    const userCreateResponse = await fetch(API_URL.USERS, {
+    const userCreateResponse = await fetch(API_URLS.USERS, {
       body: userToCreate,
       method: API_METHODS.POST
     })

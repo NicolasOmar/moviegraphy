@@ -1,7 +1,7 @@
 import { $contextMessageList } from '@store/messages'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { API_URL } from '@ts/constants'
+import { API_URLS } from '@ts/constants'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReactPasswordForm } from './index'
@@ -34,7 +34,7 @@ describe('ReactPasswordForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        API_URL.PASSWORDS,
+        API_URLS.PASSWORDS,
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
