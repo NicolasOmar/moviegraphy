@@ -22,7 +22,6 @@ export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
 interface TokenModel {
   sessionToken: string
 }
-
 // ---------- USERS / SCHEMAS ----------
 export const UserBaseSchema = z.strictObject({
   email: z.email().max(50),
@@ -47,6 +46,19 @@ export const PasswordChangeSchema = z.strictObject({
   repeatNew: z.string()
 })
 
+// ---------- GENRES / INTERFACES ----------
+export interface GenreCreateModel {
+  name: string
+}
+
+// ---------- GENRES / SCHEMAS ----------
+export const GenreCreateSchema = z.strictObject({
+  moviesIds: z.uuid().array(),
+  name: z.string().max(300),
+  userId: z.uuid()
+})
+
+// ---------- MOVIES / INTERFACES ----------
 // ---------- MOVIES / SCHEMAS ----------
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),

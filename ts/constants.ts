@@ -13,7 +13,7 @@ enum API_ENTITIES {
   USERS = 'users'
 }
 
-export enum API_URL {
+export enum API_URLS {
   MOVIES = `${API_ROUTE_BASE}/${API_ENTITIES.MOVIE}`,
   PASSWORDS = `${API_ROUTE_BASE}/${API_ENTITIES.PASSWORDS}`,
   SESSIONS = `${API_ROUTE_BASE}/${API_ENTITIES.SESSIONS}`,
@@ -29,10 +29,10 @@ export enum HTTP_STATUS {
 }
 
 export enum PAGE_URL {
+  GENRES = '/genres',
   HOME = '/',
   LOGIN = '/login',
   MOVIES = '/movies',
-  USERS = '/users',
   USERS_CREATE = '/users/create',
   USERS_UPDATE = '/users/update'
 }
