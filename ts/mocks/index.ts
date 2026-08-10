@@ -1,8 +1,11 @@
-import type { MoviesModel, SessionsModel, UsersModel } from '@models'
+import type { GenresModel, MoviesModel, SessionsModel, UsersModel } from '@models'
 
+import genresFixture from './genres.mocks.json'
 import moviesFixture from './movies.mocks.json'
 import sessionsFixture from './sessions.mocks.json'
 import usersFixture from './users.mocks.json'
+
+export const genreMocks: GenresModel[] = genresFixture
 
 export const movieMocks: MoviesModel[] = moviesFixture
 

@@ -1,12 +1,12 @@
 import type { GenresModel } from '@models'
 import type { GenreWithToken } from '@ts/entities'
 
-import prismaInstance from '@prisma/index'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { handleErrorMessage } from '@ts/parsers'
 import { type CreateOrUpdateOne, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
+import prismaInstance from '../prisma'
 import { findUserBySession } from './users'
 
 export const createGenre: CreateOrUpdateOne<
@@ -18,6 +18,14 @@ export const createGenre: CreateOrUpdateOne<
 
     if (!findedUserId) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    }
+
+    const alreadyUsedName = await prismaInstance.genres.findUnique({
+      where: { name: _genreWithToken.name }
+    })
+
+    if (alreadyUsedName) {
+      throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used')
     }
 
     const createdGenreResponse = await prismaInstance.genres.create({
