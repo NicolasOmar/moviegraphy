@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.5.0...v1.6.0) (2026-08-10)
+
+
+### Features
+
+* first implementation of full stack integration for genre creation ([ccfe07a](https://github.com/NicolasOmar/moviegraphy/commit/ccfe07ab0bb931494e20311c83862504e422acc2))
+* first implementation of genre form and structure ([f8147d6](https://github.com/NicolasOmar/moviegraphy/commit/f8147d6b221762943d2c41d0bb703b806c5b484e))
+
 # [1.5.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.4.0...v1.5.0) (2026-08-07)
 
 
