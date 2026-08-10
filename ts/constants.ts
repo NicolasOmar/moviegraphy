@@ -7,6 +7,7 @@ export enum API_METHODS {
 }
 
 enum API_ENTITIES {
+  GENRES = 'genres',
   MOVIE = 'movies',
   PASSWORDS = 'passwords',
   SESSIONS = 'sessions',
@@ -14,6 +15,7 @@ enum API_ENTITIES {
 }
 
 export enum API_URLS {
+  GENRES = `${API_ROUTE_BASE}/${API_ENTITIES.GENRES}`,
   MOVIES = `${API_ROUTE_BASE}/${API_ENTITIES.MOVIE}`,
   PASSWORDS = `${API_ROUTE_BASE}/${API_ENTITIES.PASSWORDS}`,
   SESSIONS = `${API_ROUTE_BASE}/${API_ENTITIES.SESSIONS}`,

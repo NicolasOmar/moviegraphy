@@ -51,11 +51,11 @@ export interface GenreCreateModel {
   name: string
 }
 
+export interface GenreWithToken extends GenreCreateModel, TokenModel {}
+
 // ---------- GENRES / SCHEMAS ----------
 export const GenreCreateSchema = z.strictObject({
-  moviesIds: z.uuid().array(),
-  name: z.string().max(300),
-  userId: z.uuid()
+  name: z.string().max(300)
 })
 
 // ---------- MOVIES / INTERFACES ----------

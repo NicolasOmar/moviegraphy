@@ -5,6 +5,10 @@ import type { FC } from 'react'
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { addMessageToContext } from '@store/messages'
+import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
+import { fetchWithAuth } from '@ts/helpers'
+import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const genreCreateTitle = 'Create new Genre'
@@ -26,7 +30,21 @@ export const ReactGenreForm: FC = () => {
 
   const handleSubmit = async (_formData: GenreCreateModel) => {
     setLoadingSystemState(true)
-    console.warn(_formData)
+
+    const genreToCreate = parseModelToFormData(_formData)
+
+    const genreCreateResponse = await fetchWithAuth(API_URLS.GENRES, {
+      body: genreToCreate,
+      method: API_METHODS.POST
+    })
+
+    if (genreCreateResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(genreCreateResponse)
+      addMessageToContext({ content: errorMessage, type: 'error' })
+    } else {
+      addMessageToContext({ content: 'Genre created', type: 'success' })
+    }
+
     setLoadingSystemState(false)
   }
 
