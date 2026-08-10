@@ -1,7 +1,7 @@
 import { isSessionValid } from '@api/sessions'
 import {
   API_METHODS,
-  API_URL,
+  API_URLS,
   HTTP_STATUS,
   PAGE_URL,
   SESSION_COOKIE_NAME,
@@ -46,7 +46,7 @@ describe('onRequest', () => {
   describe('API routes', () => {
     it('calls next without deleting the cookie when the login path is hit without a valid session', async () => {
       mockedIsSessionValid.mockResolvedValue(false)
-      const { context, next } = buildContext(API_URL.SESSIONS, undefined, API_METHODS.POST)
+      const { context, next } = buildContext(API_URLS.SESSIONS, undefined, API_METHODS.POST)
 
       await onRequest(context, next)
 
@@ -56,7 +56,7 @@ describe('onRequest', () => {
 
     it('calls next without deleting the cookie when the user-create path is hit without a valid session', async () => {
       mockedIsSessionValid.mockResolvedValue(false)
-      const { context, next } = buildContext(API_URL.USERS, undefined, API_METHODS.POST)
+      const { context, next } = buildContext(API_URLS.USERS, undefined, API_METHODS.POST)
 
       await onRequest(context, next)
 
@@ -66,7 +66,7 @@ describe('onRequest', () => {
 
     it('returns 401, deletes the cookie, and skips next when a protected API route has no valid session', async () => {
       mockedIsSessionValid.mockResolvedValue(false)
-      const { context, next } = buildContext(API_URL.USERS, undefined, API_METHODS.PATCH)
+      const { context, next } = buildContext(API_URLS.USERS, undefined, API_METHODS.PATCH)
 
       const response = (await onRequest(context, next)) as Response
 
@@ -78,7 +78,7 @@ describe('onRequest', () => {
 
     it('calls next when a protected API route is hit with a valid session', async () => {
       mockedIsSessionValid.mockResolvedValue(true)
-      const { context, next } = buildContext(API_URL.USERS, 'raw-token', API_METHODS.PATCH)
+      const { context, next } = buildContext(API_URLS.USERS, 'raw-token', API_METHODS.PATCH)
 
       await onRequest(context, next)
 

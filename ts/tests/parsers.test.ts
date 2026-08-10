@@ -39,7 +39,8 @@ describe('parseFormDataToModel', () => {
       description: movie.description,
       id: movie.id,
       name: movie.name,
-      releaseYear: String(movie.releaseYear)
+      releaseYear: String(movie.releaseYear),
+      userId: movie.userId
     })
   })
 
@@ -67,7 +68,8 @@ describe('parseRequestToModel', () => {
       description: movie.description,
       id: movie.id,
       name: movie.name,
-      releaseYear: String(movie.releaseYear)
+      releaseYear: String(movie.releaseYear),
+      userId: movie.userId
     })
   })
 })

@@ -1,7 +1,7 @@
 import { $contextMessageList } from '@store/messages'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { API_URL, PAGE_URL } from '@ts/constants'
+import { API_URLS, PAGE_URL } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -51,7 +51,7 @@ describe('ReactUserForm', () => {
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        API_URL.USERS,
+        API_URLS.USERS,
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )

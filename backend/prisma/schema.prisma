@@ -12,14 +12,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model Movies {
-  countryMade String
-  description String? @db.VarChar(300)
-  id          String  @id @unique
-  name        String  @db.VarChar(150)
-  releaseYear Int
-}
-
 model Users {
   id       String     @id @unique
   name     String?    @db.VarChar(25)
@@ -27,6 +19,8 @@ model Users {
   email    String     @unique @db.VarChar(50)
   password String     @db.Text
   tokens   Sessions[]
+  movies   Movies[]
+  genres   Genres[]
 }
 
 model Sessions {
@@ -38,4 +32,23 @@ model Sessions {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model Movies {
+  countryMade String
+  description String?  @db.VarChar(300)
+  id          String   @id @unique
+  name        String   @db.VarChar(150)
+  releaseYear Int
+  userId      String
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  genres      Genres[]
+}
+
+model Genres {
+  id     String   @id @unique
+  name   String   @unique @db.VarChar(100)
+  userId String
+  user   Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movies Movies[]
 }

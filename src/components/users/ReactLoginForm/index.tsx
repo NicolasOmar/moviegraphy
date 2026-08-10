@@ -5,7 +5,7 @@ import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactFo
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { addMessageToContext } from '@store/messages'
-import { API_METHODS, API_URL, HTTP_STATUS, PAGE_URL } from '@ts/constants'
+import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC } from 'react'
@@ -42,7 +42,7 @@ export const ReactLoginForm: FC = () => {
 
     const userToLogin = parseModelToFormData(_loginFormData)
 
-    const userCreateResponse = await fetch(API_URL.SESSIONS, {
+    const userCreateResponse = await fetch(API_URLS.SESSIONS, {
       body: userToLogin,
       method: API_METHODS.POST
     })
@@ -51,7 +51,7 @@ export const ReactLoginForm: FC = () => {
       const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
       addMessageToContext({ content: errorMessage, type: 'error' })
     } else {
-      window.location.href = PAGE_URL.USERS
+      window.location.href = PAGE_URL.HOME
     }
 
     setLoadingSystemState(false)

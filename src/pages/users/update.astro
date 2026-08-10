@@ -5,15 +5,6 @@ import NavigationLayout from '@layouts/NavigationLayout.astro'
 ---
 
 <NavigationLayout>
-  <section class="settings_content">
-    <ReactPasswordForm client:visible />
-    <ReactUserUpdateForm client:visible />
-  </section>
+  <ReactPasswordForm client:visible />
+  <ReactUserUpdateForm client:visible />
 </NavigationLayout>
-
-<style>
-  section.settings_content {
-    display: grid;
-    margin: 0 2.5%;
-  }
-</style>
