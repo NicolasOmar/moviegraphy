@@ -9,6 +9,13 @@ import { v6 } from 'uuid'
 import prismaInstance from '../prisma'
 import { findUserBySession } from './users'
 
+/** CREATE function for genres
+ *
+ * - If the provided name on the genre has been already added, it will return an error
+ *
+ * @param _genreWithToken A `GenreWithToken` object to be created in the database
+ * @returns The new `GenresModel`
+ */
 export const createGenre: CreateOrUpdateOne<
   GenreWithToken,
   GenresModel
@@ -28,15 +35,13 @@ export const createGenre: CreateOrUpdateOne<
       throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used')
     }
 
-    const createdGenreResponse = await prismaInstance.genres.create({
+    return await prismaInstance.genres.create({
       data: {
         id: v6(),
         name: _genreWithToken.name,
         userId: findedUserId as string
       }
     })
-
-    return createdGenreResponse
   } catch (createGerneError) {
     console.error('[POST /api/genres]', { error: createGerneError })
 

@@ -1,5 +1,5 @@
 import type { UsersModel } from '@models'
-import type { UserUpdateModel, UserWithToken } from '@ts/entities'
+import type { PasswordChangeWithToken, UserUpdateModel, UserWithToken } from '@ts/entities'
 import type { CreateOrUpdateOne, FindOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
@@ -12,12 +12,17 @@ import { v6 } from 'uuid'
 import prismaInstance from '../prisma'
 import { Prisma } from '../prisma/generated/client'
 
-export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async newUser => {
+/** CREATE function for users
+ *
+ * @param _newUser A `UsersModel` object to be created in the database
+ * @returns The new `UserWithToken` (includes a `sessionToken` to be added as a cookie)
+ */
+export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _newUser => {
   try {
-    const hashedPassword = await hashString(newUser.password)
+    const hashedPassword = await hashString(_newUser.password)
     const createdUser = await prismaInstance.users.create({
       data: {
-        ...newUser,
+        ..._newUser,
         password: hashedPassword
       }
     })
@@ -73,35 +78,51 @@ export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name,
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }
 }
-
-export const updatePassword: CreateOrUpdateOne<
-  { newPassword: string; oldPassword: string; sessionToken: string },
-  boolean
-> = async passwords => {
-  const hashedToken = hashToken(passwords.sessionToken)
+/** UPDATE function for users
+ *
+ * - Hashed the provided `sessionToken`
+ * - Looks for the created session from the `hashedToken`
+ *    - If does not exists, it returns an `INVALID_CREDENTIALS` error
+ * - Looks for the logged user from the `existingSession`
+ *    - If does not exists, it returns an `INVALID_CREDENTIALS` error
+ * - Look the `oldPassword` is the same as the previous/hashed one form the logged user
+ *    - If does not exists, it returns an `PASSWORD_MISMATCH` error
+ * - Hashes the new password and updates the user with it
+ *
+ * @param _modifiedPassword A `PasswordChangeWithToken` object to update an already created one
+ * @returns A true value when the password has been updated in the database
+ */
+export const updatePassword: CreateOrUpdateOne<PasswordChangeWithToken, boolean> = async ({
+  newPassword,
+  oldPassword,
+  sessionToken
+}) => {
+  const hashedToken = hashToken(sessionToken)
 
   try {
-    const refreshToken = await prismaInstance.sessions.findFirst({
+    const existingSession = await prismaInstance.sessions.findFirst({
       where: { token: hashedToken }
     })
 
-    if (!refreshToken) {
+    if (!existingSession) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     }
 
-    const loggedUser = await prismaInstance.users.findUnique({ where: { id: refreshToken.userId } })
+    const loggedUser = await prismaInstance.users.findUnique({
+      where: { id: existingSession.userId }
+    })
 
     if (!loggedUser) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     }
 
-    const areSamePasswords = await compareHashed(passwords.oldPassword, loggedUser.password)
+    const areSamePasswords = await compareHashed(oldPassword, loggedUser.password)
 
     if (!areSamePasswords) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
     }
 
-    const hashedNewPassword = await hashString(passwords.newPassword)
+    const hashedNewPassword = await hashString(newPassword)
 
     await prismaInstance.users.update({
       data: { password: hashedNewPassword },
@@ -121,7 +142,10 @@ export const updatePassword: CreateOrUpdateOne<
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }
 }
-
+/** GET function for registered users by its `username`
+ *
+ * @returns A boolean value if the user with the provided username exists or not
+ */
 export const findUserByUsername: FindOne<UsersModel, { username: string }> = async ({
   username
 }) => {
@@ -142,19 +166,24 @@ export const findUserByUsername: FindOne<UsersModel, { username: string }> = asy
   }
 }
 
-export const findUserBySession: FindOne<string, string> = async (sessionToken: string) => {
-  const hashedToken = hashToken(sessionToken)
+/** GET function for registered users by its `sessionToken`
+ *
+ * @param _sessionToken A string for the raw session token from the logged user
+ * @returns Logged user's id
+ */
+export const findUserBySession: FindOne<string, string> = async (_sessionToken: string) => {
+  const hashedToken = hashToken(_sessionToken)
 
   try {
-    const refreshToken = await prismaInstance.sessions.findFirst({
+    const loggedSession = await prismaInstance.sessions.findFirst({
       where: { token: hashedToken }
     })
 
-    if (!refreshToken) {
+    if (!loggedSession) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     }
 
-    return refreshToken.userId
+    return loggedSession.userId
   } catch (findUserBySessionError) {
     console.error('[GET /api/users]', { error: findUserBySessionError })
 

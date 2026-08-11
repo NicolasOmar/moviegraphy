@@ -6,6 +6,10 @@ import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from 
 
 import prismaInstance from '../prisma'
 
+/** GET function for registered movies
+ *
+ * @returns A list of `MoviesModel`
+ */
 export const getMovieList: GetMany<MoviesModel> = async () => {
   try {
     return await prismaInstance.movies.findMany()
@@ -18,9 +22,14 @@ export const getMovieList: GetMany<MoviesModel> = async () => {
   }
 }
 
-export const createMovie: CreateOrUpdateOne<MoviesModel> = async newMovie => {
+/** CREATE function for movies
+ *
+ * @param _newMovie A `MoviesModel` object to be created in the database
+ * @returns The new `MoviesModel`
+ */
+export const createMovie: CreateOrUpdateOne<MoviesModel> = async _newMovie => {
   try {
-    return await prismaInstance.movies.create({ data: newMovie })
+    return await prismaInstance.movies.create({ data: _newMovie })
   } catch (error) {
     console.error('[POST /api/movies]', { error })
 
@@ -30,8 +39,13 @@ export const createMovie: CreateOrUpdateOne<MoviesModel> = async newMovie => {
   }
 }
 
-export const updateMovie: CreateOrUpdateOne<MoviesModel> = async modifiedMovie => {
-  const { id: movieId, ...dataToUpdate } = modifiedMovie
+/** UPDATE function for movies
+ *
+ * @param _modifiedMovie A `MoviesModel` object to update an already created one
+ * @returns The updated `MoviesModel`
+ */
+export const updateMovie: CreateOrUpdateOne<MoviesModel> = async _modifiedMovie => {
+  const { id: movieId, ...dataToUpdate } = _modifiedMovie
 
   try {
     return await prismaInstance.movies.update({
@@ -47,9 +61,14 @@ export const updateMovie: CreateOrUpdateOne<MoviesModel> = async modifiedMovie =
   }
 }
 
-export const deleteMovie: DeleteOne = async id => {
+/** DELETE function for movies
+ *
+ * @param _movieId A string related to an existing movie in the database
+ * @returns A true value when the movie has been deleted from the database
+ */
+export const deleteMovie: DeleteOne = async _movieId => {
   try {
-    await prismaInstance.movies.delete({ where: { id } })
+    await prismaInstance.movies.delete({ where: { id: _movieId } })
 
     return new Promise(resolve => resolve(true))
   } catch (error) {

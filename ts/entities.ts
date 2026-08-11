@@ -8,6 +8,13 @@ export interface PasswordChangeModel {
   repeatNew: string
 }
 
+// ---------- USERS / INTERFACES ----------
+export interface PasswordChangeWithToken {
+  newPassword: string
+  oldPassword: string
+  sessionToken: string
+}
+
 export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string
 }
@@ -18,7 +25,6 @@ export type UserUpdateModel = Omit<UsersModel, 'email' | 'password'>
 
 export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
 
-// ---------- USERS / INTERFACES ----------
 interface TokenModel {
   sessionToken: string
 }

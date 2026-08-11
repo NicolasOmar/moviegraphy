@@ -9,13 +9,19 @@ import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
 
-export const isSessionValid = async (rawToken?: null | string): Promise<boolean> => {
-  if (rawToken === undefined || rawToken === null) {
+/**
+ * Asks for a raw session token, it looks for it in the registered sessions for its existence.
+ *
+ * @param _rawToken token without hashing (that could even not be sended)
+ * @returns A boolean if is a valid one or not.
+ */
+export const isSessionValid = async (_rawToken?: null | string): Promise<boolean> => {
+  if (_rawToken === undefined || _rawToken === null) {
     return false
   }
 
   try {
-    const hashedToken = hashToken(rawToken)
+    const hashedToken = hashToken(_rawToken)
     const refreshToken = await prismaInstance.sessions.findFirst({
       where: { expiresAt: { gt: getCurrentISODate() }, token: hashedToken }
     })
@@ -30,6 +36,17 @@ export const isSessionValid = async (rawToken?: null | string): Promise<boolean>
   }
 }
 
+/**
+ * - Looks for the user in the database using its password or username
+ *    - If it does not exists, it will return INVALID_CREDENTIALS error
+ * - Looks that the provided password by the user is the same as its hashed countrapart
+ *    - If it does not exists, it will return INVALID_CREDENTIALS error
+ * - Creates a new token from users's id and hashes it
+ * - Creates a session
+ *
+ * @param _userToLogin of type `UserLoginModel`
+ * @returns An `UserWithToken`
+ */
 export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async ({
   password,
   username
@@ -78,8 +95,15 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
   }
 }
 
-export const logoutUser: DeleteOne = async token => {
-  const hashedToken = hashToken(token)
+/**
+ * - Hashes the provided token
+ * - Deletes the saved session from the hashed token
+ *
+ * @param _token A raw session token in string format
+ * @returns True
+ */
+export const logoutUser: DeleteOne = async _token => {
+  const hashedToken = hashToken(_token)
 
   try {
     await prismaInstance.sessions.delete({
