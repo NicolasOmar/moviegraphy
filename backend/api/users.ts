@@ -14,7 +14,7 @@ import { Prisma } from '../prisma/generated/client'
 
 /** CREATE function for users
  *
- * @param _newUser A `UsersModel` object to be created in the database
+ * @param _newUser - A `UsersModel` object to be created in the database
  * @returns The new `UserWithToken` (includes a `sessionToken` to be added as a cookie)
  */
 export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _newUser => {
@@ -89,7 +89,7 @@ export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name,
  *    - If does not exists, it returns an `PASSWORD_MISMATCH` error
  * - Hashes the new password and updates the user with it
  *
- * @param _modifiedPassword A `PasswordChangeWithToken` object to update an already created one
+ * @param _modifiedPassword - A `PasswordChangeWithToken` object to update an already created one
  * @returns A true value when the password has been updated in the database
  */
 export const updatePassword: CreateOrUpdateOne<PasswordChangeWithToken, boolean> = async ({
@@ -168,7 +168,7 @@ export const findUserByUsername: FindOne<UsersModel, { username: string }> = asy
 
 /** GET function for registered users by its `sessionToken`
  *
- * @param _sessionToken A string for the raw session token from the logged user
+ * @param _sessionToken - A string for the raw session token from the logged user
  * @returns Logged user's id
  */
 export const findUserBySession: FindOne<string, string> = async (_sessionToken: string) => {

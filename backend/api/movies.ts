@@ -24,7 +24,7 @@ export const getMovieList: GetMany<MoviesModel> = async () => {
 
 /** CREATE function for movies
  *
- * @param _newMovie A `MoviesModel` object to be created in the database
+ * @param _newMovie - A `MoviesModel` object to be created in the database
  * @returns The new `MoviesModel`
  */
 export const createMovie: CreateOrUpdateOne<MoviesModel> = async _newMovie => {
@@ -41,7 +41,7 @@ export const createMovie: CreateOrUpdateOne<MoviesModel> = async _newMovie => {
 
 /** UPDATE function for movies
  *
- * @param _modifiedMovie A `MoviesModel` object to update an already created one
+ * @param _modifiedMovie - A `MoviesModel` object to update an already created one
  * @returns The updated `MoviesModel`
  */
 export const updateMovie: CreateOrUpdateOne<MoviesModel> = async _modifiedMovie => {
@@ -63,7 +63,7 @@ export const updateMovie: CreateOrUpdateOne<MoviesModel> = async _modifiedMovie 
 
 /** DELETE function for movies
  *
- * @param _movieId A string related to an existing movie in the database
+ * @param _movieId - A string related to an existing movie in the database
  * @returns A true value when the movie has been deleted from the database
  */
 export const deleteMovie: DeleteOne = async _movieId => {

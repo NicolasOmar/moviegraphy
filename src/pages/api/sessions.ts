@@ -4,7 +4,6 @@ import type { APIRoute } from 'astro'
 import { loginUser, logoutUser } from '@api/sessions'
 import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
-import { HttpError } from '@ts/types'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
   const loginModel = await parseRequestToModel<UserLoginModel>(request)
@@ -30,7 +29,7 @@ export const DELETE: APIRoute = async ({ cookies }) => {
   const loggedToken = cookies.get(SESSION_COOKIE_NAME)
 
   if (!loggedToken) {
-    return parseHttpErrorToResponse(new HttpError(HTTP_STATUS.BAD_REQUEST, 'No token provided'))
+    return parseMessageToResponse('No token provided', HTTP_STATUS.BAD_REQUEST)
   }
 
   try {

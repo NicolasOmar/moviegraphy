@@ -8,10 +8,11 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
 import perfectionist from 'eslint-plugin-perfectionist'
+import tsdoc from 'eslint-plugin-tsdoc'
 import vitest from '@vitest/eslint-plugin'
 
 export default defineConfig(
-  globalIgnores(['dist/**', '.astro/**', 'node_modules/**']),
+  globalIgnores(['dist/**', '.astro/**', 'node_modules/**', 'backend/prisma/generated/**']),
   js.configs.recommended,
   tseslint.configs.recommended,
   astro.configs.recommended,
@@ -21,7 +22,8 @@ export default defineConfig(
     plugins: {
       react,
       'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y
+      'jsx-a11y': jsxA11y,
+      tsdoc
     },
     languageOptions: {
       globals: {
@@ -38,7 +40,8 @@ export default defineConfig(
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
-      ...jsxA11y.configs.recommended.rules
+      ...jsxA11y.configs.recommended.rules,
+      'tsdoc/syntax': 'error'
     }
   },
   {

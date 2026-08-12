@@ -13,7 +13,7 @@ import { findUserBySession } from './users'
  *
  * - If the provided name on the genre has been already added, it will return an error
  *
- * @param _genreWithToken A `GenreWithToken` object to be created in the database
+ * @param _genreWithToken - A `GenreWithToken` object to be created in the database
  * @returns The new `GenresModel`
  */
 export const createGenre: CreateOrUpdateOne<

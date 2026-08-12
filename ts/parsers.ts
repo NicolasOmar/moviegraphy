@@ -1,47 +1,107 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from './constants'
 import { HttpError } from './types'
 
-export const parseModelToFormData = <T extends object>(rawFormData: T): FormData => {
+/** Converts a raw data object into a FormData for API consumption
+ *
+ * @param _rawFormData - A generic data object which shape is provided by the user
+ * @returns A `FormData` object fo be sended from the React component to the `/pages/api` routes and be handled
+ */
+export const parseModelToFormData = <UserDefinedModel extends object>(
+  _rawFormData: UserDefinedModel
+): FormData => {
   const _formData = new FormData()
 
-  ;(Object.keys(rawFormData) as Array<keyof T>).forEach(key =>
-    _formData.append(String(key), String(rawFormData[key]))
+  ;(Object.keys(_rawFormData) as Array<keyof UserDefinedModel>).forEach(key =>
+    _formData.append(String(key), String(_rawFormData[key]))
   )
 
   return _formData
 }
 
-export const parseFormDataToModel = <T extends object>(_formData: FormData): T => {
+/** Sort of inverted `parseModelToFormData` method. Used to parse a `FormData`
+ * object into a user-defined data object
+ *
+ * @param _formData - A `FormData` object to be parsed
+ * @returns A user-defined data object
+ */
+export const parseFormDataToModel = <UserDefinedModel extends object>(
+  _formData: FormData
+): UserDefinedModel => {
   return Array.from(_formData.entries()).reduce(
     (_finalModel, [_formDataKey, _formDataValue]) => ({
       ..._finalModel,
       [_formDataKey]: _formDataValue
     }),
-    {} as T
+    {} as UserDefinedModel
   )
 }
 
-export const parseRequestToModel = async <T extends object>(request: Request): Promise<T> => {
-  const extractedFormData = await request.formData()
-  return parseFormDataToModel(extractedFormData)
+/** Handles an API `Request` and obtains its `FormData` object to be parsed
+ * into a user-defined data object using `parseFormDataToModel`
+ *
+ * @param _requestObject - A `Request` object obtained from a `APIRoute` request
+ * @returns A user-defined data object inside a promise
+ */
+export const parseRequestToModel = async <UserDefinedModel extends object>(
+  _requestObject: Request
+): Promise<UserDefinedModel> => {
+  const extractedFormData = await _requestObject.formData()
+
+  return parseFormDataToModel<UserDefinedModel>(extractedFormData)
 }
 
-export const handleErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : String(error)
+/** Extract error's message or creates a string out of the error object itself
+ *
+ * - If the `_error` is an instance of `Error`. It return its `message` property
+ * - Else, the `_error` is stringified and returned as the message
+ *
+ * @param _error - An `unknown` error object to be parsed
+ * @returns Error's message
+ */
+export const handleErrorMessage = (_error: unknown) =>
+  _error instanceof Error ? _error.message : String(_error)
 
+/** Extract Response's  message from the `/pages/api` request and
+ * displays it (even if is an array of strings, it joins them)
+ *
+ * @param _response - An API `Response` (mostly an error)
+ * @returns A single string to be displayed by the front-end
+ */
 export const parseResponseErrorToMessage = async (_response: Response) => {
   const errorMessage = (await _response.json()).message as string | string[]
   return Array.isArray(errorMessage) ? errorMessage.join('. ') : errorMessage
 }
 
+/** Parses a message string or a specific type of error object into a Response
+ * from the `/pages/api` response to the front-end
+ *
+ * - Mostly used for success messages or `zod` schema errors
+ *
+ * @param _message - A string, list of strings or user-defined object with the mentioned message
+ * @param _status - A [standard HTTP code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status)
+ * @returns An API Response with standard `message` and `status`
+ */
 export const parseMessageToResponse = <T>(
-  message: string | string[] | T,
-  status: number
-): Response => new Response(JSON.stringify({ message }), { status })
+  _message: string | string[] | T,
+  _status: number
+): Response => new Response(JSON.stringify({ message: _message }), { status: _status })
 
-export const parseHttpErrorToResponse = (error: HttpError | unknown): Response => {
-  if (error instanceof HttpError) {
-    return parseMessageToResponse(error.message, error.status)
+/** Parses an error (HTTP type or unhandled) into a `Response` using
+ * `parseMessageToResponse`
+ *
+ * - Mostly used for `/pages/api` error catching (it simplifies the
+ * handling into a single return function)
+ *
+ * - If _error is an instance of `HttpError`, it will parse it into
+ * a `Response` based on its data
+ *    - Else, it will return an `UNEXPECTED` error message because as default
+ *
+ * @param _error - The error to be handled
+ * @returns A `Response` object to ha handled to the front-end
+ */
+export const parseHttpErrorToResponse = (_error: HttpError | unknown): Response => {
+  if (_error instanceof HttpError) {
+    return parseMessageToResponse(_error.message, _error.status)
   }
 
   return parseMessageToResponse(USER_ERROR_MESSAGES.UNEXPECTED, HTTP_STATUS.INTERNAL_SERVER_ERROR)
