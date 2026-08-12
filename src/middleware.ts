@@ -14,8 +14,7 @@ const API_PATH = '/api'
 const AUTH_EXEMPT_PAGE_URLS: string[] = [PAGE_URL.LOGIN, PAGE_URL.USERS_CREATE]
 const AUTH_EXEMPT_API_URLS: string[] = [API_URLS.USERS, API_URLS.SESSIONS]
 
-/**
- * Query called each time a page or api is requested (is the same concept for Astro, a request)
+/** Query called each time a page or api is requested (is the same concept for Astro, a request)
  * - First, i collects the session token from user's cookies and looks if the session is valid
  * - Then, if the request is an api call (using `API_PATH` as reference), it will go to another branch
  *  - If the session token is not valid and the url is not a login or user creation path

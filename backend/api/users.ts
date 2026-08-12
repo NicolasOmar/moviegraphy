@@ -1,6 +1,6 @@
 import type { UsersModel } from '@models'
 import type { PasswordChangeWithToken, UserUpdateModel, UserWithToken } from '@ts/entities'
-import type { CreateOrUpdateOne, FindOne } from '@ts/types'
+import type { CreateOrUpdateOne, GetOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getISODateWithDaysOffset } from '@ts/helpers'
@@ -12,9 +12,15 @@ import { v6 } from 'uuid'
 import prismaInstance from '../prisma'
 import { Prisma } from '../prisma/generated/client'
 
-/** CREATE function for users
+/** `[CREATE]` function for users
  *
- * @param _newUser - A `UsersModel` object to be created in the database
+ * - Hashes the _newUser password
+ * - Creates the user with the hashed password
+ * - Creates a raw session token based on the newly created user
+ * - Creates a hashed version of the raw session token
+ * - Creates a session registry using the hashed session token and user id
+ *
+ * @param _newUser - A `UsersModel` object to be inserted into the database
  * @returns The new `UserWithToken` (includes a `sessionToken` to be added as a cookie)
  */
 export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _newUser => {
@@ -58,6 +64,11 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _n
   }
 }
 
+/** `[UPDATE]` function for users
+ *
+ * @returns A true value when the creted user has been updated in the database
+ * @param _updatedUser - A `UserUpdateModel` object to update an already created one
+ */
 export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name, username }) => {
   try {
     await prismaInstance.users.update({
@@ -78,7 +89,8 @@ export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name,
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }
 }
-/** UPDATE function for users
+
+/** `[UPDATE]` function for a created user's password
  *
  * - Hashed the provided `sessionToken`
  * - Looks for the created session from the `hashedToken`
@@ -142,13 +154,11 @@ export const updatePassword: CreateOrUpdateOne<PasswordChangeWithToken, boolean>
     throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
   }
 }
-/** GET function for registered users by its `username`
+/** `[GET]` function for registered users by its `username`
  *
  * @returns A boolean value if the user with the provided username exists or not
  */
-export const findUserByUsername: FindOne<UsersModel, { username: string }> = async ({
-  username
-}) => {
+export const findUserByUsername: GetOne<{ username: string }> = async ({ username }) => {
   try {
     const findedUser = await prismaInstance.users.findUnique({ where: { username } })
 
@@ -166,12 +176,12 @@ export const findUserByUsername: FindOne<UsersModel, { username: string }> = asy
   }
 }
 
-/** GET function for registered users by its `sessionToken`
+/** `[GET]` function for registered users by its `sessionToken`
  *
  * @param _sessionToken - A string for the raw session token from the logged user
  * @returns Logged user's id
  */
-export const findUserBySession: FindOne<string, string> = async (_sessionToken: string) => {
+export const findUserBySession: GetOne<string, string> = async _sessionToken => {
   const hashedToken = hashToken(_sessionToken)
 
   try {
@@ -179,7 +189,7 @@ export const findUserBySession: FindOne<string, string> = async (_sessionToken: 
       where: { token: hashedToken }
     })
 
-    if (!loggedSession) {
+    if (!loggedSession || !loggedSession.userId) {
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     }
 

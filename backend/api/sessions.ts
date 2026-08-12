@@ -41,8 +41,8 @@ export const isSessionValid = async (_rawToken?: null | string): Promise<boolean
  *    - If it does not exists, it will return INVALID_CREDENTIALS error
  * - Looks that the provided password by the user is the same as its hashed countrapart
  *    - If it does not exists, it will return INVALID_CREDENTIALS error
- * - Creates a new token from users's id and hashes it
- * - Creates a session
+ * - Creates a new session token from users's id and hashes it
+ * - Creates a new session with the hashed session token and user's id
  *
  * @param _userToLogin - of type `UserLoginModel`
  * @returns An `UserWithToken`
@@ -110,7 +110,7 @@ export const logoutUser: DeleteOne = async _token => {
       where: { token: hashedToken }
     })
 
-    return new Promise(resolve => resolve(true))
+    return true
   } catch (logOutError) {
     console.error('[POST /api/sessions]', { error: logOutError })
 
