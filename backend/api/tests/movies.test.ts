@@ -25,24 +25,24 @@ describe('getMovieList', () => {
     expect(result).toEqual(movieMocks)
   })
 
-  it('falls back to an empty list when the query rejects with an Error', async () => {
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movies.findMany.mockRejectedValue(
       new Error('SASL: client password must be a string')
     )
 
-    const result = await getMovieList()
-
-    expect(result).toEqual([])
+    await expect(getMovieList()).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'SASL: client password must be a string')
+    )
   })
 
-  it('falls back to an empty list when a non-Error value is thrown', async () => {
+  it('wraps a non-Error rejection into a 500 HttpError with the stringified value', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movies.findMany.mockRejectedValue('connection refused')
 
-    const result = await getMovieList()
-
-    expect(result).toEqual([])
+    await expect(getMovieList()).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
+    )
   })
 })
 

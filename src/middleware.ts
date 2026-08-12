@@ -27,7 +27,7 @@ const AUTH_EXEMPT_API_URLS: string[] = [API_URLS.USERS, API_URLS.SESSIONS]
  */
 export const onRequest = defineMiddleware(async ({ cookies, redirect, request, url }, next) => {
   const rawSessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const isValidSessionToken = await isSessionValid(rawSessionToken)
+  const isValidSessionToken = await isSessionValid(rawSessionToken).catch(() => false)
 
   if (url.pathname.startsWith(API_PATH)) {
     const isLoginOrUserCreateEndpoint =

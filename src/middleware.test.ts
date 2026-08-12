@@ -86,6 +86,17 @@ describe('onRequest', () => {
       expect(context.cookies.delete).not.toHaveBeenCalled()
       expect(next).toHaveBeenCalled()
     })
+
+    it('treats a rejected isSessionValid as an invalid session and returns 401', async () => {
+      mockedIsSessionValid.mockRejectedValue(new Error('connection refused'))
+      const { context, next } = buildContext(API_URLS.USERS, 'raw-token', API_METHODS.PATCH)
+
+      const response = (await onRequest(context, next)) as Response
+
+      expect(context.cookies.delete).toHaveBeenCalledWith(SESSION_COOKIE_NAME)
+      expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+      expect(next).not.toHaveBeenCalled()
+    })
   })
 
   describe('page routes', () => {

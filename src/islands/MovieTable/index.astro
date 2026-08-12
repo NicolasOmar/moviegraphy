@@ -27,7 +27,7 @@ const movieListColumns = [
   }
 ]
 
-const movieList = await getMovieList()
+const movieList = await getMovieList().catch(() => [])
 ---
 
 <ReactMovieTable client:visible columns={movieListColumns} dataSource={movieList} />

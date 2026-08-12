@@ -4,7 +4,7 @@ import type { CreateOrUpdateOne, GetOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getISODateWithDaysOffset } from '@ts/helpers'
-import { handleErrorMessage } from '@ts/parsers'
+import { parseApiErrorToHttpError } from '@ts/parsers'
 import { compareHashed, createToken, hashString, hashToken } from '@ts/tokens'
 import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
@@ -48,19 +48,16 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _n
       email: createdUser.email,
       sessionToken: rawToken
     }
-  } catch (createUserError) {
-    console.error('[POST /api/users]', { error: createUserError })
-
+  } catch (_createUserError) {
     if (
-      createUserError instanceof Prisma.PrismaClientKnownRequestError &&
-      createUserError.code === 'P2002'
+      _createUserError instanceof Prisma.PrismaClientKnownRequestError &&
+      _createUserError.code === 'P2002'
     ) {
+      console.error('[POST /api/users]', { error: _createUserError })
       throw new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)
     }
 
-    const errorMessage = handleErrorMessage(createUserError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+    throw parseApiErrorToHttpError(_createUserError, '[POST /api/users]')
   }
 }
 
@@ -77,16 +74,8 @@ export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name,
     })
 
     return true
-  } catch (updateUserError) {
-    console.error('[POST /api/users]', { error: updateUserError })
-
-    if (updateUserError instanceof HttpError) {
-      throw updateUserError
-    }
-
-    const errorMessage = handleErrorMessage(updateUserError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_updateUserError) {
+    throw parseApiErrorToHttpError(_updateUserError, '[PATCH /api/users]')
   }
 }
 
@@ -142,16 +131,8 @@ export const updatePassword: CreateOrUpdateOne<PasswordChangeWithToken, boolean>
     })
 
     return true
-  } catch (updatePasswordError) {
-    console.error('[POST /api/users]', { error: updatePasswordError })
-
-    if (updatePasswordError instanceof HttpError) {
-      throw updatePasswordError
-    }
-
-    const errorMessage = handleErrorMessage(updatePasswordError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_updatePasswordError) {
+    throw parseApiErrorToHttpError(_updatePasswordError, '[POST /api/passwords]')
   }
 }
 /** `[GET]` function for registered users by its `username`
@@ -163,16 +144,8 @@ export const findUserByUsername: GetOne<{ username: string }> = async ({ usernam
     const findedUser = await prismaInstance.users.findUnique({ where: { username } })
 
     return Promise.resolve(findedUser !== null)
-  } catch (findUserByUsernameError) {
-    console.error('[GET /api/users]', { error: findUserByUsernameError })
-
-    if (findUserByUsernameError instanceof HttpError) {
-      throw findUserByUsernameError
-    }
-
-    const errorMessage = handleErrorMessage(findUserByUsernameError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_findUserByUsernameError) {
+    throw parseApiErrorToHttpError(_findUserByUsernameError, '[GET /api/users]')
   }
 }
 
@@ -194,15 +167,7 @@ export const findUserBySession: GetOne<string, string> = async _sessionToken => 
     }
 
     return loggedSession.userId
-  } catch (findUserBySessionError) {
-    console.error('[GET /api/users]', { error: findUserBySessionError })
-
-    if (findUserBySessionError instanceof HttpError) {
-      throw findUserBySessionError
-    }
-
-    const errorMessage = handleErrorMessage(findUserBySessionError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_findUserBySessionError) {
+    throw parseApiErrorToHttpError(_findUserBySessionError, '[GET /api/users]')
   }
 }

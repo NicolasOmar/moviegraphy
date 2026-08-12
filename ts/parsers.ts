@@ -58,7 +58,7 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
  * @param _error - An `unknown` error object to be parsed
  * @returns Error's message
  */
-export const handleErrorMessage = (_error: unknown) =>
+export const getErrorMessage = (_error: unknown) =>
   _error instanceof Error ? _error.message : String(_error)
 
 /** Extract Response's  message from the `/pages/api` request and
@@ -105,4 +105,31 @@ export const parseHttpErrorToResponse = (_error: HttpError | unknown): Response 
   }
 
   return parseMessageToResponse(USER_ERROR_MESSAGES.UNEXPECTED, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+}
+
+/** Parses an error related to `Prisma` handling into an `HttpError` to be handled by
+ * the `/pages/api` handlers
+ *
+ * - Consoles the error at the `backend/api` level
+ * - If the error is an instance of HttpError, it returns it withour adjust it
+ * - Else, it creates an error message from the original error
+ * - Then, it returns the parsed message with a `INTERNAL_SERVER_ERROR` HTTP code
+ *
+ * @param _error - The error to be handled
+ * @param _apiPath - A string path to trace, locate and debug the issue at the `backend/api` level
+ * @returns An `HttpError` object to be handled by `/pages/api` responses
+ */
+export const parseApiErrorToHttpError = (
+  _error: HttpError | unknown,
+  _apiPath: string
+): HttpError => {
+  console.error(_apiPath, { error: _error })
+
+  if (_error instanceof HttpError) {
+    return _error
+  }
+
+  const errorMessage = getErrorMessage(_error)
+
+  return new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
 }

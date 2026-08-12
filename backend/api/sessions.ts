@@ -2,7 +2,7 @@ import type { UserLoginModel, UserWithToken } from '@ts/entities'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getCurrentISODate, getISODateWithDaysOffset } from '@ts/helpers'
-import { handleErrorMessage } from '@ts/parsers'
+import { parseApiErrorToHttpError } from '@ts/parsers'
 import { compareHashed, createToken, hashToken } from '@ts/tokens'
 import { type CreateOrUpdateOne, type DeleteOne, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
@@ -27,12 +27,8 @@ export const isSessionValid = async (_rawToken?: null | string): Promise<boolean
     })
 
     return Boolean(refreshToken)
-  } catch (error) {
-    const errorMessage = handleErrorMessage(error)
-
-    console.error('[middleware] refresh token validation failed', { errorMessage })
-
-    return false
+  } catch (_isSessionValidError) {
+    throw parseApiErrorToHttpError(_isSessionValidError, '[isSessionValid]')
   }
 }
 
@@ -82,16 +78,8 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
       email: user.email,
       sessionToken: rawToken
     }
-  } catch (getUserByCredentialsError) {
-    console.error('[POST /api/users]', { error: getUserByCredentialsError })
-
-    if (getUserByCredentialsError instanceof HttpError) {
-      throw getUserByCredentialsError
-    }
-
-    const errorMessage = handleErrorMessage(getUserByCredentialsError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_loginUserError) {
+    throw parseApiErrorToHttpError(_loginUserError, '[loginUser]')
   }
 }
 
@@ -111,11 +99,7 @@ export const logoutUser: DeleteOne = async _token => {
     })
 
     return true
-  } catch (logOutError) {
-    console.error('[POST /api/sessions]', { error: logOutError })
-
-    const errorMessage = handleErrorMessage(logOutError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_logOutUserError) {
+    throw parseApiErrorToHttpError(_logOutUserError, '[logoutUser]')
   }
 }

@@ -1,8 +1,7 @@
 import type { MoviesModel } from '@models'
 
-import { HTTP_STATUS } from '@ts/constants'
-import { handleErrorMessage } from '@ts/parsers'
-import { type CreateOrUpdateOne, type DeleteOne, type GetManyOld, HttpError } from '@ts/types'
+import { parseApiErrorToHttpError } from '@ts/parsers'
+import { type CreateOrUpdateOne, type DeleteOne, type GetManyOld } from '@ts/types'
 
 import prismaInstance from '../prisma'
 
@@ -13,12 +12,8 @@ import prismaInstance from '../prisma'
 export const getMovieList: GetManyOld<MoviesModel> = async () => {
   try {
     return await prismaInstance.movies.findMany()
-  } catch (error) {
-    const errorMessage = handleErrorMessage(error)
-
-    console.error('[GET /api/movies]', { errorMessage })
-
-    return []
+  } catch (_getMovieListError) {
+    throw parseApiErrorToHttpError(_getMovieListError, '[GET /api/movies]')
   }
 }
 
@@ -30,12 +25,8 @@ export const getMovieList: GetManyOld<MoviesModel> = async () => {
 export const createMovie: CreateOrUpdateOne<MoviesModel> = async _newMovie => {
   try {
     return await prismaInstance.movies.create({ data: _newMovie })
-  } catch (error) {
-    console.error('[POST /api/movies]', { error })
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_createMovieError) {
+    throw parseApiErrorToHttpError(_createMovieError, '[POST /api/movies]')
   }
 }
 
@@ -52,12 +43,8 @@ export const updateMovie: CreateOrUpdateOne<MoviesModel> = async _modifiedMovie 
       data: dataToUpdate,
       where: { id: movieId }
     })
-  } catch (error) {
-    console.error('[PATCH /api/movies]', { error })
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_updateMovieError) {
+    throw parseApiErrorToHttpError(_updateMovieError, '[PATCH /api/movies]')
   }
 }
 
@@ -71,11 +58,7 @@ export const deleteMovie: DeleteOne = async _movieId => {
     await prismaInstance.movies.delete({ where: { id: _movieId } })
 
     return true
-  } catch (error) {
-    console.error('[DELETE /api/movies]', { error })
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_deleteMovieError) {
+    throw parseApiErrorToHttpError(_deleteMovieError, '[DELETE /api/movies]')
   }
 }

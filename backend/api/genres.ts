@@ -2,7 +2,7 @@ import type { GenresModel } from '@models'
 import type { GenreWithToken } from '@ts/entities'
 
 import { HTTP_STATUS } from '@ts/constants'
-import { handleErrorMessage } from '@ts/parsers'
+import { parseApiErrorToHttpError } from '@ts/parsers'
 import { type CreateOrUpdateOne, type GetMany, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
@@ -38,16 +38,8 @@ export const createGenre: CreateOrUpdateOne<
         userId: findedUserId as string
       }
     })
-  } catch (createGerneError) {
-    console.error('[POST /api/genres]', { error: createGerneError })
-
-    if (createGerneError instanceof HttpError) {
-      throw createGerneError
-    }
-
-    const errorMessage = handleErrorMessage(createGerneError)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_createGerneError) {
+    throw parseApiErrorToHttpError(_createGerneError, '[POST /api/genres]')
   }
 }
 
@@ -63,15 +55,7 @@ export const findGenres: GetMany<string, GenresModel> = async _sessionToken => {
     const findedUserId = await findUserBySession(_sessionToken)
 
     return await prismaInstance.genres.findMany({ where: { userId: findedUserId } })
-  } catch (error) {
-    console.error('[POST /api/genres]', { error: error })
-
-    if (error instanceof HttpError) {
-      throw error
-    }
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_getGenreListError) {
+    throw parseApiErrorToHttpError(_getGenreListError, '[GET /api/genres]')
   }
 }
