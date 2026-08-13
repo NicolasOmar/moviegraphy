@@ -72,7 +72,6 @@ export const ReactMovieForm: FC = () => {
 
     if (selectedMovieInContext === null) {
       const movieToCreate = parseModelToFormData(_movieFormDataModel)
-
       const movieCreateResponse = await fetchWithAuth(API_URLS.MOVIES, {
         body: movieToCreate,
         method: API_METHODS.POST

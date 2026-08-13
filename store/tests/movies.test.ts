@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { movieMocks } from '../ts/mocks'
+import { movieMocks } from '../../ts/mocks'
 import {
   $contextMovieList,
   $contextSelectedMovie,
@@ -9,7 +9,7 @@ import {
   setMovieListOnContext,
   updateMovieOnListContext,
   updateSelectedMovieOnContext
-} from './movies'
+} from '../movies'
 
 beforeEach(() => {
   $contextMovieList.set([])

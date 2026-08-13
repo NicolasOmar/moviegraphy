@@ -23,7 +23,7 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
   const isSystemLoading = useStore($contextLoading)
   const [searchParam, setSearchParam] = useState<string>('')
 
-  const memoizedTable = useMemo(() => {
+  const memoizedMovieTable = useMemo(() => {
     const filteredDataSource =
       searchParam.length > 0
         ? movieListInContext.filter(_movie => _movie.name.includes(searchParam))
@@ -49,7 +49,7 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
   useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
 
   const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
-  const memoizedSeach = useMemo(
+  const memoizedMovieSearch = useMemo(
     () =>
       movieListInContext.length > 0 ? (
         <Input disabled={isSystemLoading} onChange={handleSearch} />
@@ -85,8 +85,8 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
       <Typography.Title level={2} style={{ textAlign: 'center' }}>
         List of movies
       </Typography.Title>
-      {memoizedSeach}
-      {memoizedTable}
+      {memoizedMovieSearch}
+      {memoizedMovieTable}
     </section>
   )
 }

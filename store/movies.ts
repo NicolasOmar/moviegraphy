@@ -5,22 +5,23 @@ import { atom } from 'nanostores'
 export const $contextMovieList = atom<MoviesModel[]>([])
 export const $contextSelectedMovie = atom<MoviesModel | null>(null)
 
-export const setMovieListOnContext = (movieList: MoviesModel[]) => $contextMovieList.set(movieList)
+export const setMovieListOnContext = (_movieList: MoviesModel[]) =>
+  $contextMovieList.set(_movieList)
 
-export const addMovieToListContext = (newMovie: MoviesModel) => {
-  $contextMovieList.set([...$contextMovieList.get(), newMovie])
+export const addMovieToListContext = (_newMovie: MoviesModel) => {
+  $contextMovieList.set([...$contextMovieList.get(), _newMovie])
 }
 
-export const updateMovieOnListContext = (updatedMovie: MoviesModel) => {
+export const updateMovieOnListContext = (_updatedMovie: MoviesModel) => {
   $contextMovieList.set(
-    $contextMovieList.get().map(_movie => (_movie.id === updatedMovie.id ? updatedMovie : _movie))
+    $contextMovieList.get().map(_movie => (_movie.id === _updatedMovie.id ? _updatedMovie : _movie))
   )
 }
 
-export const deleteMovieOnListContext = (movieId: string) => {
-  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id !== movieId))
+export const deleteMovieOnListContext = (_movieId: string) => {
+  $contextMovieList.set($contextMovieList.get().filter(({ id }) => id !== _movieId))
 }
 
-export const updateSelectedMovieOnContext = (_updateData: MoviesModel | null) => {
-  $contextSelectedMovie.set(_updateData)
+export const updateSelectedMovieOnContext = (_updatedMovie: MoviesModel | null) => {
+  $contextSelectedMovie.set(_updatedMovie)
 }
