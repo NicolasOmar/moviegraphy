@@ -5,7 +5,7 @@ import { mockReset } from 'vitest-mock-extended'
 
 import { genreMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
-import { createGenre } from '../genres'
+import { createGenre, findGenres } from '../genres'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
@@ -93,6 +93,40 @@ describe('createGenre', () => {
     mockedPrisma.genres.findUnique.mockRejectedValue('connection refused')
 
     await expect(createGenre({ name: genre.name, sessionToken: 'raw-token' })).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
+    )
+  })
+})
+
+describe('findGenres', () => {
+  it('resolves the genres owned by the session user', async () => {
+    mockSessionFor(genreMocks[0].userId)
+    mockedPrisma.genres.findMany.mockResolvedValue(genreMocks)
+
+    const result = await findGenres('raw-token')
+
+    expect(mockedPrisma.genres.findMany).toHaveBeenCalledWith({
+      where: { userId: genreMocks[0].userId }
+    })
+    expect(result).toEqual(genreMocks)
+  })
+
+  it('rejects with a 400 HttpError and never queries genres when the session token is unknown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
+
+    await expect(findGenres('bad-token')).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.genres.findMany).not.toHaveBeenCalled()
+  })
+
+  it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockSessionFor(genreMocks[0].userId)
+    mockedPrisma.genres.findMany.mockRejectedValue(new Error('connection refused'))
+
+    await expect(findGenres('raw-token')).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })

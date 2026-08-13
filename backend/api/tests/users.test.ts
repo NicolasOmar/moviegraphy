@@ -190,6 +190,21 @@ describe('updateUser', () => {
     })
   })
 
+  it('rejects with a 400 HttpError and never updates when the new username is already taken', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [user, otherUser] = userMocks
+    const [session] = sessionMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue(otherUser)
+
+    await expect(
+      updateUser({ name: user.name, sessionToken: 'some-raw-token', username: otherUser.username })
+    ).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, `Username '${otherUser.username}' is already taken`)
+    )
+    expect(mockedPrisma.users.update).not.toHaveBeenCalled()
+  })
+
   it('wraps any rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
