@@ -1,4 +1,4 @@
-import type { UserLoginModel, UserWithToken } from '@ts/entities'
+import type { LoginFormModel } from '@ts/entities'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getCurrentISODate, getISODateWithDaysOffset } from '@ts/helpers'
@@ -40,10 +40,10 @@ export const isSessionValid = async (_rawToken?: null | string): Promise<boolean
  * - Creates a new session token from users's id and hashes it
  * - Creates a new session with the hashed session token and user's id
  *
- * @param _userToLogin - of type `UserLoginModel`
- * @returns An `UserWithToken`
+ * @param _userToLogin - of type `LoginFormModel`
+ * @returns the raw session token
  */
-export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async ({
+export const loginUser: CreateOrUpdateOne<LoginFormModel, string> = async ({
   password,
   username
 }) => {
@@ -62,22 +62,19 @@ export const loginUser: CreateOrUpdateOne<UserLoginModel, UserWithToken> = async
       throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     }
 
-    const rawToken = createToken(user.id)
-    const hashedToken = hashToken(rawToken)
+    const rawSessionToken = createToken(user.id)
+    const hashedSessionToken = hashToken(rawSessionToken)
 
     await prismaInstance.sessions.create({
       data: {
         expiresAt: getISODateWithDaysOffset(7),
         id: v6(),
-        token: hashedToken,
+        token: hashedSessionToken,
         userId: user.id
       }
     })
 
-    return {
-      email: user.email,
-      sessionToken: rawToken
-    }
+    return rawSessionToken
   } catch (_loginUserError) {
     throw parseApiErrorToHttpError(_loginUserError, '[loginUser]')
   }

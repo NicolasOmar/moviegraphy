@@ -58,8 +58,7 @@ const buildPatchFormData = (overrides: Record<string, string> = {}) => {
 describe('POST', () => {
   it('creates a user, generates an id, sets a refreshToken cookie, and returns 200', async () => {
     const [user] = userMocks
-    const createdUser = { ...user, sessionToken: 'raw-token' }
-    mockedCreateUser.mockResolvedValue(createdUser)
+    mockedCreateUser.mockResolvedValue('raw-token')
     const context = buildContext(buildFormData())
 
     const response = await POST(context)
@@ -77,7 +76,7 @@ describe('POST', () => {
       expect.objectContaining({ httpOnly: true, path: '/' })
     )
     expect(response.status).toBe(HTTP_STATUS.OK)
-    expect(await response.json()).toEqual({ message: createdUser })
+    expect(await response.json()).toEqual({ message: 'raw-token' })
   })
 
   it('returns 400 without calling createUser when a required field is missing', async () => {

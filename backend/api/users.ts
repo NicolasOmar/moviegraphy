@@ -1,5 +1,5 @@
 import type { UsersModel } from '@models'
-import type { PasswordChangeWithToken, UserUpdateModel, UserWithToken } from '@ts/entities'
+import type { PasswordChangeWithToken, UserUpdateModel } from '@ts/entities'
 import type { CreateOrUpdateOne, GetOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
@@ -21,9 +21,9 @@ import { Prisma } from '../prisma/generated/client'
  * - Creates a session registry using the hashed session token and user id
  *
  * @param _newUser - A `UsersModel` object to be inserted into the database
- * @returns The new `UserWithToken` (includes a `sessionToken` to be added as a cookie)
+ * @returns The new `UserWithTokenModel` (includes a `sessionToken` to be added as a cookie)
  */
-export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _newUser => {
+export const createUser: CreateOrUpdateOne<UsersModel, string> = async _newUser => {
   try {
     const hashedPassword = await hashString(_newUser.password)
     const createdUser = await prismaInstance.users.create({
@@ -44,10 +44,7 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _n
       }
     })
 
-    return {
-      email: createdUser.email,
-      sessionToken: rawToken
-    }
+    return rawToken
   } catch (_createUserError) {
     if (
       _createUserError instanceof Prisma.PrismaClientKnownRequestError &&

@@ -2,13 +2,14 @@ import type { MoviesModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
-import { HTTP_STATUS } from '@ts/constants'
-import { MovieCreateSchema, MovieUpdateSchema } from '@ts/entities'
+import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
+import { MovieCreateSchema, type MovieFormModel, MovieUpdateSchema } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 
-export const POST: APIRoute = async ({ request }) => {
-  const newMovieModel = await parseRequestToModel<MoviesModel>(request)
+export const POST: APIRoute = async ({ cookies, request }) => {
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
+  const newMovieModel = await parseRequestToModel<MovieFormModel>(request)
   const movieCreationZod = await MovieCreateSchema.safeParseAsync(newMovieModel)
 
   if (movieCreationZod.error) {
@@ -17,11 +18,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const movieCreated = await createMovie({
+    const movieCreated = (await createMovie({
       ...newMovieModel,
       id: v6(),
-      releaseYear: +newMovieModel.releaseYear
-    })
+      releaseYear: +newMovieModel.releaseYear,
+      sessionToken
+    })) as MoviesModel
 
     return parseMessageToResponse(movieCreated, HTTP_STATUS.OK)
   } catch (apiCreateError) {
@@ -29,7 +31,8 @@ export const POST: APIRoute = async ({ request }) => {
   }
 }
 
-export const PATCH: APIRoute = async ({ request }) => {
+export const PATCH: APIRoute = async ({ cookies, request }) => {
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
   const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
   const movieUpdateZod = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
 
@@ -41,7 +44,8 @@ export const PATCH: APIRoute = async ({ request }) => {
   try {
     const movieUpdated = await updateMovie({
       ...updateMovieModel,
-      releaseYear: +updateMovieModel.releaseYear
+      releaseYear: +updateMovieModel.releaseYear,
+      sessionToken
     })
 
     return parseMessageToResponse(movieUpdated, HTTP_STATUS.OK)

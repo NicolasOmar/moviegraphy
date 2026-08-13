@@ -1,5 +1,5 @@
 import type { GenresModel } from '@models'
-import type { GenreCreateModel } from '@ts/entities'
+import type { GenreFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 import type { FC } from 'react'
 
@@ -14,7 +14,7 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const genreFormTitle = 'Create new Genre'
-const genreFormInputs: FormInputList<GenreCreateModel> = [
+const genreFormInputs: FormInputList<GenreFormModel> = [
   {
     label: 'Name',
     name: 'name',
@@ -27,10 +27,10 @@ const genreFormButtons: ReactFormButtonProps[] = [
 ]
 
 export const ReactGenreForm: FC = () => {
-  const [genreForm] = Form.useForm<GenreCreateModel>()
+  const [genreForm] = Form.useForm<GenreFormModel>()
   const isSystemLoading = useStore($contextLoading)
 
-  const handleSubmit = async (_formData: GenreCreateModel) => {
+  const handleSubmit = async (_formData: GenreFormModel) => {
     setLoadingSystemState(true)
 
     const genreToCreate = parseModelToFormData(_formData)

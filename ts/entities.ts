@@ -1,6 +1,8 @@
-import type { UsersModel } from '@models'
+import type { GenresModel, MoviesModel, UsersModel } from '@models'
 
 import * as z from 'zod'
+
+export type LoginFormModel = Pick<UsersModel, 'password' | 'username'>
 
 // ---------- USERS / INTERFACES ----------
 export interface PasswordChangeWithToken {
@@ -19,12 +21,8 @@ export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string
 }
 
-export type UserLoginModel = Pick<UsersModel, 'password' | 'username'>
-
 export interface UserUpdateModel
   extends Omit<UsersModel, 'email' | 'id' | 'password'>, TokenModel {}
-
-export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
 
 interface TokenModel {
   sessionToken: string
@@ -52,20 +50,17 @@ export const PasswordChangeSchema = z.strictObject({
   old: z.string(),
   repeatNew: z.string()
 })
+export type CreateGenreForm = GenreFormModel & TokenModel
 
 // ---------- GENRES / INTERFACES ----------
-export interface GenreCreateModel {
-  name: string
-}
-
-export interface GenreWithToken extends GenreCreateModel, TokenModel {}
-
+export type GenreFormModel = Omit<GenresModel, 'userId'>
 // ---------- GENRES / SCHEMAS ----------
 export const GenreCreateSchema = z.strictObject({
   name: z.string().max(300)
 })
-
+export type CreateMovieForm = MovieFormModel & TokenModel
 // ---------- MOVIES / INTERFACES ----------
+export type MovieFormModel = Omit<MoviesModel, 'userId'>
 // ---------- MOVIES / SCHEMAS ----------
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),

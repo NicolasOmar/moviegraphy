@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from '@ts/constants'
+import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
@@ -15,77 +15,122 @@ beforeEach(() => {
   mockReset(mockedPrisma)
 })
 
+const mockSessionFor = (userId: string) =>
+  mockedPrisma.sessions.findFirst.mockResolvedValue({
+    createdAt: new Date(),
+    expiresAt: new Date(),
+    id: 'session-id',
+    token: 'hashed-token',
+    userId
+  })
+
 describe('getMovieList', () => {
-  it('returns whatever mockedPrisma.movies.findMany resolves, called with no arguments', async () => {
+  it('resolves the movies owned by the session user', async () => {
+    mockSessionFor(movieMocks[0].userId)
     mockedPrisma.movies.findMany.mockResolvedValue(movieMocks)
 
-    const result = await getMovieList()
+    const result = await getMovieList('raw-token')
 
-    expect(mockedPrisma.movies.findMany).toHaveBeenCalledWith()
+    expect(mockedPrisma.movies.findMany).toHaveBeenCalledWith({
+      where: { userId: movieMocks[0].userId }
+    })
     expect(result).toEqual(movieMocks)
   })
 
-  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+  it('rejects with a 400 HttpError and never queries movies when the session token is unknown', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    mockedPrisma.movies.findMany.mockRejectedValue(
-      new Error('SASL: client password must be a string')
-    )
+    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
 
-    await expect(getMovieList()).rejects.toEqual(
-      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'SASL: client password must be a string')
+    await expect(getMovieList('bad-token')).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     )
+    expect(mockedPrisma.movies.findMany).not.toHaveBeenCalled()
   })
 
-  it('wraps a non-Error rejection into a 500 HttpError with the stringified value', async () => {
+  it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    mockedPrisma.movies.findMany.mockRejectedValue('connection refused')
+    mockSessionFor(movieMocks[0].userId)
+    mockedPrisma.movies.findMany.mockRejectedValue(new Error('connection refused'))
 
-    await expect(getMovieList()).rejects.toEqual(
+    await expect(getMovieList('raw-token')).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })
 })
 
 describe('createMovie', () => {
-  it('creates a movie forwarding the given entity as data and returns the created record', async () => {
+  it('creates a movie for the session owner without leaking the sessionToken into the stored data', async () => {
     const [movie] = movieMocks
+    const { userId, ...movieForm } = movie
+    mockSessionFor(userId)
     mockedPrisma.movies.create.mockResolvedValue(movie)
 
-    const result = await createMovie(movie)
+    const result = await createMovie({ ...movieForm, sessionToken: 'raw-token' })
 
-    expect(mockedPrisma.movies.create).toHaveBeenCalledWith({ data: movie })
+    expect(mockedPrisma.movies.create).toHaveBeenCalledWith({
+      data: { ...movieForm, userId }
+    })
     expect(result).toEqual(movie)
+  })
+
+  it('rejects with a 400 HttpError and never creates when the session token is unknown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
+
+    await expect(createMovie({ ...movie, sessionToken: 'bad-token' })).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.movies.create).not.toHaveBeenCalled()
   })
 
   it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const [movie] = movieMocks
+    const { userId, ...movieForm } = movieMocks[0]
+    mockSessionFor(userId)
     mockedPrisma.movies.create.mockRejectedValue(new Error('unique constraint failed'))
 
-    await expect(createMovie(movie)).rejects.toEqual(
+    await expect(createMovie({ ...movieForm, sessionToken: 'raw-token' })).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed')
     )
   })
 })
 
 describe('updateMovie', () => {
-  it('strips the id out of data, uses it as the where clause, and returns the updated record', async () => {
+  it('strips the id and sessionToken out of data, scopes the where clause to the session owner, and returns the updated record', async () => {
     const [movie] = movieMocks
-    const { id, ...dataToUpdate } = movie
+    const { userId, ...movieForm } = movie
+    const { id, ...dataToUpdate } = movieForm
+    mockSessionFor(userId)
     mockedPrisma.movies.update.mockResolvedValue(movie)
 
-    const result = await updateMovie(movie)
+    const result = await updateMovie({ ...movieForm, sessionToken: 'raw-token' })
 
-    expect(mockedPrisma.movies.update).toHaveBeenCalledWith({ data: dataToUpdate, where: { id } })
+    expect(mockedPrisma.movies.update).toHaveBeenCalledWith({
+      data: dataToUpdate,
+      where: { id, userId }
+    })
     expect(result).toEqual(movie)
+  })
+
+  it('rejects with a 400 HttpError and never updates when the session token is unknown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [movie] = movieMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
+
+    await expect(updateMovie({ ...movie, sessionToken: 'bad-token' })).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.movies.update).not.toHaveBeenCalled()
   })
 
   it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const [movie] = movieMocks
+    const { userId, ...movieForm } = movieMocks[0]
+    mockSessionFor(userId)
     mockedPrisma.movies.update.mockRejectedValue(new Error('record not found'))
 
-    await expect(updateMovie(movie)).rejects.toEqual(
+    await expect(updateMovie({ ...movieForm, sessionToken: 'raw-token' })).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'record not found')
     )
   })

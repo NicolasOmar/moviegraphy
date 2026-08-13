@@ -1,4 +1,4 @@
-import type { UserLoginModel } from '@ts/entities'
+import type { LoginFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 import type { FC } from 'react'
 
@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ReactForm, type ReactFormButtonProps, type ReactFormProps } from './index'
 
-const formInputs: FormInputList<UserLoginModel> = [
+const formInputs: FormInputList<LoginFormModel> = [
   {
     label: 'Username or Email',
     name: 'username',
@@ -27,8 +27,8 @@ const formButtons: ReactFormButtonProps[] = [
   { htmlType: 'submit', title: 'Log In', type: 'primary' }
 ]
 
-const Wrapper: FC<Partial<ReactFormProps<UserLoginModel>>> = props => {
-  const [formInstance] = Form.useForm<UserLoginModel>()
+const Wrapper: FC<Partial<ReactFormProps<LoginFormModel>>> = props => {
+  const [formInstance] = Form.useForm<LoginFormModel>()
 
   return (
     <ReactForm

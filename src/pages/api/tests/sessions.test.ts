@@ -45,7 +45,7 @@ const buildContext = (
 describe('POST', () => {
   it('logs a user in, sets a refreshToken cookie, and returns 200', async () => {
     const [user] = userMocks
-    mockedLoginUser.mockResolvedValue({ email: user.email, sessionToken: 'raw-token' })
+    mockedLoginUser.mockResolvedValue('raw-token')
     const context = buildContext()
 
     const response = await POST(context)

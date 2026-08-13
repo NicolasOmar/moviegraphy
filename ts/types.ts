@@ -4,12 +4,10 @@ import type { ChangeEventHandler } from 'react'
 /** Used for CREATE or UPDATE API methods
  *
  * @typeParam InputE - Data structure for database insert or update
- * @typeParam OuputE - Data structure that will return as a `Promise`
- * @returns A `Promise` in shape of `InputE` or `OuputE`
+ * @typeParam OuputE - Data structure that will the return value
+ * @returns A `Promise` in shape of a `OuputE`
  */
-export type CreateOrUpdateOne<InputE, OutputE = boolean> = (
-  _entity: InputE
-) => Promise<InputE | OutputE>
+export type CreateOrUpdateOne<InputE, OutputE = boolean> = (_entity: InputE) => Promise<OutputE>
 
 /** Used for DELETE API method
  *
@@ -36,15 +34,6 @@ export type FormInputList<T> = Array<FormInput<T>>
  * @returns A `Promise` in shape of a list of `OuputE`
  */
 export type GetMany<InputE = string, OutputE = boolean> = (finder: InputE) => Promise<OutputE[]>
-
-/** Used for GET API method. Focused on a single element/registry
- *
- * @deprecated Use the `GetOne` type for future single Get requests
- *
- * @typeParam T - Data structure that will return as a `Promise`
- * @returns A `Promise` in shape of a single `T`
- */
-export type GetManyOld<T> = () => Promise<T[]>
 
 /** Used for GET API method. Focused on a single element/registry
  *

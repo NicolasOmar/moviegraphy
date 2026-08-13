@@ -1,4 +1,4 @@
-import type { UserLoginModel, UserWithToken } from '@ts/entities'
+import type { LoginFormModel } from '@ts/entities'
 import type { APIRoute } from 'astro'
 
 import { loginUser, logoutUser } from '@api/sessions'
@@ -6,10 +6,10 @@ import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
-  const loginModel = await parseRequestToModel<UserLoginModel>(request)
+  const loginFormModel = await parseRequestToModel<LoginFormModel>(request)
 
   try {
-    const { sessionToken } = (await loginUser(loginModel)) as UserWithToken
+    const sessionToken = await loginUser(loginFormModel)
 
     cookies.set(SESSION_COOKIE_NAME, sessionToken, {
       httpOnly: true,

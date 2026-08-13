@@ -2,12 +2,12 @@ import type { APIRoute } from 'astro'
 
 import { createGenre } from '@api/genres'
 import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
-import { type GenreCreateModel, GenreCreateSchema } from '@ts/entities'
+import { GenreCreateSchema, type GenreFormModel } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
   const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
-  const newGenreModel = await parseRequestToModel<GenreCreateModel>(request)
+  const newGenreModel = await parseRequestToModel<GenreFormModel>(request)
   const genreCreationZod = await GenreCreateSchema.safeParseAsync(newGenreModel)
 
   if (genreCreationZod.error) {

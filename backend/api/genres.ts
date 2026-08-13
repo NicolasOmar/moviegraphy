@@ -1,5 +1,5 @@
 import type { GenresModel } from '@models'
-import type { GenreWithToken } from '@ts/entities'
+import type { CreateGenreForm } from '@ts/entities'
 
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
@@ -13,10 +13,10 @@ import { findUserBySession } from './users'
  *
  * - If the provided name on the genre has been already added, it will return an error
  *
- * @param _genreWithToken - A `GenreWithToken` object to be created in the database
+ * @param _genreFormData - A `CreateGenreForm` object to be created in the database
  * @returns The new `GenresModel`
  */
-export const createGenre: CreateOrUpdateOne<GenreWithToken, GenresModel> = async ({
+export const createGenre: CreateOrUpdateOne<CreateGenreForm, GenresModel> = async ({
   name,
   sessionToken
 }) => {

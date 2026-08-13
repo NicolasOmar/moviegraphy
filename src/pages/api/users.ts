@@ -6,8 +6,7 @@ import {
   UserCreateSchema,
   type UserFormModel,
   type UserUpdateModel,
-  UserUpdateSchema,
-  type UserWithToken
+  UserUpdateSchema
 } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
@@ -32,15 +31,15 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }
 
   try {
-    const userCreated = (await createUser({
+    const createdUserToken = await createUser({
       email,
       id: v6(),
       name,
       password,
       username
-    })) as UserWithToken
+    })
 
-    cookies.set(SESSION_COOKIE_NAME, userCreated.sessionToken, {
+    cookies.set(SESSION_COOKIE_NAME, createdUserToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
@@ -48,7 +47,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
       secure: true
     })
 
-    return parseMessageToResponse(userCreated, HTTP_STATUS.OK)
+    return parseMessageToResponse(createdUserToken, HTTP_STATUS.OK)
   } catch (error) {
     return parseHttpErrorToResponse(error)
   }

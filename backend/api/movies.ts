@@ -1,17 +1,21 @@
 import type { MoviesModel } from '@models'
+import type { CreateMovieForm } from '@ts/entities'
 
 import { parseApiErrorToHttpError } from '@ts/parsers'
-import { type CreateOrUpdateOne, type DeleteOne, type GetManyOld } from '@ts/types'
+import { type CreateOrUpdateOne, type DeleteOne, type GetMany } from '@ts/types'
 
 import prismaInstance from '../prisma'
+import { findUserBySession } from './users'
 
 /** `[GET]` function for registered movies
  *
  * @returns A list of `MoviesModel`
  */
-export const getMovieList: GetManyOld<MoviesModel> = async () => {
+export const getMovieList: GetMany<string, MoviesModel> = async _sessionToken => {
   try {
-    return await prismaInstance.movies.findMany()
+    const findedUserId = await findUserBySession(_sessionToken)
+
+    return await prismaInstance.movies.findMany({ where: { userId: findedUserId } })
   } catch (_getMovieListError) {
     throw parseApiErrorToHttpError(_getMovieListError, '[GET /api/movies]')
   }
@@ -22,9 +26,17 @@ export const getMovieList: GetManyOld<MoviesModel> = async () => {
  * @param _newMovie - A `MoviesModel` object to be inserted into the database
  * @returns The new `MoviesModel`
  */
-export const createMovie: CreateOrUpdateOne<MoviesModel> = async _newMovie => {
+export const createMovie: CreateOrUpdateOne<CreateMovieForm, MoviesModel> = async _newMovie => {
+  const { sessionToken, ...movieData } = _newMovie
+
   try {
-    return await prismaInstance.movies.create({ data: _newMovie })
+    const findedUserId = await findUserBySession(sessionToken)
+    return await prismaInstance.movies.create({
+      data: {
+        ...movieData,
+        userId: findedUserId
+      }
+    })
   } catch (_createMovieError) {
     throw parseApiErrorToHttpError(_createMovieError, '[POST /api/movies]')
   }
@@ -35,13 +47,18 @@ export const createMovie: CreateOrUpdateOne<MoviesModel> = async _newMovie => {
  * @param _modifiedMovie - A `MoviesModel` object to update an already created one
  * @returns The updated `MoviesModel`
  */
-export const updateMovie: CreateOrUpdateOne<MoviesModel> = async _modifiedMovie => {
-  const { id: movieId, ...dataToUpdate } = _modifiedMovie
+export const updateMovie: CreateOrUpdateOne<
+  CreateMovieForm,
+  MoviesModel
+> = async _modifiedMovie => {
+  const { id: movieId, sessionToken, ...dataToUpdate } = _modifiedMovie
 
   try {
+    const findedUserId = await findUserBySession(sessionToken)
+
     return await prismaInstance.movies.update({
       data: dataToUpdate,
-      where: { id: movieId }
+      where: { id: movieId, userId: findedUserId }
     })
   } catch (_updateMovieError) {
     throw parseApiErrorToHttpError(_updateMovieError, '[PATCH /api/movies]')

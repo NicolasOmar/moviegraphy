@@ -48,7 +48,8 @@ describe('POST', () => {
       description: movie.description,
       id: 'fixed-test-id',
       name: movie.name,
-      releaseYear: movie.releaseYear
+      releaseYear: movie.releaseYear,
+      sessionToken: 'raw-token'
     })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ message: movie })
@@ -105,7 +106,8 @@ describe('PATCH', () => {
       description: movie.description,
       id: movie.id,
       name: movie.name,
-      releaseYear: movie.releaseYear
+      releaseYear: movie.releaseYear,
+      sessionToken: 'raw-token'
     })
     expect(response.status).toBe(200)
   })

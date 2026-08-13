@@ -45,7 +45,7 @@ describe('createUser', () => {
         userId: user.id
       })
     })
-    expect(result).toEqual({ email: user.email, sessionToken: expect.any(String) })
+    expect(result).toEqual(expect.any(String))
   })
 
   it('translates a P2002 unique-constraint error into a 409 duplicate-email HttpError', async () => {

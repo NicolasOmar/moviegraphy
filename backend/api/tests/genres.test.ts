@@ -32,7 +32,7 @@ describe('createGenre', () => {
     mockedPrisma.genres.findUnique.mockResolvedValue(null)
     mockedPrisma.genres.create.mockResolvedValue(genre)
 
-    const result = await createGenre({ name: genre.name, sessionToken: 'raw-token' })
+    const result = await createGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
 
     expect(mockedPrisma.genres.findUnique).toHaveBeenCalledWith({ where: { name: genre.name } })
     expect(mockedPrisma.genres.create).toHaveBeenCalledWith({
@@ -45,7 +45,9 @@ describe('createGenre', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.sessions.findFirst.mockResolvedValue(null)
 
-    await expect(createGenre({ name: 'Horror', sessionToken: 'bad-token' })).rejects.toEqual(
+    await expect(
+      createGenre({ id: 'irrelevant-id', name: 'Horror', sessionToken: 'bad-token' })
+    ).rejects.toEqual(
       new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     )
     expect(mockedPrisma.genres.findUnique).not.toHaveBeenCalled()
@@ -56,7 +58,9 @@ describe('createGenre', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockSessionFor('')
 
-    await expect(createGenre({ name: 'Horror', sessionToken: 'raw-token' })).rejects.toEqual(
+    await expect(
+      createGenre({ id: 'irrelevant-id', name: 'Horror', sessionToken: 'raw-token' })
+    ).rejects.toEqual(
       new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
     )
     expect(mockedPrisma.genres.findUnique).not.toHaveBeenCalled()
@@ -68,9 +72,9 @@ describe('createGenre', () => {
     mockSessionFor(genre.userId)
     mockedPrisma.genres.findUnique.mockResolvedValue(genre)
 
-    await expect(createGenre({ name: genre.name, sessionToken: 'raw-token' })).rejects.toEqual(
-      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used')
-    )
+    await expect(
+      createGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used'))
     expect(mockedPrisma.genres.create).not.toHaveBeenCalled()
   })
 
@@ -81,9 +85,9 @@ describe('createGenre', () => {
     mockedPrisma.genres.findUnique.mockResolvedValue(null)
     mockedPrisma.genres.create.mockRejectedValue(new Error('unique constraint failed'))
 
-    await expect(createGenre({ name: genre.name, sessionToken: 'raw-token' })).rejects.toEqual(
-      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed')
-    )
+    await expect(
+      createGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed'))
   })
 
   it('wraps a non-Error rejection from genres.findUnique into a 500 HttpError with the stringified value', async () => {
@@ -92,9 +96,9 @@ describe('createGenre', () => {
     mockSessionFor(genre.userId)
     mockedPrisma.genres.findUnique.mockRejectedValue('connection refused')
 
-    await expect(createGenre({ name: genre.name, sessionToken: 'raw-token' })).rejects.toEqual(
-      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
-    )
+    await expect(
+      createGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused'))
   })
 })
 
