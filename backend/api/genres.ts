@@ -16,15 +16,15 @@ import { findUserBySession } from './users'
  * @param _genreWithToken - A `GenreWithToken` object to be created in the database
  * @returns The new `GenresModel`
  */
-export const createGenre: CreateOrUpdateOne<
-  GenreWithToken,
-  GenresModel
-> = async _genreWithToken => {
+export const createGenre: CreateOrUpdateOne<GenreWithToken, GenresModel> = async ({
+  name,
+  sessionToken
+}) => {
   try {
-    const findedUserId = await findUserBySession(_genreWithToken.sessionToken)
+    const findedUserId = await findUserBySession(sessionToken)
 
     const alreadyUsedName = await prismaInstance.genres.findUnique({
-      where: { name: _genreWithToken.name }
+      where: { name }
     })
 
     if (alreadyUsedName) {
@@ -34,7 +34,7 @@ export const createGenre: CreateOrUpdateOne<
     return await prismaInstance.genres.create({
       data: {
         id: v6(),
-        name: _genreWithToken.name,
+        name,
         userId: findedUserId as string
       }
     })

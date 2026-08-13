@@ -157,47 +157,63 @@ describe('updatePassword', () => {
 describe('updateUser', () => {
   it('persists a null name as-is, and resolves true', async () => {
     const [user] = userMocks
+    const [session] = sessionMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockResolvedValue(user)
 
-    const result = await updateUser({ id: user.id, name: null, username: 'newUsername' })
+    const result = await updateUser({
+      name: null,
+      sessionToken: 'some-raw-token',
+      username: 'newUsername'
+    })
 
     expect(mockedPrisma.users.update).toHaveBeenCalledWith({
       data: { name: null, username: 'newUsername' },
-      where: { id: user.id }
+      where: { id: session.userId }
     })
     expect(result).toBe(true)
   })
 
   it('persists a provided name unchanged', async () => {
     const [user] = userMocks
+    const [session] = sessionMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockResolvedValue(user)
 
-    await updateUser({ id: user.id, name: 'New Name', username: 'newUsername' })
+    await updateUser({ name: 'New Name', sessionToken: 'some-raw-token', username: 'newUsername' })
 
     expect(mockedPrisma.users.update).toHaveBeenCalledWith({
       data: { name: 'New Name', username: 'newUsername' },
-      where: { id: user.id }
+      where: { id: session.userId }
     })
   })
 
   it('wraps any rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
+    const [session] = sessionMocks
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockRejectedValue(new Error('connection refused'))
 
     await expect(
-      updateUser({ id: user.id, name: user.name, username: user.username })
+      updateUser({ name: user.name, sessionToken: 'some-raw-token', username: user.username })
     ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused'))
   })
 
   it('rethrows an HttpError from the data layer as-is instead of wrapping it', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
+    const [session] = sessionMocks
     const originalError = new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)
+    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
+    mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockRejectedValue(originalError)
 
     await expect(
-      updateUser({ id: user.id, name: user.name, username: user.username })
+      updateUser({ name: user.name, sessionToken: 'some-raw-token', username: user.username })
     ).rejects.toBe(originalError)
   })
 })

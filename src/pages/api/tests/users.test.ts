@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro'
 
-import { createUser, findUserBySession, findUserByUsername, updateUser } from '@api/users'
+import { createUser, updateUser } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import { userMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
@@ -10,16 +10,12 @@ import { PATCH, POST } from '../users'
 
 vi.mock('@api/users', () => ({
   createUser: vi.fn<typeof createUser>(),
-  findUserBySession: vi.fn<typeof findUserBySession>(),
-  findUserByUsername: vi.fn<typeof findUserByUsername>(),
   updateUser: vi.fn<typeof updateUser>()
 }))
 
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 
 const mockedCreateUser = vi.mocked(createUser)
-const mockedFindUserBySession = vi.mocked(findUserBySession)
-const mockedFindUserByUsername = vi.mocked(findUserByUsername)
 const mockedUpdateUser = vi.mocked(updateUser)
 
 beforeEach(() => {
@@ -143,60 +139,46 @@ describe('PATCH', () => {
 
     const response = await PATCH(context)
 
-    expect(mockedFindUserByUsername).not.toHaveBeenCalled()
+    expect(mockedUpdateUser).not.toHaveBeenCalled()
     expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
     expect(await response.json()).toEqual({
       message: ['Too big: expected string to have <=50 characters']
     })
   })
 
-  it('returns 400 without calling findUserBySession when the username is already taken', async () => {
-    const [user] = userMocks
-    mockedFindUserByUsername.mockResolvedValue(true)
-    const context = buildContext(buildPatchFormData(), 'PATCH')
-
-    const response = await PATCH(context)
-
-    expect(mockedFindUserBySession).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({
-      message: `Username '${user.username}' is already taken`
-    })
-  })
-
-  it("returns 400 without calling updateUser when the session's owning user can't be found", async () => {
-    mockedFindUserByUsername.mockResolvedValue(false)
-    mockedFindUserBySession.mockResolvedValue('')
-    const context = buildContext(buildPatchFormData(), 'PATCH')
-
-    const response = await PATCH(context)
-
-    expect(mockedUpdateUser).not.toHaveBeenCalled()
-    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
-    expect(await response.json()).toEqual({ message: 'NO PATCH USER' })
-  })
-
   it('updates the user for the session owner and returns 200 when the payload is valid', async () => {
     const [user] = userMocks
-    mockedFindUserByUsername.mockResolvedValue(false)
-    mockedFindUserBySession.mockResolvedValue(user.id)
     mockedUpdateUser.mockResolvedValue(true)
     const context = buildContext(buildPatchFormData(), 'PATCH')
 
     const response = await PATCH(context)
 
-    expect(mockedFindUserBySession).toHaveBeenCalledWith('raw-token')
     expect(mockedUpdateUser).toHaveBeenCalledWith({
-      id: user.id,
       name: user.name,
+      sessionToken: 'raw-token',
       username: user.username
     })
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: true })
   })
 
+  it('returns 400 with the data layer message when the username is already taken', async () => {
+    const [user] = userMocks
+    mockedUpdateUser.mockRejectedValue(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, `Username '${user.username}' is already taken`)
+    )
+    const context = buildContext(buildPatchFormData(), 'PATCH')
+
+    const response = await PATCH(context)
+
+    expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+    expect(await response.json()).toEqual({
+      message: `Username '${user.username}' is already taken`
+    })
+  })
+
   it('propagates the status and message carried by an HttpError from the data layer', async () => {
-    mockedFindUserByUsername.mockRejectedValue(
+    mockedUpdateUser.mockRejectedValue(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
     const context = buildContext(buildPatchFormData(), 'PATCH')

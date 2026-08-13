@@ -8,21 +8,20 @@ import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel }
 export const POST: APIRoute = async ({ cookies, request }) => {
   const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
   const newGenreModel = await parseRequestToModel<GenreCreateModel>(request)
+  const genreCreationZod = await GenreCreateSchema.safeParseAsync(newGenreModel)
 
-  const genreZod = await GenreCreateSchema.safeParseAsync(newGenreModel)
-
-  if (genreZod.error) {
-    const genreCreateZodError = genreZod.error.issues.map(({ message }) => message)
+  if (genreCreationZod.error) {
+    const genreCreateZodError = genreCreationZod.error.issues.map(({ message }) => message)
     return parseMessageToResponse(genreCreateZodError, HTTP_STATUS.BAD_REQUEST)
   }
 
   try {
-    await createGenre({
+    const genreCreated = await createGenre({
       ...newGenreModel,
       sessionToken
     })
 
-    return parseMessageToResponse('GO', HTTP_STATUS.OK)
+    return parseMessageToResponse(genreCreated, HTTP_STATUS.OK)
   } catch (error) {
     return parseHttpErrorToResponse(error)
   }

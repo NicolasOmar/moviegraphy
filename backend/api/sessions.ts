@@ -22,11 +22,11 @@ export const isSessionValid = async (_rawToken?: null | string): Promise<boolean
 
   try {
     const hashedToken = hashToken(_rawToken)
-    const refreshToken = await prismaInstance.sessions.findFirst({
+    const registeredUserSession = await prismaInstance.sessions.findFirst({
       where: { expiresAt: { gt: getCurrentISODate() }, token: hashedToken }
     })
 
-    return Boolean(refreshToken)
+    return registeredUserSession !== null
   } catch (_isSessionValidError) {
     throw parseApiErrorToHttpError(_isSessionValidError, '[isSessionValid]')
   }

@@ -66,11 +66,29 @@ export const createUser: CreateOrUpdateOne<UsersModel, UserWithToken> = async _n
  * @returns A true value when the creted user has been updated in the database
  * @param _updatedUser - A `UserUpdateModel` object to update an already created one
  */
-export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({ id, name, username }) => {
+export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({
+  name,
+  sessionToken,
+  username
+}) => {
   try {
+    const findedUserId = await findUserBySession(sessionToken)
+
+    if (!findedUserId) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, 'NO PATCH USER')
+    }
+
+    const isUserNameAlreadyUser = await findUserByUsername({
+      username
+    })
+
+    if (isUserNameAlreadyUser) {
+      throw new HttpError(HTTP_STATUS.BAD_REQUEST, `Username '${username}' is already taken`)
+    }
+
     await prismaInstance.users.update({
       data: { name: name ?? null, username },
-      where: { id: id }
+      where: { id: findedUserId }
     })
 
     return true
@@ -143,7 +161,7 @@ export const findUserByUsername: GetOne<{ username: string }> = async ({ usernam
   try {
     const findedUser = await prismaInstance.users.findUnique({ where: { username } })
 
-    return Promise.resolve(findedUser !== null)
+    return findedUser !== null
   } catch (_findUserByUsernameError) {
     throw parseApiErrorToHttpError(_findUserByUsernameError, '[GET /api/users]')
   }

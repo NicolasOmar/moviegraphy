@@ -9,12 +9,11 @@ import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ request }) => {
   const newMovieModel = await parseRequestToModel<MoviesModel>(request)
+  const movieCreationZod = await MovieCreateSchema.safeParseAsync(newMovieModel)
 
-  const { error: zodError } = await MovieCreateSchema.safeParseAsync(newMovieModel)
-
-  if (zodError) {
-    const movieCreateZodMessage = zodError.issues.map(({ message }) => message)
-    return parseMessageToResponse(movieCreateZodMessage, HTTP_STATUS.BAD_REQUEST)
+  if (movieCreationZod.error) {
+    const movieCreateZodError = movieCreationZod.error.issues.map(({ message }) => message)
+    return parseMessageToResponse(movieCreateZodError, HTTP_STATUS.BAD_REQUEST)
   }
 
   try {
@@ -32,11 +31,10 @@ export const POST: APIRoute = async ({ request }) => {
 
 export const PATCH: APIRoute = async ({ request }) => {
   const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
+  const movieUpdateZod = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
 
-  const { error: zodError } = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
-
-  if (zodError) {
-    const movieUpdateZodError = zodError.issues.map(({ message }) => message)
+  if (movieUpdateZod.error) {
+    const movieUpdateZodError = movieUpdateZod.error.issues.map(({ message }) => message)
     return parseMessageToResponse(movieUpdateZodError, HTTP_STATUS.BAD_REQUEST)
   }
 

@@ -2,17 +2,17 @@ import type { UsersModel } from '@models'
 
 import * as z from 'zod'
 
-export interface PasswordChangeModel {
-  new: string
-  old: string
-  repeatNew: string
-}
-
 // ---------- USERS / INTERFACES ----------
 export interface PasswordChangeWithToken {
   newPassword: string
   oldPassword: string
   sessionToken: string
+}
+
+export interface PasswordUpdateModel {
+  new: string
+  old: string
+  repeatNew: string
 }
 
 export interface UserFormModel extends Omit<UsersModel, 'id'> {
@@ -21,7 +21,8 @@ export interface UserFormModel extends Omit<UsersModel, 'id'> {
 
 export type UserLoginModel = Pick<UsersModel, 'password' | 'username'>
 
-export type UserUpdateModel = Omit<UsersModel, 'email' | 'password'>
+export interface UserUpdateModel
+  extends Omit<UsersModel, 'email' | 'id' | 'password'>, TokenModel {}
 
 export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
 

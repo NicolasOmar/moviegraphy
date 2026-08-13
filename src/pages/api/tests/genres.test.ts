@@ -38,7 +38,7 @@ describe('POST', () => {
       sessionToken: 'raw-token'
     })
     expect(response.status).toBe(HTTP_STATUS.OK)
-    expect(await response.json()).toEqual({ message: 'GO' })
+    expect(await response.json()).toEqual({ message: genre })
   })
 
   it('returns 400 with the joined Zod issue messages when the payload fails schema validation', async () => {
