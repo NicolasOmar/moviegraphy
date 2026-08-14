@@ -1,10 +1,11 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { HttpError } from '@ts/types'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { movieMocks } from '../mocks'
 import {
-  handleErrorMessage,
+  getErrorMessage,
+  parseApiErrorToHttpError,
   parseFormDataToModel,
   parseHttpErrorToResponse,
   parseMessageToResponse,
@@ -74,16 +75,16 @@ describe('parseRequestToModel', () => {
   })
 })
 
-describe('handleErrorMessage', () => {
+describe('getErrorMessage', () => {
   it('extracts the message from an Error instance', () => {
-    expect(handleErrorMessage(new Error('database connection failed'))).toBe(
+    expect(getErrorMessage(new Error('database connection failed'))).toBe(
       'database connection failed'
     )
   })
 
   it('coerces non-Error values to a string', () => {
-    expect(handleErrorMessage('plain string failure')).toBe('plain string failure')
-    expect(handleErrorMessage({ code: 500 })).toBe('[object Object]')
+    expect(getErrorMessage('plain string failure')).toBe('plain string failure')
+    expect(getErrorMessage({ code: 500 })).toBe('[object Object]')
   })
 })
 
@@ -109,6 +110,37 @@ describe('parseMessageToResponse', () => {
 
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: 'Movie created' })
+  })
+})
+
+describe('parseApiErrorToHttpError', () => {
+  it('logs the error under the given api path and returns it unchanged when it is already an HttpError', () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const originalError = new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)
+
+    const result = parseApiErrorToHttpError(originalError, '[POST /api/users]')
+
+    expect(result).toBe(originalError)
+    expect(consoleErrorSpy).toHaveBeenCalledWith('[POST /api/users]', { error: originalError })
+  })
+
+  it('wraps an Error instance into a 500 HttpError carrying its message', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const originalError = new Error('unique constraint failed')
+
+    const result = parseApiErrorToHttpError(originalError, '[POST /api/movies]')
+
+    expect(result).toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed')
+    )
+  })
+
+  it('wraps a non-Error value into a 500 HttpError with the stringified value', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    const result = parseApiErrorToHttpError('connection refused', '[GET /api/genres]')
+
+    expect(result).toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused'))
   })
 })
 

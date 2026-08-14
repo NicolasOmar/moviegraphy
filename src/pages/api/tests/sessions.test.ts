@@ -45,7 +45,7 @@ const buildContext = (
 describe('POST', () => {
   it('logs a user in, sets a refreshToken cookie, and returns 200', async () => {
     const [user] = userMocks
-    mockedLoginUser.mockResolvedValue({ email: user.email, sessionToken: 'raw-token' })
+    mockedLoginUser.mockResolvedValue('raw-token')
     const context = buildContext()
 
     const response = await POST(context)
@@ -57,7 +57,7 @@ describe('POST', () => {
       expect.objectContaining({ httpOnly: true, path: '/' })
     )
     expect(response.status).toBe(HTTP_STATUS.OK)
-    expect(await response.json()).toEqual({ message: { success: true } })
+    expect(await response.json()).toEqual({ message: true })
   })
 
   it('propagates the status and message carried by an HttpError when credentials are invalid', async () => {
@@ -85,7 +85,7 @@ describe('DELETE', () => {
     expect(mockedLogoutUser).toHaveBeenCalledWith('raw-token')
     expect(context.cookies.delete).toHaveBeenCalledWith(SESSION_COOKIE_NAME)
     expect(response.status).toBe(HTTP_STATUS.OK)
-    expect(await response.json()).toEqual({ message: { success: true } })
+    expect(await response.json()).toEqual({ message: true })
   })
 
   it('returns 400 without calling logoutUser when no refreshToken cookie is present', async () => {

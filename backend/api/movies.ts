@@ -1,62 +1,81 @@
 import type { MoviesModel } from '@models'
+import type { MovieCreateModel } from '@ts/entities'
 
-import { HTTP_STATUS } from '@ts/constants'
-import { handleErrorMessage } from '@ts/parsers'
-import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts/types'
+import { parseApiErrorToHttpError } from '@ts/parsers'
+import { type CreateOrUpdateOne, type DeleteOne, type GetMany } from '@ts/types'
 
 import prismaInstance from '../prisma'
+import { findUserBySession } from './users'
 
-export const getMovieList: GetMany<MoviesModel> = async () => {
+/** `[GET]` function for registered movies
+ *
+ * @returns A list of `MoviesModel`
+ */
+export const getMovieList: GetMany<string, MoviesModel> = async _sessionToken => {
   try {
-    return await prismaInstance.movies.findMany()
-  } catch (error) {
-    const errorMessage = handleErrorMessage(error)
+    const findedUserId = await findUserBySession(_sessionToken)
 
-    console.error('[GET /api/movies]', { errorMessage })
-
-    return []
+    return await prismaInstance.movies.findMany({ where: { userId: findedUserId } })
+  } catch (_getMovieListError) {
+    throw parseApiErrorToHttpError(_getMovieListError, '[GET /api/movies]')
   }
 }
 
-export const createMovie: CreateOrUpdateOne<MoviesModel> = async newMovie => {
+/** `[CREATE]` function for movies
+ *
+ * @param _newMovie - A `MoviesModel` object to be inserted into the database
+ * @returns The new `MoviesModel`
+ */
+export const createMovie: CreateOrUpdateOne<MovieCreateModel, MoviesModel> = async _newMovie => {
+  const { sessionToken, ...movieData } = _newMovie
+
   try {
-    return await prismaInstance.movies.create({ data: newMovie })
-  } catch (error) {
-    console.error('[POST /api/movies]', { error })
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+    const findedUserId = await findUserBySession(sessionToken)
+    return await prismaInstance.movies.create({
+      data: {
+        ...movieData,
+        userId: findedUserId
+      }
+    })
+  } catch (_createMovieError) {
+    throw parseApiErrorToHttpError(_createMovieError, '[POST /api/movies]')
   }
 }
 
-export const updateMovie: CreateOrUpdateOne<MoviesModel> = async modifiedMovie => {
-  const { id: movieId, ...dataToUpdate } = modifiedMovie
+/** `[UPDATE]` function for movies
+ *
+ * @param _modifiedMovie - A `MoviesModel` object to update an already created one
+ * @returns The updated `MoviesModel`
+ */
+export const updateMovie: CreateOrUpdateOne<
+  MovieCreateModel,
+  MoviesModel
+> = async _modifiedMovie => {
+  const { id: movieId, sessionToken, ...dataToUpdate } = _modifiedMovie
 
   try {
+    const findedUserId = await findUserBySession(sessionToken)
+
     return await prismaInstance.movies.update({
       data: dataToUpdate,
-      where: { id: movieId }
+      where: { id: movieId, userId: findedUserId }
     })
-  } catch (error) {
-    console.error('[PATCH /api/movies]', { error })
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+  } catch (_updateMovieError) {
+    throw parseApiErrorToHttpError(_updateMovieError, '[PATCH /api/movies]')
   }
 }
 
-export const deleteMovie: DeleteOne = async id => {
+/** `[DELETE]` function for movies
+ *
+ * @param _movieId - A string related to an existing movie in the database
+ * @returns A `true`
+ */
+export const deleteMovie: DeleteOne = async _movieId => {
   try {
-    await prismaInstance.movies.delete({ where: { id } })
+    await prismaInstance.movies.delete({ where: { id: _movieId } })
 
-    return new Promise(resolve => resolve(true))
-  } catch (error) {
-    console.error('[DELETE /api/movies]', { error })
-
-    const errorMessage = handleErrorMessage(error)
-
-    throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+    return true
+  } catch (_deleteMovieError) {
+    throw parseApiErrorToHttpError(_deleteMovieError, '[DELETE /api/movies]')
   }
 }

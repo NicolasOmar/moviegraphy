@@ -41,16 +41,13 @@ describe('isSessionValid', () => {
     expect(await isSessionValid('some-raw-token')).toBe(false)
   })
 
-  it('returns false and logs the failure when the query rejects', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.sessions.findFirst.mockRejectedValue(new Error('connection refused'))
 
-    const result = await isSessionValid('some-raw-token')
-
-    expect(result).toBe(false)
-    expect(consoleErrorSpy).toHaveBeenCalledWith('[middleware] refresh token validation failed', {
-      errorMessage: 'connection refused'
-    })
+    await expect(isSessionValid('some-raw-token')).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
+    )
   })
 })
 
@@ -72,7 +69,7 @@ describe('loginUser', () => {
         userId: user.id
       })
     })
-    expect(result).toEqual({ email: user.email, sessionToken: expect.any(String) })
+    expect(result).toEqual(expect.any(String))
   })
 
   it('rejects with a 400 invalid-credentials HttpError when no user matches', async () => {

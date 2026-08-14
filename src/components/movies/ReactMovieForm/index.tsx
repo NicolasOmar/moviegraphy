@@ -1,4 +1,5 @@
 import type { MoviesModel } from '@models'
+import type { MovieFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
@@ -18,7 +19,7 @@ import { type FC, useMemo } from 'react'
 import { API_METHODS, API_URLS, HTTP_STATUS } from 'ts/constants'
 
 const movieFormTitle = 'Create a new movie'
-const movieFormInputs: FormInputList<MoviesModel> = [
+const movieFormInputs: FormInputList<MovieFormModel> = [
   {
     label: 'Name',
     name: 'name',
@@ -51,7 +52,7 @@ const movieFormInputs: FormInputList<MoviesModel> = [
 export const ReactMovieForm: FC = () => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
   const isSystemLoading = useStore($contextLoading)
-  const [movieForm] = Form.useForm<MoviesModel>()
+  const [movieForm] = Form.useForm<MovieFormModel>()
 
   const movieFormButtons = useMemo(() => {
     const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
@@ -67,12 +68,11 @@ export const ReactMovieForm: FC = () => {
     }
   })
 
-  const handleSubmit = async (_movieFormDataModel: MoviesModel) => {
+  const handleSubmit = async (_movieFormDataModel: MovieFormModel) => {
     setLoadingSystemState(true)
 
     if (selectedMovieInContext === null) {
       const movieToCreate = parseModelToFormData(_movieFormDataModel)
-
       const movieCreateResponse = await fetchWithAuth(API_URLS.MOVIES, {
         body: movieToCreate,
         method: API_METHODS.POST

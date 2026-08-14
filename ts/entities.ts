@@ -1,29 +1,34 @@
-import type { UsersModel } from '@models'
+import type { GenresModel, MoviesModel, UsersModel } from '@models'
 
 import * as z from 'zod'
 
-export interface PasswordChangeModel {
+// ---------- USERS / INTERFACES ----------
+export interface PasswordFormModel {
   new: string
   old: string
   repeatNew: string
+}
+
+export interface PasswordUpdateModel {
+  newPassword: string
+  oldPassword: string
+  sessionToken: string
 }
 
 export interface UserFormModel extends Omit<UsersModel, 'id'> {
   repeatPassword: string
 }
 
-export type UserLoginModel = Pick<UsersModel, 'password' | 'username'>
+export type UserLoginFormModel = Pick<UsersModel, 'password' | 'username'>
 
-export type UserUpdateModel = Omit<UsersModel, 'email' | 'password'>
+export interface UserUpdateModel
+  extends Omit<UsersModel, 'email' | 'id' | 'password'>, TokenModel {}
 
-export interface UserWithToken extends Pick<UsersModel, 'email'>, TokenModel {}
-
-// ---------- USERS / INTERFACES ----------
 interface TokenModel {
   sessionToken: string
 }
 // ---------- USERS / SCHEMAS ----------
-export const UserBaseSchema = z.strictObject({
+const UserBaseSchema = z.strictObject({
   email: z.email().max(50),
   name: z.string().max(25).optional()
 })
@@ -45,20 +50,18 @@ export const PasswordChangeSchema = z.strictObject({
   old: z.string(),
   repeatNew: z.string()
 })
-
 // ---------- GENRES / INTERFACES ----------
-export interface GenreCreateModel {
-  name: string
-}
+export type GenreCreateForm = GenreFormModel & TokenModel
 
-export interface GenreWithToken extends GenreCreateModel, TokenModel {}
-
+export type GenreFormModel = Omit<GenresModel, 'userId'>
 // ---------- GENRES / SCHEMAS ----------
 export const GenreCreateSchema = z.strictObject({
   name: z.string().max(300)
 })
-
 // ---------- MOVIES / INTERFACES ----------
+export type MovieCreateModel = MovieFormModel & TokenModel
+
+export type MovieFormModel = Omit<MoviesModel, 'userId'>
 // ---------- MOVIES / SCHEMAS ----------
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),
