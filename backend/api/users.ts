@@ -1,5 +1,5 @@
 import type { UsersModel } from '@models'
-import type { PasswordUpdateModel, UserUpdateModel } from '@ts/entities'
+import type { PasswordUpdateModel, UserUpdateFormModel } from '@ts/entities'
 import type { CreateOrUpdateOne, GetOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
@@ -61,9 +61,9 @@ export const createUser: CreateOrUpdateOne<UsersModel, string> = async _newUser 
 /** `[UPDATE]` function for users
  *
  * @returns A true value when the creted user has been updated in the database
- * @param _updatedUser - A `UserUpdateModel` object to update an already created one
+ * @param _updatedUser - A `UserUpdateFormModel` object to update an already created one
  */
-export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({
+export const updateUser: CreateOrUpdateOne<UserUpdateFormModel> = async ({
   name,
   sessionToken,
   username

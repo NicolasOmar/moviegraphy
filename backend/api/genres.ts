@@ -1,5 +1,5 @@
 import type { GenresModel } from '@models'
-import type { GenreCreateForm } from '@ts/entities'
+import type { GenreApiModel } from '@ts/entities'
 
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
@@ -13,10 +13,10 @@ import { findUserBySession } from './users'
  *
  * - If the provided name on the genre has been already added, it will return an error
  *
- * @param _genreFormData - A `GenreCreateForm` object to be created in the database
+ * @param _genreFormData - A `GenreApiModel` object to be created in the database
  * @returns The new `GenresModel`
  */
-export const createGenre: CreateOrUpdateOne<GenreCreateForm, GenresModel> = async ({
+export const createGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async ({
   name,
   sessionToken
 }) => {
@@ -40,6 +40,38 @@ export const createGenre: CreateOrUpdateOne<GenreCreateForm, GenresModel> = asyn
     })
   } catch (_createGerneError) {
     throw parseApiErrorToHttpError(_createGerneError, '[POST /api/genres]')
+  }
+}
+
+/** [UPDATE] function for genres
+ *
+ * - If the provided name on the genre has been already added, it will return an error
+ *
+ * @param _genreFormData - A `GenreApiModel` object to udpate an already created one
+ * @returns The updated Genre as `GenresModel`
+ */
+export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async ({
+  id,
+  name,
+  sessionToken
+}) => {
+  try {
+    const findedUserId = await findUserBySession(sessionToken)
+
+    const isNameAlreadyUsed = await prismaInstance.genres.findUnique({
+      where: { name }
+    })
+
+    if (isNameAlreadyUsed) {
+      throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used')
+    }
+
+    return await prismaInstance.genres.update({
+      data: { name },
+      where: { id, userId: findedUserId }
+    })
+  } catch (_updateGenreError) {
+    throw parseApiErrorToHttpError(_updateGenreError, '[PATCH /api/genres]')
   }
 }
 

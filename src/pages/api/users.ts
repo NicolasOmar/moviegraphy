@@ -5,7 +5,7 @@ import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/const
 import {
   UserCreateSchema,
   type UserFormModel,
-  type UserUpdateModel,
+  type UserUpdateFormModel,
   UserUpdateSchema
 } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 
 export const PATCH: APIRoute = async ({ cookies, request }) => {
   const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
-  const userUpdateModel = await parseRequestToModel<UserUpdateModel>(request)
+  const userUpdateModel = await parseRequestToModel<UserUpdateFormModel>(request)
   const userCreateZod = await UserUpdateSchema.safeParseAsync(userUpdateModel)
 
   if (userCreateZod.error) {
