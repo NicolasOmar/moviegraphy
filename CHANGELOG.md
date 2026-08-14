@@ -1,3 +1,17 @@
+# [1.7.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.6.0...v1.7.0) (2026-08-14)
+
+
+### Bug Fixes
+
+* adding context comments on backend api and some helper functions ([42ac674](https://github.com/NicolasOmar/moviegraphy/commit/42ac67467ca1c931f9080617fb0b6b6c50de9a54))
+* adding missing tsdocs and including a linter for style adjustment ([9c564d3](https://github.com/NicolasOmar/moviegraphy/commit/9c564d3fbee60a40deffb3906343ef8958b5ac8e))
+* handleErrorMessage renamed getErrorMessage. new api parser to handle api backend errors ([8ac7bb4](https://github.com/NicolasOmar/moviegraphy/commit/8ac7bb4e6306b82e4fb31f1b9ca848d50c7e4ba2))
+
+
+### Features
+
+* first implementation of genre list with context and creation integration included ([e37626a](https://github.com/NicolasOmar/moviegraphy/commit/e37626aaefedd40c720484af93ac56f5ef702c49))
+
 # [1.6.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.5.0...v1.6.0) (2026-08-10)
 
 
