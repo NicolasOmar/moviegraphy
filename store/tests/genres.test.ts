@@ -5,10 +5,10 @@ import {
   $contextGenreList,
   $contextSelectedGenre,
   addGenreToListContext,
-  deleteMovieOnListContext,
+  deleteGenreOnListContext,
   setGenreListOnContext,
-  updateMovieOnListContext,
-  updateSelectedMovieOnContext
+  updateGenresOnListContext,
+  updateSelectedGenreOnContext
 } from '../genres'
 
 beforeEach(() => {
@@ -35,37 +35,37 @@ describe('addGenreToListContext', () => {
   })
 })
 
-describe('updateMovieOnListContext', () => {
+describe('updateGenresOnListContext', () => {
   it('replaces only the entry matching the given id, leaving the rest untouched', () => {
     setGenreListOnContext(genreMocks)
     const [firstGenre, ...restOfGenres] = genreMocks
     const updatedGenre = { ...firstGenre, name: 'Updated Name' }
 
-    updateMovieOnListContext(updatedGenre)
+    updateGenresOnListContext(updatedGenre)
 
     expect($contextGenreList.get()).toEqual([updatedGenre, ...restOfGenres])
   })
 })
 
-describe('deleteMovieOnListContext', () => {
+describe('deleteGenreOnListContext', () => {
   it('removes the genre with the given id from the list', () => {
     setGenreListOnContext(genreMocks)
     const [genreToDelete, ...restOfGenres] = genreMocks
 
-    deleteMovieOnListContext(genreToDelete.id)
+    deleteGenreOnListContext(genreToDelete.id)
 
     expect($contextGenreList.get()).toEqual(restOfGenres)
   })
 })
 
-describe('updateSelectedMovieOnContext', () => {
+describe('updateSelectedGenreOnContext', () => {
   it('sets and clears the selected genre atom', () => {
     const [genre] = genreMocks
 
-    updateSelectedMovieOnContext(genre)
+    updateSelectedGenreOnContext(genre)
     expect($contextSelectedGenre.get()).toEqual(genre)
 
-    updateSelectedMovieOnContext(null)
+    updateSelectedGenreOnContext(null)
     expect($contextSelectedGenre.get()).toBeNull()
   })
 })

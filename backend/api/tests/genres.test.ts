@@ -5,7 +5,7 @@ import { mockReset } from 'vitest-mock-extended'
 
 import { genreMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
-import { createGenre, findGenres } from '../genres'
+import { createGenre, findGenres, updateGenre } from '../genres'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
@@ -99,6 +99,68 @@ describe('createGenre', () => {
     await expect(
       createGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
     ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused'))
+  })
+})
+
+describe('updateGenre', () => {
+  it('updates a genre owned by the session user once the new name is free', async () => {
+    const [genre] = genreMocks
+    const updatedGenre = { ...genre, name: 'Sci-Fi Renamed' }
+    mockSessionFor(genre.userId)
+    mockedPrisma.genres.findUnique.mockResolvedValue(null)
+    mockedPrisma.genres.update.mockResolvedValue(updatedGenre)
+
+    const result = await updateGenre({
+      id: genre.id,
+      name: updatedGenre.name,
+      sessionToken: 'raw-token'
+    })
+
+    expect(mockedPrisma.genres.findUnique).toHaveBeenCalledWith({
+      where: { name: updatedGenre.name }
+    })
+    expect(mockedPrisma.genres.update).toHaveBeenCalledWith({
+      data: { name: updatedGenre.name },
+      where: { id: genre.id, userId: genre.userId }
+    })
+    expect(result).toEqual(updatedGenre)
+  })
+
+  it('rejects with a 400 HttpError and never queries genres when the session token is unknown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
+
+    await expect(
+      updateGenre({ id: 'irrelevant-id', name: 'Horror', sessionToken: 'bad-token' })
+    ).rejects.toEqual(
+      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
+    )
+    expect(mockedPrisma.genres.findUnique).not.toHaveBeenCalled()
+    expect(mockedPrisma.genres.update).not.toHaveBeenCalled()
+  })
+
+  it('rejects with a 500 HttpError and never updates when the genre name is already taken', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [genre] = genreMocks
+    mockSessionFor(genre.userId)
+    mockedPrisma.genres.findUnique.mockResolvedValue(genre)
+
+    await expect(
+      updateGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used'))
+    expect(mockedPrisma.genres.update).not.toHaveBeenCalled()
+  })
+
+  it('wraps a rejection from genres.update into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [genre] = genreMocks
+    mockSessionFor(genre.userId)
+    mockedPrisma.genres.findUnique.mockResolvedValue(null)
+    mockedPrisma.genres.update.mockRejectedValue(new Error('record not found'))
+
+    await expect(
+      updateGenre({ id: genre.id, name: genre.name, sessionToken: 'raw-token' })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'record not found'))
   })
 })
 

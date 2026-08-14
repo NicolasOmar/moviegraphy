@@ -55,10 +55,10 @@ export const PasswordUpdateSchema = z.strictObject({
   repeatNew: z.string()
 })
 
+// ---------- GENRES / INTERFACES ----------
 /** Used at `/backend/api` for [CREATE] and [UPDATE] API methods */
 export type GenreApiModel = GenreFormModel & TokenModel
 
-// ---------- GENRES / INTERFACES ----------
 /** Used at `/components` and `/pages/api` for data handling */
 export type GenreFormModel = Omit<GenresModel, 'userId'>
 
@@ -68,10 +68,16 @@ export const GenreCreateSchema = z.strictObject({
   name: z.string().max(300)
 })
 
+/** Used at `/pages/api` for data validation */
+export const GenreUpdateSchema = z.strictObject({
+  ...GenreCreateSchema.shape,
+  id: z.uuid()
+})
+
+// ---------- MOVIES / INTERFACES ----------
 /** Used at `/backend/api` for [CREATE] and [UPDATE] API methods */
 export type MovieApiModel = MovieFormModel & TokenModel
 
-// ---------- MOVIES / INTERFACES ----------
 /** Used at `/components` and `/pages/api` for data handling */
 export type MovieFormModel = Omit<MoviesModel, 'userId'>
 

@@ -32,10 +32,10 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
       key: 'options',
       render: (_singleMovie: MoviesModel) => (
         <>
-          <Button disabled={isSystemLoading} onClick={() => handleEdit(_singleMovie)}>
+          <Button disabled={isSystemLoading} onClick={() => handleMovieEdit(_singleMovie)}>
             E
           </Button>
-          <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleMovie.id)}>
+          <Button disabled={isSystemLoading} onClick={() => handleMovieDelete(_singleMovie.id)}>
             D
           </Button>
         </>
@@ -57,9 +57,9 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
     [movieListInContext, isSystemLoading]
   )
 
-  const handleEdit = (_movieToEdit: MoviesModel) => updateSelectedMovieOnContext(_movieToEdit)
+  const handleMovieEdit = (_movieToEdit: MoviesModel) => updateSelectedMovieOnContext(_movieToEdit)
 
-  const handleDelete = async (id: string) => {
+  const handleMovieDelete = async (id: string) => {
     setLoadingSystemState(true)
     const movieIdToDelete = parseModelToFormData({ id })
 
