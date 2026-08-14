@@ -1,5 +1,5 @@
 import type { MoviesModel } from '@models'
-import type { CreateMovieForm } from '@ts/entities'
+import type { MovieCreateModel } from '@ts/entities'
 
 import { parseApiErrorToHttpError } from '@ts/parsers'
 import { type CreateOrUpdateOne, type DeleteOne, type GetMany } from '@ts/types'
@@ -26,7 +26,7 @@ export const getMovieList: GetMany<string, MoviesModel> = async _sessionToken =>
  * @param _newMovie - A `MoviesModel` object to be inserted into the database
  * @returns The new `MoviesModel`
  */
-export const createMovie: CreateOrUpdateOne<CreateMovieForm, MoviesModel> = async _newMovie => {
+export const createMovie: CreateOrUpdateOne<MovieCreateModel, MoviesModel> = async _newMovie => {
   const { sessionToken, ...movieData } = _newMovie
 
   try {
@@ -48,7 +48,7 @@ export const createMovie: CreateOrUpdateOne<CreateMovieForm, MoviesModel> = asyn
  * @returns The updated `MoviesModel`
  */
 export const updateMovie: CreateOrUpdateOne<
-  CreateMovieForm,
+  MovieCreateModel,
   MoviesModel
 > = async _modifiedMovie => {
   const { id: movieId, sessionToken, ...dataToUpdate } = _modifiedMovie

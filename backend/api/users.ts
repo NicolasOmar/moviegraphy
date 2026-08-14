@@ -1,5 +1,5 @@
 import type { UsersModel } from '@models'
-import type { PasswordChangeWithToken, UserUpdateModel } from '@ts/entities'
+import type { PasswordUpdateModel, UserUpdateModel } from '@ts/entities'
 import type { CreateOrUpdateOne, GetOne } from '@ts/types'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
@@ -105,10 +105,10 @@ export const updateUser: CreateOrUpdateOne<UserUpdateModel> = async ({
  *    - If does not exists, it returns an `PASSWORD_MISMATCH` error
  * - Hashes the new password and updates the user with it
  *
- * @param _modifiedPassword - A `PasswordChangeWithToken` object to update an already created one
+ * @param _modifiedPassword - A `PasswordUpdateModel` object to update an already created one
  * @returns A true value when the password has been updated in the database
  */
-export const updatePassword: CreateOrUpdateOne<PasswordChangeWithToken, boolean> = async ({
+export const updatePassword: CreateOrUpdateOne<PasswordUpdateModel, boolean> = async ({
   newPassword,
   oldPassword,
   sessionToken

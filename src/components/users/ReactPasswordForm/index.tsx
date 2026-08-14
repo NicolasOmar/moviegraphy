@@ -1,4 +1,4 @@
-import type { PasswordUpdateModel } from '@ts/entities'
+import type { PasswordFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 import type { FC } from 'react'
 
@@ -12,7 +12,7 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const passwordChangeTitle = 'Change password'
-const passwordChangeInputs: FormInputList<PasswordUpdateModel> = [
+const passwordChangeInputs: FormInputList<PasswordFormModel> = [
   {
     label: 'Old password',
     name: 'old',
@@ -77,10 +77,10 @@ const passwordChangeButtons: ReactFormButtonProps[] = [
 ]
 
 export const ReactPasswordForm: FC = () => {
-  const [passwordForm] = Form.useForm<PasswordUpdateModel>()
+  const [passwordForm] = Form.useForm<PasswordFormModel>()
   const isSystemLoading = useStore($contextLoading)
 
-  const handleSubmit = async (_formData: PasswordUpdateModel) => {
+  const handleSubmit = async (_formData: PasswordFormModel) => {
     setLoadingSystemState(true)
 
     const passwordToUpdate = parseModelToFormData(_formData)

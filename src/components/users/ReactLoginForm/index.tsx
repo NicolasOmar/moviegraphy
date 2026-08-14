@@ -1,4 +1,4 @@
-import type { LoginFormModel } from '@ts/entities'
+import type { UserLoginFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
@@ -11,7 +11,7 @@ import { Form } from 'antd'
 import { type FC } from 'react'
 
 const loginFormTitle = 'Welcome to Moviegraphy'
-const loginFormInputs: FormInputList<LoginFormModel> = [
+const loginFormInputs: FormInputList<UserLoginFormModel> = [
   {
     label: 'Username or Email',
     name: 'username',
@@ -34,10 +34,10 @@ const loginFormButtons: ReactFormButtonProps[] = [
 ]
 
 export const ReactLoginForm: FC = () => {
-  const [loginForm] = Form.useForm<LoginFormModel>()
+  const [loginForm] = Form.useForm<UserLoginFormModel>()
   const isSystemLoading = useStore($contextLoading)
 
-  const handleSubmit = async (_loginFormData: LoginFormModel) => {
+  const handleSubmit = async (_loginFormData: UserLoginFormModel) => {
     setLoadingSystemState(true)
 
     const userToLogin = parseModelToFormData(_loginFormData)

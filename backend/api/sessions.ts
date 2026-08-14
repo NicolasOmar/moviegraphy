@@ -1,4 +1,4 @@
-import type { LoginFormModel } from '@ts/entities'
+import type { UserLoginFormModel } from '@ts/entities'
 
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getCurrentISODate, getISODateWithDaysOffset } from '@ts/helpers'
@@ -40,10 +40,10 @@ export const isSessionValid = async (_rawToken?: null | string): Promise<boolean
  * - Creates a new session token from users's id and hashes it
  * - Creates a new session with the hashed session token and user's id
  *
- * @param _userToLogin - of type `LoginFormModel`
+ * @param _userToLogin - of type `UserLoginFormModel`
  * @returns the raw session token
  */
-export const loginUser: CreateOrUpdateOne<LoginFormModel, string> = async ({
+export const loginUser: CreateOrUpdateOne<UserLoginFormModel, string> = async ({
   password,
   username
 }) => {

@@ -2,12 +2,12 @@ import type { APIRoute } from 'astro'
 
 import { updatePassword } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
-import { PasswordChangeSchema, type PasswordUpdateModel } from '@ts/entities'
+import { PasswordChangeSchema, type PasswordFormModel } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
 export const POST: APIRoute = async ({ cookies, request }) => {
   const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const passwordUpdateModel = await parseRequestToModel<PasswordUpdateModel>(request)
+  const passwordUpdateModel = await parseRequestToModel<PasswordFormModel>(request)
 
   if (
     passwordUpdateModel.old === passwordUpdateModel.new ||
