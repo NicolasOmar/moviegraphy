@@ -22,6 +22,8 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
+const loggedUserId = userMocks[0].id
+
 const buildContext = (formData: FormData, method = 'POST'): APIContext =>
   ({
     cookies: {
@@ -29,6 +31,7 @@ const buildContext = (formData: FormData, method = 'POST'): APIContext =>
       get: vi.fn().mockReturnValue({ value: 'raw-token' }),
       set: vi.fn()
     },
+    locals: { loggedUserId },
     request: new Request('http://localhost/api/users', { body: formData, method })
   }) as unknown as APIContext
 
@@ -145,7 +148,7 @@ describe('PATCH', () => {
     })
   })
 
-  it('updates the user for the session owner and returns 200 when the payload is valid', async () => {
+  it('updates the logged user and returns 200 when the payload is valid', async () => {
     const [user] = userMocks
     mockedUpdateUser.mockResolvedValue(true)
     const context = buildContext(buildPatchFormData(), 'PATCH')
@@ -153,8 +156,8 @@ describe('PATCH', () => {
     const response = await PATCH(context)
 
     expect(mockedUpdateUser).toHaveBeenCalledWith({
+      loggedUserId,
       name: user.name,
-      sessionToken: 'raw-token',
       username: user.username
     })
     expect(response.status).toBe(HTTP_STATUS.OK)

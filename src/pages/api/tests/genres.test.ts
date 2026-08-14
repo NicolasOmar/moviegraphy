@@ -20,14 +20,16 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
+const loggedUserId = genreMocks[0].userId
+
 const buildContext = (formData: FormData, method: 'PATCH' | 'POST' = 'POST'): APIContext =>
   ({
-    cookies: { get: vi.fn().mockReturnValue({ value: 'raw-token' }) },
+    locals: { loggedUserId },
     request: new Request('http://localhost/api/genres', { body: formData, method })
   }) as unknown as APIContext
 
 describe('POST', () => {
-  it('parses form data, forwards the session token from cookies, and returns 200', async () => {
+  it('parses form data, forwards the loggedUserId from locals, and returns 200', async () => {
     const [genre] = genreMocks
     const formData = new FormData()
     formData.append('name', genre.name)
@@ -36,8 +38,8 @@ describe('POST', () => {
     const response = await POST(buildContext(formData))
 
     expect(mockedCreateGenre).toHaveBeenCalledWith({
-      name: genre.name,
-      sessionToken: 'raw-token'
+      loggedUserId,
+      name: genre.name
     })
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: genre })
@@ -72,7 +74,7 @@ describe('POST', () => {
 })
 
 describe('PATCH', () => {
-  it('parses form data, forwards the session token and id, and returns 200', async () => {
+  it('parses form data, forwards the loggedUserId and id, and returns 200', async () => {
     const [genre] = genreMocks
     const updatedGenre = { ...genre, name: 'Sci-Fi Renamed' }
     const formData = new FormData()
@@ -84,8 +86,8 @@ describe('PATCH', () => {
 
     expect(mockedUpdateGenre).toHaveBeenCalledWith({
       id: genre.id,
-      name: updatedGenre.name,
-      sessionToken: 'raw-token'
+      loggedUserId,
+      name: updatedGenre.name
     })
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: updatedGenre })

@@ -7,7 +7,6 @@ import { type CreateOrUpdateOne, type GetMany, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
-import { findUserBySession } from './users'
 
 /** `[CREATE]` function for genres
  *
@@ -17,12 +16,10 @@ import { findUserBySession } from './users'
  * @returns The new `GenresModel`
  */
 export const createGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async ({
-  name,
-  sessionToken
+  loggedUserId,
+  name
 }) => {
   try {
-    const findedUserId = await findUserBySession(sessionToken)
-
     const alreadyUsedName = await prismaInstance.genres.findUnique({
       where: { name }
     })
@@ -35,7 +32,7 @@ export const createGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
       data: {
         id: v6(),
         name,
-        userId: findedUserId as string
+        userId: loggedUserId
       }
     })
   } catch (_createGerneError) {
@@ -52,12 +49,10 @@ export const createGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
  */
 export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async ({
   id,
-  name,
-  sessionToken
+  loggedUserId,
+  name
 }) => {
   try {
-    const findedUserId = await findUserBySession(sessionToken)
-
     const isNameAlreadyUsed = await prismaInstance.genres.findUnique({
       where: { name }
     })
@@ -68,7 +63,7 @@ export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
 
     return await prismaInstance.genres.update({
       data: { name },
-      where: { id, userId: findedUserId }
+      where: { id, userId: loggedUserId }
     })
   } catch (_updateGenreError) {
     throw parseApiErrorToHttpError(_updateGenreError, '[PATCH /api/genres]')
@@ -79,14 +74,12 @@ export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
  *
  * - Gets user's ids based on its session token
  *
- * @param _sessionToken - Logged user's session token to access its registered genres
+ * @param _loggeduserId - Logged user's id to access its registered genres
  * @returns A list of `GenreModel`
  */
-export const findGenres: GetMany<string, GenresModel> = async _sessionToken => {
+export const findGenres: GetMany<string, GenresModel> = async _loggeduserId => {
   try {
-    const findedUserId = await findUserBySession(_sessionToken)
-
-    return await prismaInstance.genres.findMany({ where: { userId: findedUserId } })
+    return await prismaInstance.genres.findMany({ where: { userId: _loggeduserId } })
   } catch (_getGenreListError) {
     throw parseApiErrorToHttpError(_getGenreListError, '[GET /api/genres]')
   }

@@ -1,12 +1,15 @@
 import type { APIRoute } from 'astro'
 
 import { updatePassword } from '@api/users'
-import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
-import { type PasswordUpdateFormModel, PasswordUpdateSchema } from '@ts/entities'
+import { HTTP_STATUS } from '@ts/constants'
+import {
+  type CustomAstroLocals,
+  type PasswordUpdateFormModel,
+  PasswordUpdateSchema
+} from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
-export const POST: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
+export const POST: APIRoute = async ({ locals, request }) => {
   const passwordUpdateModel = await parseRequestToModel<PasswordUpdateFormModel>(request)
 
   if (
@@ -26,13 +29,13 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 
   try {
     const updatedPassword = (await updatePassword({
+      loggedUserId: (locals as CustomAstroLocals).loggedUserId,
       newPassword: passwordUpdateModel.new,
-      oldPassword: passwordUpdateModel.old,
-      sessionToken: sessionToken!
+      oldPassword: passwordUpdateModel.old
     })) as boolean
 
     return parseMessageToResponse(updatedPassword, HTTP_STATUS.OK)
-  } catch (apiError) {
-    return parseHttpErrorToResponse(apiError)
+  } catch (_updatePasswordError) {
+    return parseHttpErrorToResponse(_updatePasswordError)
   }
 }

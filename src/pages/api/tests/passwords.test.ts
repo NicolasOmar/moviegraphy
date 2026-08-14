@@ -35,9 +35,11 @@ const buildFormData = (overrides: Record<string, string | undefined> = {}) => {
   return formData
 }
 
+const loggedUserId = 'some-logged-user-id'
+
 const buildContext = (formData?: FormData): APIContext =>
   ({
-    cookies: { get: vi.fn().mockReturnValue({ value: 'raw-token' }) },
+    locals: { loggedUserId },
     request: new Request('http://localhost/api/passwords', {
       body: formData ?? buildFormData(),
       method: 'POST'
@@ -85,9 +87,9 @@ describe('POST', () => {
     const response = await POST(context)
 
     expect(mockedUpdatePassword).toHaveBeenCalledWith({
+      loggedUserId,
       newPassword: 'brandNewPassword123',
-      oldPassword: 'currentPassword123',
-      sessionToken: 'raw-token'
+      oldPassword: 'currentPassword123'
     })
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: true })

@@ -21,7 +21,7 @@ import { Prisma } from '../prisma/generated/client'
  * - Creates a session registry using the hashed session token and user id
  *
  * @param _newUser - A `UsersModel` object to be inserted into the database
- * @returns The new `UserWithTokenModel` (includes a `sessionToken` to be added as a cookie)
+ * @returns Newly created user session token (that it will be added as a cookie)
  */
 export const createUser: CreateOrUpdateOne<UsersModel, string> = async _newUser => {
   try {
@@ -64,17 +64,11 @@ export const createUser: CreateOrUpdateOne<UsersModel, string> = async _newUser 
  * @param _updatedUser - A `UserUpdateFormModel` object to update an already created one
  */
 export const updateUser: CreateOrUpdateOne<UserUpdateFormModel> = async ({
+  loggedUserId,
   name,
-  sessionToken,
   username
 }) => {
   try {
-    const findedUserId = await findUserBySession(sessionToken)
-
-    if (!findedUserId) {
-      throw new HttpError(HTTP_STATUS.BAD_REQUEST, 'NO PATCH USER')
-    }
-
     const isUserNameAlreadyUser = await findUserByUsername({
       username
     })
@@ -85,7 +79,7 @@ export const updateUser: CreateOrUpdateOne<UserUpdateFormModel> = async ({
 
     await prismaInstance.users.update({
       data: { name: name ?? null, username },
-      where: { id: findedUserId }
+      where: { id: loggedUserId }
     })
 
     return true
@@ -96,10 +90,7 @@ export const updateUser: CreateOrUpdateOne<UserUpdateFormModel> = async ({
 
 /** `[UPDATE]` function for a created user's password
  *
- * - Hashed the provided `sessionToken`
- * - Looks for the created session from the `hashedToken`
- *    - If does not exists, it returns an `INVALID_CREDENTIALS` error
- * - Looks for the logged user from the `existingSession`
+ * - Looks for the logged user from the `loggedUserId`
  *    - If does not exists, it returns an `INVALID_CREDENTIALS` error
  * - Look the `oldPassword` is the same as the previous/hashed one form the logged user
  *    - If does not exists, it returns an `PASSWORD_MISMATCH` error
@@ -109,23 +100,13 @@ export const updateUser: CreateOrUpdateOne<UserUpdateFormModel> = async ({
  * @returns A true value when the password has been updated in the database
  */
 export const updatePassword: CreateOrUpdateOne<PasswordUpdateModel, boolean> = async ({
+  loggedUserId,
   newPassword,
-  oldPassword,
-  sessionToken
+  oldPassword
 }) => {
-  const hashedToken = hashToken(sessionToken)
-
   try {
-    const existingSession = await prismaInstance.sessions.findFirst({
-      where: { token: hashedToken }
-    })
-
-    if (!existingSession) {
-      throw new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
-    }
-
     const loggedUser = await prismaInstance.users.findUnique({
-      where: { id: existingSession.userId }
+      where: { id: loggedUserId }
     })
 
     if (!loggedUser) {

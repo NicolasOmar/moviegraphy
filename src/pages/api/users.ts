@@ -3,6 +3,7 @@ import type { APIRoute } from 'astro'
 import { createUser, updateUser } from '@api/users'
 import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import {
+  type CustomAstroLocals,
   UserCreateSchema,
   type UserFormModel,
   type UserUpdateFormModel,
@@ -53,8 +54,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }
 }
 
-export const PATCH: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
+export const PATCH: APIRoute = async ({ locals, request }) => {
   const userUpdateModel = await parseRequestToModel<UserUpdateFormModel>(request)
   const userCreateZod = await UserUpdateSchema.safeParseAsync(userUpdateModel)
 
@@ -65,8 +65,8 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
 
   try {
     const updatedUserResponse = (await updateUser({
+      loggedUserId: (locals as CustomAstroLocals).loggedUserId,
       name: userUpdateModel.name,
-      sessionToken,
       username: userUpdateModel.username
     })) as boolean
 

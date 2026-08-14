@@ -3,7 +3,7 @@ import { getMovieList } from '@api/movies'
 
 import './index.css'
 import { ReactMovieTable } from '@components/movies/ReactMovieTable'
-import { SESSION_COOKIE_NAME } from '@ts/constants'
+import { type CustomAstroLocals } from '@ts/entities'
 
 const movieListColumns = [
   {
@@ -28,8 +28,8 @@ const movieListColumns = [
   }
 ]
 
-const sessionToken = Astro.cookies.get(SESSION_COOKIE_NAME)?.value as string
-const movieList = await getMovieList(sessionToken).catch(() => [])
+const loggedUserId = (Astro.locals as CustomAstroLocals).loggedUserId
+const movieList = await getMovieList(loggedUserId).catch(() => [])
 ---
 
 <ReactMovieTable client:visible columns={movieListColumns} dataSource={movieList} />

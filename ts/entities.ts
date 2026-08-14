@@ -2,23 +2,27 @@ import type { GenresModel, MoviesModel, UsersModel } from '@models'
 
 import * as z from 'zod'
 
+/** Used at Astro handling to obtain and handle logged user's id */
+export type CustomAstroLocals = {
+  loggedUserId: string
+}
+
 // ---------- USERS / INTERFACES ----------
 /** Used at `/components` and `/pages/api` for data handling */
-export interface PasswordUpdateFormModel {
+export type PasswordUpdateFormModel = {
   new: string
   old: string
   repeatNew: string
 }
 
 /** Used at `/backend/api` for [UPDATE] API method */
-export interface PasswordUpdateModel {
+export type PasswordUpdateModel = CustomAstroLocals & {
   newPassword: string
   oldPassword: string
-  sessionToken: string
 }
 
 /** Used at `/components` and `/pages/api` for data handling */
-export interface UserFormModel extends Omit<UsersModel, 'id'> {
+export type UserFormModel = Omit<UsersModel, 'id'> & {
   repeatPassword: string
 }
 
@@ -26,11 +30,7 @@ export interface UserFormModel extends Omit<UsersModel, 'id'> {
 export type UserLoginFormModel = Pick<UsersModel, 'password' | 'username'>
 
 /** Used at `/components` and `/pages/api` for data handling */
-export type UserUpdateFormModel = Omit<UsersModel, 'email' | 'id' | 'password'> & TokenModel
-
-interface TokenModel {
-  sessionToken: string
-}
+export type UserUpdateFormModel = CustomAstroLocals & Omit<UsersModel, 'email' | 'id' | 'password'>
 
 // ---------- USERS / SCHEMAS ----------
 /** Used at `/pages/api` for data validation */
@@ -57,7 +57,7 @@ export const PasswordUpdateSchema = z.strictObject({
 
 // ---------- GENRES / INTERFACES ----------
 /** Used at `/backend/api` for [CREATE] and [UPDATE] API methods */
-export type GenreApiModel = GenreFormModel & TokenModel
+export type GenreApiModel = CustomAstroLocals & GenreFormModel
 
 /** Used at `/components` and `/pages/api` for data handling */
 export type GenreFormModel = Omit<GenresModel, 'userId'>
@@ -76,7 +76,7 @@ export const GenreUpdateSchema = z.strictObject({
 
 // ---------- MOVIES / INTERFACES ----------
 /** Used at `/backend/api` for [CREATE] and [UPDATE] API methods */
-export type MovieApiModel = MovieFormModel & TokenModel
+export type MovieApiModel = CustomAstroLocals & MovieFormModel
 
 /** Used at `/components` and `/pages/api` for data handling */
 export type MovieFormModel = Omit<MoviesModel, 'userId'>

@@ -4,7 +4,7 @@ import { ReactGenreForm } from '@components/genres/ReactGenreForm'
 import { ReactGenreTable } from '@components/genres/ReactGenreTable'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
 import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
-import { SESSION_COOKIE_NAME } from '@ts/constants'
+import { type CustomAstroLocals } from '@ts/entities'
 
 const genreListColumns = [
   {
@@ -13,8 +13,8 @@ const genreListColumns = [
     title: 'Name'
   }
 ]
-const sessionToken = Astro.cookies.get(SESSION_COOKIE_NAME)?.value as string
-const genreList = await findGenres(sessionToken).catch(() => [])
+const loggedUserId = (Astro.locals as CustomAstroLocals).loggedUserId
+const genreList = await findGenres(loggedUserId).catch(() => [])
 ---
 
 <NavigationLayout>
