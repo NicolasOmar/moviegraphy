@@ -49,8 +49,8 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     })
 
     return parseMessageToResponse(createdUserToken, HTTP_STATUS.OK)
-  } catch (error) {
-    return parseHttpErrorToResponse(error)
+  } catch (_userCreateError) {
+    return parseHttpErrorToResponse(_userCreateError)
   }
 }
 
@@ -71,7 +71,7 @@ export const PATCH: APIRoute = async ({ locals, request }) => {
     })) as boolean
 
     return parseMessageToResponse(updatedUserResponse, HTTP_STATUS.OK)
-  } catch (apiError) {
-    return parseHttpErrorToResponse(apiError)
+  } catch (_userUpdateError) {
+    return parseHttpErrorToResponse(_userUpdateError)
   }
 }

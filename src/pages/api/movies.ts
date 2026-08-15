@@ -30,8 +30,8 @@ export const POST: APIRoute = async ({ locals, request }) => {
     })) as MoviesModel
 
     return parseMessageToResponse(movieCreated, HTTP_STATUS.OK)
-  } catch (apiCreateError) {
-    return parseHttpErrorToResponse(apiCreateError)
+  } catch (_createMovieError) {
+    return parseHttpErrorToResponse(_createMovieError)
   }
 }
 
@@ -52,8 +52,8 @@ export const PATCH: APIRoute = async ({ locals, request }) => {
     })
 
     return parseMessageToResponse(movieUpdated, HTTP_STATUS.OK)
-  } catch (apiUpdateError) {
-    return parseHttpErrorToResponse(apiUpdateError)
+  } catch (_updateMovieError) {
+    return parseHttpErrorToResponse(_updateMovieError)
   }
 }
 
@@ -64,7 +64,7 @@ export const DELETE: APIRoute = async ({ request }) => {
     await deleteMovie(deleteMovieModel.id)
 
     return parseMessageToResponse(true, HTTP_STATUS.OK)
-  } catch (apiDeleteError) {
-    return parseHttpErrorToResponse(apiDeleteError)
+  } catch (_deleteMovieError) {
+    return parseHttpErrorToResponse(_deleteMovieError)
   }
 }

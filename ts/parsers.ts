@@ -86,13 +86,13 @@ export const parseMessageToResponse = <T>(
   _status: number
 ): Response => new Response(JSON.stringify({ message: _message }), { status: _status })
 
-/** Parses an error (HTTP type or unhandled) into a `Response` using
+/** Parses an error (HTTP type or unknown) into a `Response` using
  * `parseMessageToResponse`
  *
  * - Mostly used for `/pages/api` error catching (it simplifies the
  * handling into a single return function)
  *
- * - If _error is an instance of `HttpError`, it will parse it into
+ * - If `_error` is an instance of `HttpError`, it will parse it into
  * a `Response` based on its data
  *    - Else, it will return an `UNEXPECTED` error message because as default
  *
