@@ -20,8 +20,8 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     })
 
     return parseMessageToResponse(true, HTTP_STATUS.OK)
-  } catch (error) {
-    return parseHttpErrorToResponse(error)
+  } catch (_createSessionError) {
+    return parseHttpErrorToResponse(_createSessionError)
   }
 }
 
@@ -37,7 +37,7 @@ export const DELETE: APIRoute = async ({ cookies }) => {
     cookies.delete(SESSION_COOKIE_NAME)
 
     return parseMessageToResponse(true, HTTP_STATUS.OK)
-  } catch (error) {
-    return parseHttpErrorToResponse(error)
+  } catch (_deleteSessionError) {
+    return parseHttpErrorToResponse(_deleteSessionError)
   }
 }

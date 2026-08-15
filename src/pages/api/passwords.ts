@@ -1,13 +1,16 @@
 import type { APIRoute } from 'astro'
 
 import { updatePassword } from '@api/users'
-import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
-import { PasswordChangeSchema, type PasswordFormModel } from '@ts/entities'
+import { HTTP_STATUS } from '@ts/constants'
+import {
+  type CustomAstroLocals,
+  type PasswordUpdateFormModel,
+  PasswordUpdateSchema
+} from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
-export const POST: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value
-  const passwordUpdateModel = await parseRequestToModel<PasswordFormModel>(request)
+export const POST: APIRoute = async ({ locals, request }) => {
+  const passwordUpdateModel = await parseRequestToModel<PasswordUpdateFormModel>(request)
 
   if (
     passwordUpdateModel.old === passwordUpdateModel.new ||
@@ -16,7 +19,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     return parseMessageToResponse('Passwords are not the same', HTTP_STATUS.BAD_REQUEST)
   }
 
-  const passwordUpdateZod = await PasswordChangeSchema.safeParseAsync(passwordUpdateModel)
+  const passwordUpdateZod = await PasswordUpdateSchema.safeParseAsync(passwordUpdateModel)
 
   if (passwordUpdateZod.error) {
     const passwordUpdateZodError = passwordUpdateZod.error.issues.map(({ message }) => message)
@@ -26,13 +29,13 @@ export const POST: APIRoute = async ({ cookies, request }) => {
 
   try {
     const updatedPassword = (await updatePassword({
+      loggedUserId: (locals as CustomAstroLocals).loggedUserId,
       newPassword: passwordUpdateModel.new,
-      oldPassword: passwordUpdateModel.old,
-      sessionToken: sessionToken!
+      oldPassword: passwordUpdateModel.old
     })) as boolean
 
     return parseMessageToResponse(updatedPassword, HTTP_STATUS.OK)
-  } catch (apiError) {
-    return parseHttpErrorToResponse(apiError)
+  } catch (_updatePasswordError) {
+    return parseHttpErrorToResponse(_updatePasswordError)
   }
 }

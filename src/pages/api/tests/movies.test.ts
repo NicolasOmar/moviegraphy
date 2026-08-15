@@ -24,9 +24,11 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
+const loggedUserId = movieMocks[0].userId
+
 const buildContext = (formData: FormData, method: string): APIContext =>
   ({
-    cookies: { get: vi.fn().mockReturnValue({ value: 'raw-token' }) },
+    locals: { loggedUserId },
     request: new Request('http://localhost/api/movie', { body: formData, method })
   }) as unknown as APIContext
 
@@ -47,9 +49,9 @@ describe('POST', () => {
       countryMade: movie.countryMade,
       description: movie.description,
       id: 'fixed-test-id',
+      loggedUserId,
       name: movie.name,
-      releaseYear: movie.releaseYear,
-      sessionToken: 'raw-token'
+      releaseYear: movie.releaseYear
     })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ message: movie })
@@ -105,9 +107,9 @@ describe('PATCH', () => {
       countryMade: movie.countryMade,
       description: movie.description,
       id: movie.id,
+      loggedUserId,
       name: movie.name,
-      releaseYear: movie.releaseYear,
-      sessionToken: 'raw-token'
+      releaseYear: movie.releaseYear
     })
     expect(response.status).toBe(200)
   })

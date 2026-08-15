@@ -79,22 +79,20 @@ describe('createUser', () => {
 
 describe('updatePassword', () => {
   const buildPasswords = (overrides: Partial<Parameters<typeof updatePassword>[0]> = {}) => ({
+    loggedUserId: userMocks[0].id,
     newPassword: 'brandNewPassword123',
     oldPassword: userMocks[0].password,
-    sessionToken: 'some-raw-token',
     ...overrides
   })
 
-  it('hashes and persists the new password when the session and old password are valid', async () => {
+  it('hashes and persists the new password when the logged user and old password are valid', async () => {
     const [user] = userMocks
-    const [session] = sessionMocks
     const hashedOldPassword = await hashString(user.password)
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue({ ...user, password: hashedOldPassword })
 
     const result = await updatePassword(buildPasswords())
 
-    expect(mockedPrisma.users.findUnique).toHaveBeenCalledWith({ where: { id: session.userId } })
+    expect(mockedPrisma.users.findUnique).toHaveBeenCalledWith({ where: { id: user.id } })
     expect(mockedPrisma.users.update).toHaveBeenCalledWith({
       data: { password: expect.any(String) },
       where: { id: user.id }
@@ -108,20 +106,8 @@ describe('updatePassword', () => {
     expect(result).toBe(true)
   })
 
-  it('rejects with a 400 invalid-credentials HttpError when no session matches the token', async () => {
+  it('rejects with a 400 invalid-credentials HttpError when no user matches the loggedUserId', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    mockedPrisma.sessions.findFirst.mockResolvedValue(null)
-
-    await expect(updatePassword(buildPasswords())).rejects.toEqual(
-      new HttpError(HTTP_STATUS.BAD_REQUEST, USER_ERROR_MESSAGES.INVALID_CREDENTIALS)
-    )
-    expect(mockedPrisma.users.update).not.toHaveBeenCalled()
-  })
-
-  it('rejects with a 400 invalid-credentials HttpError when the session has no matching user', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const [session] = sessionMocks
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue(null)
 
     await expect(updatePassword(buildPasswords())).rejects.toEqual(
@@ -133,9 +119,7 @@ describe('updatePassword', () => {
   it('rejects with a 400 invalid-credentials HttpError when the old password does not match', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
-    const [session] = sessionMocks
     const hashedOldPassword = await hashString(user.password)
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue({ ...user, password: hashedOldPassword })
 
     await expect(updatePassword(buildPasswords({ oldPassword: 'wrong-password' }))).rejects.toEqual(
@@ -146,7 +130,7 @@ describe('updatePassword', () => {
 
   it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    mockedPrisma.sessions.findFirst.mockRejectedValue(new Error('connection refused'))
+    mockedPrisma.users.findUnique.mockRejectedValue(new Error('connection refused'))
 
     await expect(updatePassword(buildPasswords())).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
@@ -157,48 +141,42 @@ describe('updatePassword', () => {
 describe('updateUser', () => {
   it('persists a null name as-is, and resolves true', async () => {
     const [user] = userMocks
-    const [session] = sessionMocks
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockResolvedValue(user)
 
     const result = await updateUser({
+      loggedUserId: user.id,
       name: null,
-      sessionToken: 'some-raw-token',
       username: 'newUsername'
     })
 
     expect(mockedPrisma.users.update).toHaveBeenCalledWith({
       data: { name: null, username: 'newUsername' },
-      where: { id: session.userId }
+      where: { id: user.id }
     })
     expect(result).toBe(true)
   })
 
   it('persists a provided name unchanged', async () => {
     const [user] = userMocks
-    const [session] = sessionMocks
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockResolvedValue(user)
 
-    await updateUser({ name: 'New Name', sessionToken: 'some-raw-token', username: 'newUsername' })
+    await updateUser({ loggedUserId: user.id, name: 'New Name', username: 'newUsername' })
 
     expect(mockedPrisma.users.update).toHaveBeenCalledWith({
       data: { name: 'New Name', username: 'newUsername' },
-      where: { id: session.userId }
+      where: { id: user.id }
     })
   })
 
   it('rejects with a 400 HttpError and never updates when the new username is already taken', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user, otherUser] = userMocks
-    const [session] = sessionMocks
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue(otherUser)
 
     await expect(
-      updateUser({ name: user.name, sessionToken: 'some-raw-token', username: otherUser.username })
+      updateUser({ loggedUserId: user.id, name: user.name, username: otherUser.username })
     ).rejects.toEqual(
       new HttpError(HTTP_STATUS.BAD_REQUEST, `Username '${otherUser.username}' is already taken`)
     )
@@ -208,27 +186,23 @@ describe('updateUser', () => {
   it('wraps any rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
-    const [session] = sessionMocks
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockRejectedValue(new Error('connection refused'))
 
     await expect(
-      updateUser({ name: user.name, sessionToken: 'some-raw-token', username: user.username })
+      updateUser({ loggedUserId: user.id, name: user.name, username: user.username })
     ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused'))
   })
 
   it('rethrows an HttpError from the data layer as-is instead of wrapping it', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const [user] = userMocks
-    const [session] = sessionMocks
     const originalError = new HttpError(HTTP_STATUS.CONFLICT, USER_ERROR_MESSAGES.DUPLICATE_EMAIL)
-    mockedPrisma.sessions.findFirst.mockResolvedValue(session)
     mockedPrisma.users.findUnique.mockResolvedValue(null)
     mockedPrisma.users.update.mockRejectedValue(originalError)
 
     await expect(
-      updateUser({ name: user.name, sessionToken: 'some-raw-token', username: user.username })
+      updateUser({ loggedUserId: user.id, name: user.name, username: user.username })
     ).rejects.toBe(originalError)
   })
 })

@@ -1,4 +1,4 @@
-import type { UserUpdateModel } from '@ts/entities'
+import type { UserUpdateFormModel } from '@ts/entities'
 import type { FormInputList } from '@ts/types'
 import type { FC } from 'react'
 
@@ -12,7 +12,7 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const updateFormTitle = 'Update user data'
-const updateFormInputs: FormInputList<UserUpdateModel> = [
+const updateFormInputs: FormInputList<UserUpdateFormModel> = [
   {
     label: 'Name',
     name: 'name',
@@ -32,10 +32,10 @@ const updateFormButtons: ReactFormButtonProps[] = [
 ]
 
 export const ReactUserUpdateForm: FC = () => {
-  const [userUpdateForm] = Form.useForm<UserUpdateModel>()
+  const [userUpdateForm] = Form.useForm<UserUpdateFormModel>()
   const isSystemLoading = useStore($contextLoading)
 
-  const handleSubmit = async (_userUpdateFormData: UserUpdateModel) => {
+  const handleSubmit = async (_userUpdateFormData: UserUpdateFormModel) => {
     setLoadingSystemState(true)
 
     const userToUpdate = parseModelToFormData(_userUpdateFormData)

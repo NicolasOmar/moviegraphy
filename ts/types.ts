@@ -1,7 +1,8 @@
 import type { Rule } from 'antd/es/form'
 import type { ChangeEventHandler } from 'react'
 
-/** Used for CREATE or UPDATE API methods
+//----------APIS----------
+/** Used for `[CREATE]` or `[UPDATE]` API methods
  *
  * @typeParam InputE - Data structure for database insert or update
  * @typeParam OuputE - Data structure that will the return value
@@ -9,7 +10,7 @@ import type { ChangeEventHandler } from 'react'
  */
 export type CreateOrUpdateOne<InputE, OutputE = boolean> = (_entity: InputE) => Promise<OutputE>
 
-/** Used for DELETE API method
+/** Used for `[DELETE]` API method
  *
  * @param _identifier - string identifier to select an specific registry
  * and deleted from the database
@@ -26,7 +27,7 @@ export type FormInput<T> = {
 
 export type FormInputList<T> = Array<FormInput<T>>
 
-/** Used for GET API method. Focused on a list of elements/registries
+/** Used for `[GET]` API method. Focused on a list of elements/registries
  *
  * @typeParam InputE - Data structure for database query (could be a string
  * or an object for complex queries)
@@ -35,7 +36,7 @@ export type FormInputList<T> = Array<FormInput<T>>
  */
 export type GetMany<InputE = string, OutputE = boolean> = (finder: InputE) => Promise<OutputE[]>
 
-/** Used for GET API method. Focused on a single element/registry
+/** Used for `[GET]` API method. Focused on a single element/registry
  *
  * @typeParam InputE - Data structure for database query (could be a string
  * or an object for complex queries)
@@ -72,7 +73,6 @@ export type InputType =
   | 'url'
   | 'week'
 
-//----------API----------
 /** Error carrying an HTTP status code, so API endpoints can translate it into a Response without inspecting error internals. */
 export class HttpError extends Error {
   status: number

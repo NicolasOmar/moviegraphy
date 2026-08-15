@@ -1,4 +1,5 @@
 import { isSessionValid } from '@api/sessions'
+import { findUserBySession } from '@api/users'
 import {
   API_METHODS,
   API_URLS,
@@ -7,6 +8,7 @@ import {
   SESSION_COOKIE_NAME,
   USER_ERROR_MESSAGES
 } from '@ts/constants'
+import { type CustomAstroLocals } from '@ts/entities'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { onRequest } from './middleware'
@@ -15,10 +17,16 @@ vi.mock('@api/sessions', () => ({
   isSessionValid: vi.fn<typeof isSessionValid>()
 }))
 
+vi.mock('@api/users', () => ({
+  findUserBySession: vi.fn<typeof findUserBySession>()
+}))
+
 const mockedIsSessionValid = vi.mocked(isSessionValid)
+const mockedFindUserBySession = vi.mocked(findUserBySession)
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockedFindUserBySession.mockResolvedValue('9d3c1a2e-2222-4a1a-9a1a-000000000001')
 })
 
 type OnRequestContext = Parameters<typeof onRequest>[0]
@@ -30,10 +38,12 @@ const buildContext = (pathname: string, tokenValue?: string, method = 'GET') => 
     get: vi.fn().mockReturnValue(tokenValue ? { value: tokenValue } : undefined)
   }
   const redirect = vi.fn()
+  const locals: Record<string, unknown> = {}
 
   return {
     context: {
       cookies,
+      locals,
       redirect,
       request: new Request(`http://localhost${pathname}`, { method }),
       url: new URL(`http://localhost${pathname}`)
@@ -76,13 +86,17 @@ describe('onRequest', () => {
       expect(next).not.toHaveBeenCalled()
     })
 
-    it('calls next when a protected API route is hit with a valid session', async () => {
+    it('calls next and stores the resolved loggedUserId in locals when a protected API route is hit with a valid session', async () => {
       mockedIsSessionValid.mockResolvedValue(true)
       const { context, next } = buildContext(API_URLS.USERS, 'raw-token', API_METHODS.PATCH)
 
       await onRequest(context, next)
 
       expect(mockedIsSessionValid).toHaveBeenCalledWith('raw-token')
+      expect(mockedFindUserBySession).toHaveBeenCalledWith('raw-token')
+      expect((context.locals as CustomAstroLocals).loggedUserId).toBe(
+        '9d3c1a2e-2222-4a1a-9a1a-000000000001'
+      )
       expect(context.cookies.delete).not.toHaveBeenCalled()
       expect(next).toHaveBeenCalled()
     })
@@ -144,12 +158,16 @@ describe('onRequest', () => {
       expect(next).not.toHaveBeenCalled()
     })
 
-    it('calls next when there is a valid session and the page is not auth-exempt', async () => {
+    it('calls next and stores the resolved loggedUserId in locals when there is a valid session and the page is not auth-exempt', async () => {
       mockedIsSessionValid.mockResolvedValue(true)
       const { context, next } = buildContext('/movies', 'raw-token')
 
       await onRequest(context, next)
 
+      expect(mockedFindUserBySession).toHaveBeenCalledWith('raw-token')
+      expect((context.locals as CustomAstroLocals).loggedUserId).toBe(
+        '9d3c1a2e-2222-4a1a-9a1a-000000000001'
+      )
       expect(context.redirect).not.toHaveBeenCalled()
       expect(next).toHaveBeenCalled()
     })

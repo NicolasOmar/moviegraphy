@@ -11,16 +11,16 @@ export const addGenreToListContext = (_updatedGenre: GenresModel) => {
   $contextGenreList.set([...$contextGenreList.get(), _updatedGenre])
 }
 
-export const updateMovieOnListContext = (_updatedGenre: GenresModel) => {
+export const updateGenresOnListContext = (_updatedGenre: GenresModel) => {
   $contextGenreList.set(
     $contextGenreList.get().map(_genre => (_genre.id === _updatedGenre.id ? _updatedGenre : _genre))
   )
 }
 
-export const deleteMovieOnListContext = (_genreId: string) => {
+export const deleteGenreOnListContext = (_genreId: string) => {
   $contextGenreList.set($contextGenreList.get().filter(({ id }) => id !== _genreId))
 }
 
-export const updateSelectedMovieOnContext = (_updatedGenre: GenresModel | null) => {
+export const updateSelectedGenreOnContext = (_updatedGenre: GenresModel | null) => {
   $contextSelectedGenre.set(_updatedGenre)
 }

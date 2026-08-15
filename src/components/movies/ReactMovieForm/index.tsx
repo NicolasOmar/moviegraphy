@@ -12,11 +12,11 @@ import {
   updateMovieOnListContext,
   updateSelectedMovieOnContext
 } from '@store/movies'
+import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
-import { API_METHODS, API_URLS, HTTP_STATUS } from 'ts/constants'
 
 const movieFormTitle = 'Create a new movie'
 const movieFormInputs: FormInputList<MovieFormModel> = [
@@ -54,7 +54,7 @@ export const ReactMovieForm: FC = () => {
   const isSystemLoading = useStore($contextLoading)
   const [movieForm] = Form.useForm<MovieFormModel>()
 
-  const movieFormButtons = useMemo(() => {
+  const memoizedFormButtons = useMemo(() => {
     const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
 
     return [
@@ -68,13 +68,18 @@ export const ReactMovieForm: FC = () => {
     }
   })
 
-  const handleSubmit = async (_movieFormDataModel: MovieFormModel) => {
+  const handleSubmit = async (_movieToSubmit: MovieFormModel) => {
     setLoadingSystemState(true)
 
+    const isInCreateMode = selectedMovieInContext === null
+    const movieToSend: MovieFormModel = isInCreateMode
+      ? _movieToSubmit
+      : { ..._movieToSubmit, id: selectedMovieInContext.id }
+    const movieFormData = parseModelToFormData(movieToSend)
+
     if (selectedMovieInContext === null) {
-      const movieToCreate = parseModelToFormData(_movieFormDataModel)
       const movieCreateResponse = await fetchWithAuth(API_URLS.MOVIES, {
-        body: movieToCreate,
+        body: movieFormData,
         method: API_METHODS.POST
       })
 
@@ -89,13 +94,8 @@ export const ReactMovieForm: FC = () => {
         addMessageToContext({ content: 'Movie created', type: 'success' })
       }
     } else {
-      const movieToUpdate = parseModelToFormData({
-        ..._movieFormDataModel,
-        id: selectedMovieInContext.id
-      })
-
       const movieUpdateResponse = await fetchWithAuth(API_URLS.MOVIES, {
-        body: movieToUpdate,
+        body: movieFormData,
         method: API_METHODS.PATCH
       })
 
@@ -107,12 +107,11 @@ export const ReactMovieForm: FC = () => {
         updateSelectedMovieOnContext(null)
         updateMovieOnListContext({
           ...selectedMovieInContext,
-          ..._movieFormDataModel,
-          id: selectedMovieInContext.id
+          ..._movieToSubmit
         })
 
         addMessageToContext({
-          content: `Movie '${_movieFormDataModel.name}' updated`,
+          content: `Movie '${_movieToSubmit.name}' updated`,
           type: 'success'
         })
       }
@@ -126,7 +125,7 @@ export const ReactMovieForm: FC = () => {
 
   return (
     <ReactForm
-      formButtons={movieFormButtons}
+      formButtons={memoizedFormButtons}
       formInputs={movieFormInputs}
       formInstance={movieForm}
       formTitle={movieFormTitle}

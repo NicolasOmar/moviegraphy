@@ -2,13 +2,17 @@ import type { MoviesModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
-import { HTTP_STATUS, SESSION_COOKIE_NAME } from '@ts/constants'
-import { MovieCreateSchema, type MovieFormModel, MovieUpdateSchema } from '@ts/entities'
+import { HTTP_STATUS } from '@ts/constants'
+import {
+  type CustomAstroLocals,
+  MovieCreateSchema,
+  type MovieFormModel,
+  MovieUpdateSchema
+} from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 
-export const POST: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
+export const POST: APIRoute = async ({ locals, request }) => {
   const newMovieModel = await parseRequestToModel<MovieFormModel>(request)
   const movieCreationZod = await MovieCreateSchema.safeParseAsync(newMovieModel)
 
@@ -21,18 +25,17 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     const movieCreated = (await createMovie({
       ...newMovieModel,
       id: v6(),
-      releaseYear: +newMovieModel.releaseYear,
-      sessionToken
+      loggedUserId: (locals as CustomAstroLocals).loggedUserId,
+      releaseYear: +newMovieModel.releaseYear
     })) as MoviesModel
 
     return parseMessageToResponse(movieCreated, HTTP_STATUS.OK)
-  } catch (apiCreateError) {
-    return parseHttpErrorToResponse(apiCreateError)
+  } catch (_createMovieError) {
+    return parseHttpErrorToResponse(_createMovieError)
   }
 }
 
-export const PATCH: APIRoute = async ({ cookies, request }) => {
-  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value as string
+export const PATCH: APIRoute = async ({ locals, request }) => {
   const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
   const movieUpdateZod = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
 
@@ -44,13 +47,13 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
   try {
     const movieUpdated = await updateMovie({
       ...updateMovieModel,
-      releaseYear: +updateMovieModel.releaseYear,
-      sessionToken
+      loggedUserId: (locals as CustomAstroLocals).loggedUserId,
+      releaseYear: +updateMovieModel.releaseYear
     })
 
     return parseMessageToResponse(movieUpdated, HTTP_STATUS.OK)
-  } catch (apiUpdateError) {
-    return parseHttpErrorToResponse(apiUpdateError)
+  } catch (_updateMovieError) {
+    return parseHttpErrorToResponse(_updateMovieError)
   }
 }
 
@@ -61,7 +64,7 @@ export const DELETE: APIRoute = async ({ request }) => {
     await deleteMovie(deleteMovieModel.id)
 
     return parseMessageToResponse(true, HTTP_STATUS.OK)
-  } catch (apiDeleteError) {
-    return parseHttpErrorToResponse(apiDeleteError)
+  } catch (_deleteMovieError) {
+    return parseHttpErrorToResponse(_deleteMovieError)
   }
 }

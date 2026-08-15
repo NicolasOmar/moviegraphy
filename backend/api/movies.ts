@@ -1,21 +1,19 @@
 import type { MoviesModel } from '@models'
-import type { MovieCreateModel } from '@ts/entities'
+import type { MovieApiModel } from '@ts/entities'
 
 import { parseApiErrorToHttpError } from '@ts/parsers'
 import { type CreateOrUpdateOne, type DeleteOne, type GetMany } from '@ts/types'
 
 import prismaInstance from '../prisma'
-import { findUserBySession } from './users'
 
 /** `[GET]` function for registered movies
  *
+ * @param _loggeduserId - Logged user's id to access its registered movies
  * @returns A list of `MoviesModel`
  */
-export const getMovieList: GetMany<string, MoviesModel> = async _sessionToken => {
+export const getMovieList: GetMany<string, MoviesModel> = async _loggedUserId => {
   try {
-    const findedUserId = await findUserBySession(_sessionToken)
-
-    return await prismaInstance.movies.findMany({ where: { userId: findedUserId } })
+    return await prismaInstance.movies.findMany({ where: { userId: _loggedUserId } })
   } catch (_getMovieListError) {
     throw parseApiErrorToHttpError(_getMovieListError, '[GET /api/movies]')
   }
@@ -26,15 +24,14 @@ export const getMovieList: GetMany<string, MoviesModel> = async _sessionToken =>
  * @param _newMovie - A `MoviesModel` object to be inserted into the database
  * @returns The new `MoviesModel`
  */
-export const createMovie: CreateOrUpdateOne<MovieCreateModel, MoviesModel> = async _newMovie => {
-  const { sessionToken, ...movieData } = _newMovie
+export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async _newMovie => {
+  const { loggedUserId, ...movieData } = _newMovie
 
   try {
-    const findedUserId = await findUserBySession(sessionToken)
     return await prismaInstance.movies.create({
       data: {
         ...movieData,
-        userId: findedUserId
+        userId: loggedUserId
       }
     })
   } catch (_createMovieError) {
@@ -45,20 +42,15 @@ export const createMovie: CreateOrUpdateOne<MovieCreateModel, MoviesModel> = asy
 /** `[UPDATE]` function for movies
  *
  * @param _modifiedMovie - A `MoviesModel` object to update an already created one
- * @returns The updated `MoviesModel`
+ * @returns The updated Movie as `MoviesModel`
  */
-export const updateMovie: CreateOrUpdateOne<
-  MovieCreateModel,
-  MoviesModel
-> = async _modifiedMovie => {
-  const { id: movieId, sessionToken, ...dataToUpdate } = _modifiedMovie
+export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async _modifiedMovie => {
+  const { id: movieId, loggedUserId, ...dataToUpdate } = _modifiedMovie
 
   try {
-    const findedUserId = await findUserBySession(sessionToken)
-
     return await prismaInstance.movies.update({
       data: dataToUpdate,
-      where: { id: movieId, userId: findedUserId }
+      where: { id: movieId, userId: loggedUserId }
     })
   } catch (_updateMovieError) {
     throw parseApiErrorToHttpError(_updateMovieError, '[PATCH /api/movies]')

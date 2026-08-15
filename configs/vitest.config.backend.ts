@@ -18,9 +18,9 @@ export default defineConfig({
       include: [
         'backend/api/**/*.ts',
         'src/pages/api/**/*.ts',
-        'ts/helpers.ts',
-        'ts/parsers.ts',
-        'ts/tokens.ts'
+        '@ts/helpers.ts',
+        '@ts/parsers.ts',
+        '@ts/tokens.ts'
       ],
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary', 'html'],
@@ -34,7 +34,7 @@ export default defineConfig({
     },
     environment: 'node',
     globals: false,
-    include: ['backend/**/*.test.ts', 'src/pages/api/**/*.test.ts', 'ts/tests/**/*.test.ts'],
+    include: ['backend/**/*.test.ts', 'src/pages/api/**/*.test.ts', '@ts/tests/**/*.test.ts'],
     name: 'backend'
   }
 })

@@ -1,12 +1,20 @@
+import {
+  $contextGenreList,
+  $contextSelectedGenre,
+  updateSelectedGenreOnContext
+} from '@store/genres'
 import { $contextMessageList } from '@store/messages'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
+import { genreMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReactGenreForm } from './index'
 
 beforeEach(() => {
+  $contextGenreList.set([])
+  $contextSelectedGenre.set(null)
   $contextMessageList.set(null)
   vi.stubGlobal(
     'fetch',
@@ -64,5 +72,55 @@ describe('ReactGenreForm', () => {
     expect(await screen.findByText('The name is required')).toBeInTheDocument()
     expect(fetch).not.toHaveBeenCalled()
     expect($contextMessageList.get()).toBeNull()
+  })
+
+  it('updates a genre: pre-fills the form on selection, submits a PATCH request, updates the list, and clears the selection', async () => {
+    const user = userEvent.setup()
+    const [genreToEdit] = genreMocks
+    render(<ReactGenreForm />)
+    $contextGenreList.set([genreToEdit])
+
+    act(() => {
+      updateSelectedGenreOnContext(genreToEdit)
+    })
+
+    expect(await screen.findByLabelText('Name')).toHaveValue(genreToEdit.name)
+    expect(screen.getByRole('button', { name: 'Update' })).toBeInTheDocument()
+
+    await user.clear(screen.getByLabelText('Name'))
+    await user.type(screen.getByLabelText('Name'), 'Science Fiction')
+    await user.click(screen.getByRole('button', { name: 'Update' }))
+
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        API_URLS.GENRES,
+        expect.objectContaining({ body: expect.any(FormData), method: 'PATCH' })
+      )
+    )
+    expect($contextGenreList.get()).toEqual([{ ...genreToEdit, name: 'Science Fiction' }])
+    expect($contextSelectedGenre.get()).toBeNull()
+  })
+
+  it('shows an error message and keeps the selection when an update fails', async () => {
+    const user = userEvent.setup()
+    const [genreToEdit] = genreMocks
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Update rejected' }), { status: 500 })
+    )
+    render(<ReactGenreForm />)
+    $contextGenreList.set([genreToEdit])
+
+    act(() => {
+      updateSelectedGenreOnContext(genreToEdit)
+    })
+
+    expect(await screen.findByLabelText('Name')).toHaveValue(genreToEdit.name)
+    await user.click(screen.getByRole('button', { name: 'Update' }))
+
+    await waitFor(() =>
+      expect($contextMessageList.get()).toEqual({ content: 'Update rejected', type: 'error' })
+    )
+    expect($contextGenreList.get()).toEqual([genreToEdit])
+    expect($contextSelectedGenre.get()).toEqual(genreToEdit)
   })
 })

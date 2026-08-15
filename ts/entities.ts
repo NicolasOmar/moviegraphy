@@ -2,67 +2,87 @@ import type { GenresModel, MoviesModel, UsersModel } from '@models'
 
 import * as z from 'zod'
 
+/** Used at Astro handling to obtain and handle logged user's id */
+export type CustomAstroLocals = {
+  loggedUserId: string
+}
+
 // ---------- USERS / INTERFACES ----------
-export interface PasswordFormModel {
+/** Used at `/components` and `/pages/api` for data handling */
+export type PasswordUpdateFormModel = {
   new: string
   old: string
   repeatNew: string
 }
 
-export interface PasswordUpdateModel {
+/** Used at `/backend/api` for [UPDATE] API method */
+export type PasswordUpdateModel = CustomAstroLocals & {
   newPassword: string
   oldPassword: string
-  sessionToken: string
 }
 
-export interface UserFormModel extends Omit<UsersModel, 'id'> {
+/** Used at `/components` and `/pages/api` for data handling */
+export type UserFormModel = Omit<UsersModel, 'id'> & {
   repeatPassword: string
 }
 
+/** Used at `/components` and `/pages/api` for data handling */
 export type UserLoginFormModel = Pick<UsersModel, 'password' | 'username'>
 
-export interface UserUpdateModel
-  extends Omit<UsersModel, 'email' | 'id' | 'password'>, TokenModel {}
+/** Used at `/components` and `/pages/api` for data handling */
+export type UserUpdateFormModel = CustomAstroLocals & Omit<UsersModel, 'email' | 'id' | 'password'>
 
-interface TokenModel {
-  sessionToken: string
-}
 // ---------- USERS / SCHEMAS ----------
-const UserBaseSchema = z.strictObject({
-  email: z.email().max(50),
-  name: z.string().max(25).optional()
-})
-
+/** Used at `/pages/api` for data validation */
 export const UserCreateSchema = z.strictObject({
-  ...UserBaseSchema.shape,
+  email: z.email().max(50),
+  name: z.string().max(25).optional(),
   password: z.string().min(4).max(25),
   repeatPassword: z.string().min(4).max(25),
   username: z.string().max(50)
 })
 
+/** Used at `/pages/api` for data validation */
 export const UserUpdateSchema = z.strictObject({
   name: z.string().max(25).optional(),
   username: z.string().max(50)
 })
 
-export const PasswordChangeSchema = z.strictObject({
+/** Used at `/pages/api` for data validation */
+export const PasswordUpdateSchema = z.strictObject({
   new: z.string(),
   old: z.string(),
   repeatNew: z.string()
 })
-// ---------- GENRES / INTERFACES ----------
-export type GenreCreateForm = GenreFormModel & TokenModel
 
+// ---------- GENRES / INTERFACES ----------
+/** Used at `/backend/api` for [CREATE] and [UPDATE] API methods */
+export type GenreApiModel = CustomAstroLocals & GenreFormModel
+
+/** Used at `/components` and `/pages/api` for data handling */
 export type GenreFormModel = Omit<GenresModel, 'userId'>
+
 // ---------- GENRES / SCHEMAS ----------
+/** Used at `/pages/api` for data validation */
 export const GenreCreateSchema = z.strictObject({
   name: z.string().max(300)
 })
-// ---------- MOVIES / INTERFACES ----------
-export type MovieCreateModel = MovieFormModel & TokenModel
 
+/** Used at `/pages/api` for data validation */
+export const GenreUpdateSchema = z.strictObject({
+  ...GenreCreateSchema.shape,
+  id: z.uuid()
+})
+
+// ---------- MOVIES / INTERFACES ----------
+/** Used at `/backend/api` for [CREATE] and [UPDATE] API methods */
+export type MovieApiModel = CustomAstroLocals & MovieFormModel
+
+/** Used at `/components` and `/pages/api` for data handling */
 export type MovieFormModel = Omit<MoviesModel, 'userId'>
+
 // ---------- MOVIES / SCHEMAS ----------
+/** Used at `/pages/api` for data validation */
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),
   description: z.string().max(300).optional(),
@@ -70,6 +90,7 @@ export const MovieCreateSchema = z.strictObject({
   releaseYear: z.coerce.number().min(1850).max(3000)
 })
 
+/** Used at `/pages/api` for data validation */
 export const MovieUpdateSchema = z.strictObject({
   ...MovieCreateSchema.shape,
   id: z.uuid()
