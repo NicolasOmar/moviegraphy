@@ -1,3 +1,12 @@
+# [1.8.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.7.0...v1.8.0) (2026-08-15)
+
+
+### Features
+
+* first implementation of genre update from frontend up to backend api ([6b228bf](https://github.com/NicolasOmar/moviegraphy/commit/6b228bfeda1f865cadae1362b0cd5886ca6e06ca))
+* moving authentication api logic up to middleware to send logged user id as astro local ([549d77e](https://github.com/NicolasOmar/moviegraphy/commit/549d77efe575377ef8ba80f002f457c76d67d9a7))
+* new query included for genre update. types rewritten and comments added for readability ([f56dcf1](https://github.com/NicolasOmar/moviegraphy/commit/f56dcf1e8e764e193efeb9ddc89e3eb9282339b6))
+
 # [1.7.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.6.0...v1.7.0) (2026-08-14)
 
 
