@@ -1,20 +1,22 @@
 import type { APIContext } from 'astro'
 
-import { createGenre, updateGenre } from '@api/genres'
+import { createGenre, deleteGenre, updateGenre } from '@api/genres'
 import { HTTP_STATUS } from '@ts/constants'
 import { genreMocks } from '@ts/mocks'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { PATCH, POST } from '../genres'
+import { DELETE, PATCH, POST } from '../genres'
 
 vi.mock('@api/genres', () => ({
   createGenre: vi.fn<typeof createGenre>(),
+  deleteGenre: vi.fn<typeof deleteGenre>(),
   updateGenre: vi.fn<typeof updateGenre>()
 }))
 
 const mockedCreateGenre = vi.mocked(createGenre)
 const mockedUpdateGenre = vi.mocked(updateGenre)
+const mockedDeleteGenre = vi.mocked(deleteGenre)
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -22,7 +24,10 @@ beforeEach(() => {
 
 const loggedUserId = genreMocks[0].userId
 
-const buildContext = (formData: FormData, method: 'PATCH' | 'POST' = 'POST'): APIContext =>
+const buildContext = (
+  formData: FormData,
+  method: 'DELETE' | 'PATCH' | 'POST' = 'POST'
+): APIContext =>
   ({
     locals: { loggedUserId },
     request: new Request('http://localhost/api/genres', { body: formData, method })
@@ -136,5 +141,32 @@ describe('PATCH', () => {
 
     expect(response.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR)
     expect(await response.json()).toEqual({ message: 'update failed' })
+  })
+})
+
+describe('DELETE', () => {
+  it('parses just the id and forwards it to deleteGenre, returning 200', async () => {
+    const [genre] = genreMocks
+    const formData = new FormData()
+    formData.append('id', genre.id)
+
+    const response = await DELETE(buildContext(formData, 'DELETE'))
+
+    expect(mockedDeleteGenre).toHaveBeenCalledWith(genre.id)
+    expect(response.status).toBe(HTTP_STATUS.OK)
+  })
+
+  it('propagates the status and message carried by an HttpError when deleteGenre rejects', async () => {
+    const [genre] = genreMocks
+    const formData = new FormData()
+    formData.append('id', genre.id)
+    mockedDeleteGenre.mockRejectedValue(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'delete failed')
+    )
+
+    const response = await DELETE(buildContext(formData, 'DELETE'))
+
+    expect(response.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    expect(await response.json()).toEqual({ message: 'delete failed' })
   })
 })
