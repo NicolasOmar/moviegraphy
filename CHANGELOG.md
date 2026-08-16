@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.8.0...v1.9.0) (2026-08-16)
+
+
+### Bug Fixes
+
+* npm audit fixing ([b178e2a](https://github.com/NicolasOmar/moviegraphy/commit/b178e2a8d7c66467b31590feda375a19eaf44533))
+* updating dependencies ([1fb3fd7](https://github.com/NicolasOmar/moviegraphy/commit/1fb3fd72b56d50c654322be5c242153d460321fc))
+
+
+### Features
+
+* first implementation of genre deletion feature ([5104d84](https://github.com/NicolasOmar/moviegraphy/commit/5104d84ede1ecdfad83cc86f929eec621ee37962))
+
 # [1.8.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.7.0...v1.8.0) (2026-08-15)
 
 
