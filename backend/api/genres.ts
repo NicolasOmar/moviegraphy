@@ -3,7 +3,7 @@ import type { GenreApiModel } from '@ts/entities'
 
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
-import { type CreateOrUpdateOne, type GetMany, HttpError } from '@ts/types'
+import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
@@ -82,5 +82,20 @@ export const findGenres: GetMany<string, GenresModel> = async _loggeduserId => {
     return await prismaInstance.genres.findMany({ where: { userId: _loggeduserId } })
   } catch (_getGenreListError) {
     throw parseApiErrorToHttpError(_getGenreListError, '[GET /api/genres]')
+  }
+}
+
+/** `[DELETE]` function for a single genre
+ *
+ * @param _genreId - A string related to an existing movie in the database
+ * @returns A `true`
+ */
+export const deleteGenre: DeleteOne = async _genreId => {
+  try {
+    await prismaInstance.genres.delete({ where: { id: _genreId } })
+
+    return true
+  } catch (_deleteGenreError) {
+    throw parseApiErrorToHttpError(_deleteGenreError, '[DELETE /api/genres]')
   }
 }

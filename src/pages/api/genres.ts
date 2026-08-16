@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro'
 
-import { createGenre, updateGenre } from '@api/genres'
+import { createGenre, deleteGenre, updateGenre } from '@api/genres'
 import { HTTP_STATUS } from '@ts/constants'
 import {
   type CustomAstroLocals,
@@ -49,5 +49,17 @@ export const PATCH: APIRoute = async ({ locals, request }) => {
     return parseMessageToResponse(genreUpdated, HTTP_STATUS.OK)
   } catch (_updateGenreError) {
     return parseHttpErrorToResponse(_updateGenreError)
+  }
+}
+
+export const DELETE: APIRoute = async ({ request }) => {
+  const deleteGenreModel = await parseRequestToModel<{ id: string }>(request)
+
+  try {
+    const deleteGenreResponse = await deleteGenre(deleteGenreModel.id)
+
+    return parseMessageToResponse(deleteGenreResponse, HTTP_STATUS.OK)
+  } catch (_deleteMovieError) {
+    return parseHttpErrorToResponse(_deleteMovieError)
   }
 }

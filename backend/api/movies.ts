@@ -57,7 +57,7 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
   }
 }
 
-/** `[DELETE]` function for movies
+/** `[DELETE]` function for a single movie
  *
  * @param _movieId - A string related to an existing movie in the database
  * @returns A `true`

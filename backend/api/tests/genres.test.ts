@@ -5,7 +5,7 @@ import { mockReset } from 'vitest-mock-extended'
 
 import { genreMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
-import { createGenre, findGenres, updateGenre } from '../genres'
+import { createGenre, deleteGenre, findGenres, updateGenre } from '../genres'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
@@ -132,6 +132,28 @@ describe('findGenres', () => {
 
     await expect(findGenres(genreMocks[0].userId)).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
+    )
+  })
+})
+
+describe('deleteGenre', () => {
+  it('deletes by id and always resolves true regardless of what mockedPrisma.genres.delete resolves', async () => {
+    const [genre] = genreMocks
+    mockedPrisma.genres.delete.mockResolvedValue(genre)
+
+    const result = await deleteGenre(genre.id)
+
+    expect(mockedPrisma.genres.delete).toHaveBeenCalledWith({ where: { id: genre.id } })
+    expect(result).toBe(true)
+  })
+
+  it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const [genre] = genreMocks
+    mockedPrisma.genres.delete.mockRejectedValue(new Error('foreign key constraint failed'))
+
+    await expect(deleteGenre(genre.id)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'foreign key constraint failed')
     )
   })
 })

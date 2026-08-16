@@ -1,8 +1,10 @@
 import { $contextGenreList, $contextSelectedGenre } from '@store/genres'
+import { $contextMessageList } from '@store/messages'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { API_URLS } from '@ts/constants'
 import { genreMocks } from '@ts/mocks'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReactGenreTable } from './index'
 
@@ -11,6 +13,17 @@ const columns = [{ dataIndex: 'name', title: 'Name' }]
 beforeEach(() => {
   $contextGenreList.set([])
   $contextSelectedGenre.set(null)
+  $contextMessageList.set(null)
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ message: 'Success!' }), { status: 200 }))
+  )
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
 })
 
 describe('ReactGenreTable', () => {
@@ -40,5 +53,44 @@ describe('ReactGenreTable', () => {
     await user.click(editButton)
 
     expect($contextSelectedGenre.get()).toEqual(genreMocks[0])
+  })
+
+  it('deletes a genre via a DELETE request and clears the selection', async () => {
+    const user = userEvent.setup()
+    render(<ReactGenreTable columns={columns} dataSource={genreMocks} />)
+    await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    await user.click(deleteButton)
+
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        API_URLS.GENRES,
+        expect.objectContaining({ body: expect.any(FormData), method: 'DELETE' })
+      )
+    )
+    expect($contextSelectedGenre.get()).toBeNull()
+  })
+
+  it('shows an error message and keeps the genre in the list when deletion fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Genre is referenced elsewhere' }), { status: 409 })
+    )
+    render(<ReactGenreTable columns={columns} dataSource={genreMocks} />)
+    await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    await user.click(deleteButton)
+
+    await waitFor(() =>
+      expect($contextMessageList.get()).toEqual({
+        content: 'Genre is referenced elsewhere',
+        type: 'error'
+      })
+    )
+    expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument()
   })
 })

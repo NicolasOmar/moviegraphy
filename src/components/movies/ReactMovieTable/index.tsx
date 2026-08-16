@@ -59,9 +59,9 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
 
   const handleMovieEdit = (_movieToEdit: MoviesModel) => updateSelectedMovieOnContext(_movieToEdit)
 
-  const handleMovieDelete = async (id: string) => {
+  const handleMovieDelete = async (_movieId: string) => {
     setLoadingSystemState(true)
-    const movieIdToDelete = parseModelToFormData({ id })
+    const movieIdToDelete = parseModelToFormData({ id: _movieId })
 
     const movieDeleteResponse = await fetchWithAuth(API_URLS.MOVIES, {
       body: movieIdToDelete,
@@ -72,7 +72,7 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
       const errorMessage = await parseResponseErrorToMessage(movieDeleteResponse)
       addMessageToContext({ content: errorMessage, type: 'error' })
     } else {
-      deleteMovieOnListContext(id)
+      deleteMovieOnListContext(_movieId)
       updateSelectedMovieOnContext(null)
       addMessageToContext({ content: 'Movie deleted', type: 'success' })
     }
