@@ -9,7 +9,7 @@ import {
   updateSelectedGenreOnContext
 } from '@store/genres'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -54,11 +54,11 @@ export const ReactGenreTable: FC<ReactTableProps<GenresModel>> = ({ columns, dat
 
     if (genreDeleteResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(genreDeleteResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       deleteGenreOnListContext(_genreId)
       updateSelectedGenreOnContext(null)
-      addMessageToContext({ content: 'Genre deleted', type: 'success' })
+      publishNotification({ content: 'Genre deleted', type: 'success' })
     }
 
     setLoadingSystemState(false)

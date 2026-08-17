@@ -1,4 +1,4 @@
-import { $contextMessageList } from '@store/messages'
+import { $contextNotifications } from '@store/notifications'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ReactPasswordForm } from './index'
 
 beforeEach(() => {
-  $contextMessageList.set(null)
+  $contextNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: true }), { status: 200 }))
@@ -39,7 +39,7 @@ describe('ReactPasswordForm', () => {
       )
     )
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({ content: 'Password updated', type: 'success' })
+      expect($contextNotifications.get()).toEqual({ content: 'Password updated', type: 'success' })
     )
     expect(screen.getByLabelText('Old password')).toHaveValue('')
   })
@@ -57,7 +57,7 @@ describe('ReactPasswordForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($contextNotifications.get()).toEqual({
         content: 'Username or password is incorrect',
         type: 'error'
       })
@@ -72,7 +72,7 @@ describe('ReactPasswordForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($contextNotifications.get()).toEqual({
         content: 'Check the form messages',
         type: 'error'
       })

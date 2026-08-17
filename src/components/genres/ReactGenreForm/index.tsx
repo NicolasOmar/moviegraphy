@@ -11,7 +11,7 @@ import {
   updateSelectedGenreOnContext
 } from '@store/genres'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -64,13 +64,13 @@ export const ReactGenreForm: FC = () => {
 
       if (genreCreateResponse.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(genreCreateResponse)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
         const newGenre = (await genreCreateResponse.json()).message as GenresModel
 
         genreForm.resetFields()
         addGenreToListContext(newGenre)
-        addMessageToContext({ content: 'Genre created', type: 'success' })
+        publishNotification({ content: 'Genre created', type: 'success' })
       }
     } else {
       const genreUpdateResponse = await fetchWithAuth(API_URLS.GENRES, {
@@ -80,7 +80,7 @@ export const ReactGenreForm: FC = () => {
 
       if (genreUpdateResponse.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(genreUpdateResponse)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
         genreForm.resetFields()
 
@@ -90,7 +90,7 @@ export const ReactGenreForm: FC = () => {
           ..._genreToSubmit
         })
 
-        addMessageToContext({
+        publishNotification({
           content: `Genre '${_genreToSubmit.name}' updated`,
           type: 'success'
         })

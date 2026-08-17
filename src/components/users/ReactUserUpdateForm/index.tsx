@@ -5,7 +5,7 @@ import type { FC } from 'react'
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -47,16 +47,16 @@ export const ReactUserUpdateForm: FC = () => {
 
     if (userUpdateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(userUpdateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
-      addMessageToContext({ content: 'User correctly updated', type: 'success' })
+      publishNotification({ content: 'User correctly updated', type: 'success' })
     }
 
     setLoadingSystemState(false)
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm

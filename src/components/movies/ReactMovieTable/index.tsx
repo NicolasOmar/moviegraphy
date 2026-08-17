@@ -5,13 +5,13 @@ import type { InputEventHandler } from '@ts/types'
 import { ReactTable } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
 import {
   $contextMovieList,
   deleteMovieOnListContext,
   setMovieListOnContext,
   updateSelectedMovieOnContext
 } from '@store/movies'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -70,11 +70,11 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
 
     if (movieDeleteResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(movieDeleteResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       deleteMovieOnListContext(_movieId)
       updateSelectedMovieOnContext(null)
-      addMessageToContext({ content: 'Movie deleted', type: 'success' })
+      publishNotification({ content: 'Movie deleted', type: 'success' })
     }
 
     setLoadingSystemState(false)

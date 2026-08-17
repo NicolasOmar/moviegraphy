@@ -5,13 +5,13 @@ import type { FormInputList } from '@ts/types'
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
 import {
   $contextSelectedMovie,
   addMovieToListContext,
   updateMovieOnListContext,
   updateSelectedMovieOnContext
 } from '@store/movies'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -85,13 +85,13 @@ export const ReactMovieForm: FC = () => {
 
       if (movieCreateResponse.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(movieCreateResponse)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
         const newMovieFinal = (await movieCreateResponse.json()).message as MoviesModel
 
         movieForm.resetFields()
         addMovieToListContext(newMovieFinal)
-        addMessageToContext({ content: 'Movie created', type: 'success' })
+        publishNotification({ content: 'Movie created', type: 'success' })
       }
     } else {
       const movieUpdateResponse = await fetchWithAuth(API_URLS.MOVIES, {
@@ -101,7 +101,7 @@ export const ReactMovieForm: FC = () => {
 
       if (movieUpdateResponse.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(movieUpdateResponse)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
         movieForm.resetFields()
         updateSelectedMovieOnContext(null)
@@ -110,7 +110,7 @@ export const ReactMovieForm: FC = () => {
           ..._movieToSubmit
         })
 
-        addMessageToContext({
+        publishNotification({
           content: `Movie '${_movieToSubmit.name}' updated`,
           type: 'success'
         })
@@ -121,7 +121,7 @@ export const ReactMovieForm: FC = () => {
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm

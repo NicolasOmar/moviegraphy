@@ -4,7 +4,7 @@ import type { FormInputList } from '@ts/types'
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -105,7 +105,7 @@ export const ReactUserForm: FC = () => {
 
     if (userCreateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       window.location.href = PAGE_URL.HOME
     }
@@ -114,7 +114,7 @@ export const ReactUserForm: FC = () => {
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm

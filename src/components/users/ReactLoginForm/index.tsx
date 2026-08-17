@@ -4,7 +4,7 @@ import type { FormInputList } from '@ts/types'
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
@@ -49,7 +49,7 @@ export const ReactLoginForm: FC = () => {
 
     if (userCreateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       window.location.href = PAGE_URL.HOME
     }

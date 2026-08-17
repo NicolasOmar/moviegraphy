@@ -1,5 +1,5 @@
-import { $contextMessageList } from '@store/messages'
 import { $contextMovieList, $contextSelectedMovie } from '@store/movies'
+import { $contextNotifications } from '@store/notifications'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -13,7 +13,7 @@ const columns = [{ dataIndex: 'name', title: 'Name' }]
 beforeEach(() => {
   $contextMovieList.set([])
   $contextSelectedMovie.set(null)
-  $contextMessageList.set(null)
+  $contextNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -102,7 +102,7 @@ describe('ReactMovieTable', () => {
     await user.click(deleteButton)
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($contextNotifications.get()).toEqual({
         content: 'Movie is referenced elsewhere',
         type: 'error'
       })

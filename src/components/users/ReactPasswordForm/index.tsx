@@ -5,7 +5,7 @@ import type { FC } from 'react'
 import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual, fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -92,10 +92,10 @@ export const ReactPasswordForm: FC = () => {
 
     if (passwordUpdateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(passwordUpdateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       passwordForm.resetFields()
-      addMessageToContext({ content: 'Password updated', type: 'success' })
+      publishNotification({ content: 'Password updated', type: 'success' })
     }
 
     setLoadingSystemState(false)
@@ -103,7 +103,7 @@ export const ReactPasswordForm: FC = () => {
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm

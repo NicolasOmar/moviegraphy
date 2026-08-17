@@ -1,4 +1,4 @@
-import { $contextMessageList } from '@store/messages'
+import { $contextNotifications } from '@store/notifications'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS, PAGE_URL } from '@ts/constants'
@@ -10,7 +10,7 @@ import { ReactLoginForm } from './index'
 const originalLocation = window.location
 
 beforeEach(() => {
-  $contextMessageList.set(null)
+  $contextNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -56,7 +56,7 @@ describe('ReactLoginForm', () => {
       )
     )
     await waitFor(() => expect(window.location.href).toBe(PAGE_URL.HOME))
-    expect($contextMessageList.get()).toBeNull()
+    expect($contextNotifications.get()).toBeNull()
   })
 
   it('shows an error message and keeps the form filled when login fails', async () => {
@@ -72,7 +72,7 @@ describe('ReactLoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'Log In' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($contextNotifications.get()).toEqual({
         content: 'Username or password is incorrect',
         type: 'error'
       })

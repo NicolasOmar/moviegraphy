@@ -1,5 +1,5 @@
 ---
-import { ReactMessages } from '@components/shared/ReactMessages'
+import { ReactNotifications } from '@components/shared/ReactNotifications'
 import { ClientRouter } from 'astro:transitions'
 ---
 
@@ -17,7 +17,7 @@ import { ClientRouter } from 'astro:transitions'
   </head>
   <body>
     <slot />
-    <ReactMessages client:load transition:persist />
+    <ReactNotifications client:load transition:persist />
   </body>
 </html>
 
