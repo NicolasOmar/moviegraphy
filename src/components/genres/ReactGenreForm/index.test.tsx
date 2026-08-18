@@ -3,7 +3,7 @@ import {
   $contextSelectedGenre,
   updateSelectedGenreOnContext
 } from '@store/genres'
-import { $contextNotifications } from '@store/notifications'
+import { $globalNotifications } from '@store/notifications'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -15,7 +15,7 @@ import { ReactGenreForm } from './index'
 beforeEach(() => {
   $contextGenreList.set([])
   $contextSelectedGenre.set(null)
-  $contextNotifications.set(null)
+  $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -43,7 +43,7 @@ describe('ReactGenreForm', () => {
       )
     )
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({ content: 'Genre created', type: 'success' })
+      expect($globalNotifications.get()).toEqual({ content: 'Genre created', type: 'success' })
     )
   })
 
@@ -58,7 +58,7 @@ describe('ReactGenreForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({ content: 'Name already used', type: 'error' })
+      expect($globalNotifications.get()).toEqual({ content: 'Name already used', type: 'error' })
     )
     expect(screen.getByLabelText('Name')).toHaveValue('Sci-Fi')
   })
@@ -71,7 +71,7 @@ describe('ReactGenreForm', () => {
 
     expect(await screen.findByText('The name is required')).toBeInTheDocument()
     expect(fetch).not.toHaveBeenCalled()
-    expect($contextNotifications.get()).toBeNull()
+    expect($globalNotifications.get()).toBeNull()
   })
 
   it('updates a genre: pre-fills the form on selection, submits a PATCH request, updates the list, and clears the selection', async () => {
@@ -118,7 +118,7 @@ describe('ReactGenreForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({ content: 'Update rejected', type: 'error' })
+      expect($globalNotifications.get()).toEqual({ content: 'Update rejected', type: 'error' })
     )
     expect($contextGenreList.get()).toEqual([genreToEdit])
     expect($contextSelectedGenre.get()).toEqual(genreToEdit)

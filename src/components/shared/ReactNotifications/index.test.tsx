@@ -1,4 +1,4 @@
-import { $contextNotifications } from '@store/notifications'
+import { $globalNotifications } from '@store/notifications'
 import { act, render } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -23,7 +23,7 @@ vi.mock('antd', async importOriginal => {
 })
 
 beforeEach(() => {
-  $contextNotifications.set(null)
+  $globalNotifications.set(null)
   successSpy.mockClear()
   errorSpy.mockClear()
 })
@@ -33,12 +33,12 @@ describe('ReactNotifications', () => {
     render(<ReactNotifications />)
 
     act(() => {
-      $contextNotifications.set({ content: 'Movie created', type: 'success' })
+      $globalNotifications.set({ content: 'Movie created', type: 'success' })
     })
     expect(successSpy).toHaveBeenCalledWith({ description: 'Movie created', title: '' })
 
     act(() => {
-      $contextNotifications.set({ content: 'Movie is referenced elsewhere', type: 'error' })
+      $globalNotifications.set({ content: 'Movie is referenced elsewhere', type: 'error' })
     })
     expect(errorSpy).toHaveBeenCalledWith({
       description: 'Movie is referenced elsewhere',

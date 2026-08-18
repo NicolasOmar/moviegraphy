@@ -36,19 +36,29 @@ model Sessions {
 
 model Movies {
   countryMade String
-  description String?  @db.VarChar(300)
-  id          String   @id @unique
-  name        String   @db.VarChar(150)
+  description String?          @db.VarChar(300)
+  id          String           @id @unique
+  name        String           @db.VarChar(150)
   releaseYear Int
   userId      String
-  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  genres      Genres[]
+  user        Users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  genres      GenresOnMovies[]
 }
 
 model Genres {
-  id     String   @id @unique
-  name   String   @unique @db.VarChar(100)
+  id     String           @id @unique
+  name   String           @unique @db.VarChar(100)
   userId String
-  user   Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movies Movies[]
+  user   Users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movies GenresOnMovies[]
+}
+
+model GenresOnMovies {
+  movie      Movies   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movieId    String
+  genre      Genres   @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  genreId    String
+  assignedAt DateTime @default(now())
+
+  @@id([movieId, genreId])
 }

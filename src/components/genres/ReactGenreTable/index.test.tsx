@@ -1,5 +1,5 @@
 import { $contextGenreList, $contextSelectedGenre } from '@store/genres'
-import { $contextNotifications } from '@store/notifications'
+import { $globalNotifications } from '@store/notifications'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -13,7 +13,7 @@ const columns = [{ dataIndex: 'name', title: 'Name' }]
 beforeEach(() => {
   $contextGenreList.set([])
   $contextSelectedGenre.set(null)
-  $contextNotifications.set(null)
+  $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -86,7 +86,7 @@ describe('ReactGenreTable', () => {
     await user.click(deleteButton)
 
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: 'Genre is referenced elsewhere',
         type: 'error'
       })

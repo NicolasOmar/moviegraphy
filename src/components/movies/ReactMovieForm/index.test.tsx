@@ -3,7 +3,7 @@ import {
   $contextSelectedMovie,
   updateSelectedMovieOnContext
 } from '@store/movies'
-import { $contextNotifications } from '@store/notifications'
+import { $globalNotifications } from '@store/notifications'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -17,7 +17,7 @@ vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 beforeEach(() => {
   $contextMovieList.set([])
   $contextSelectedMovie.set(null)
-  $contextNotifications.set(null)
+  $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -77,7 +77,7 @@ describe('ReactMovieForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({ content: 'Name is required', type: 'error' })
+      expect($globalNotifications.get()).toEqual({ content: 'Name is required', type: 'error' })
     )
     expect($contextMovieList.get()).toEqual([])
     expect(screen.getByLabelText('Name')).toHaveValue('The Matrix')
@@ -127,7 +127,7 @@ describe('ReactMovieForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({ content: 'Update rejected', type: 'error' })
+      expect($globalNotifications.get()).toEqual({ content: 'Update rejected', type: 'error' })
     )
     expect($contextMovieList.get()).toEqual([movieToEdit])
     expect($contextSelectedMovie.get()).toEqual(movieToEdit)
@@ -140,7 +140,7 @@ describe('ReactMovieForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() =>
-      expect($contextNotifications.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: 'Check the form messages',
         type: 'error'
       })
