@@ -1,8 +1,8 @@
 import type { GenresModel } from '@models'
 import type { GenreFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedGenre,
@@ -19,12 +19,15 @@ import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
 const genreFormTitle = 'Create new Genre'
-const genreFormInputs: FormInputList<GenreFormModel> = [
+const genreFormInputs: FormConfig<GenreFormModel> = [
   {
-    label: 'Name',
-    name: 'name',
-    rules: [{ message: 'The name is required', required: true }, { max: 300 }],
-    type: 'text'
+    config: {
+      label: 'Name',
+      name: 'name',
+      rules: [{ message: 'The name is required', required: true }, { max: 300 }],
+      type: 'text'
+    },
+    typeOfInput: 'input'
   }
 ]
 
@@ -36,9 +39,7 @@ export const ReactGenreForm: FC = () => {
   const memoizedFormButtons = useMemo(() => {
     const submitButtonText = selectedGenreInContext ? 'Update' : 'Create'
 
-    return [
-      { htmlType: 'submit', title: submitButtonText, type: 'primary' }
-    ] as ReactFormButtonProps[]
+    return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButton[]
   }, [selectedGenreInContext])
 
   $contextSelectedGenre.listen(_genre => {

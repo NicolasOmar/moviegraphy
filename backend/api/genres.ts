@@ -77,7 +77,7 @@ export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
  * @param _loggeduserId - Logged user's id to access its registered genres
  * @returns A list of `GenreModel`
  */
-export const findGenres: GetMany<string, GenresModel> = async _loggeduserId => {
+export const getGenreList: GetMany<string, GenresModel> = async _loggeduserId => {
   try {
     return await prismaInstance.genres.findMany({ where: { userId: _loggeduserId } })
   } catch (_getGenreListError) {

@@ -1,8 +1,8 @@
-import type { MoviesModel } from '@models'
+import type { GenresModel, MoviesModel } from '@models'
 import type { MovieFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import {
@@ -18,49 +18,64 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
+interface ReactMovieFormProps {
+  genreList: GenresModel[]
+}
+
 const movieFormTitle = 'Create a new movie'
-const movieFormInputs: FormInputList<MovieFormModel> = [
+const movieFormInputs: FormConfig<MovieFormModel> = [
   {
-    label: 'Name',
-    name: 'name',
-    rules: [
-      { message: 'Name is required', required: true },
-      { max: 300, message: 'Name must be 150 characters as much' }
-    ]
+    config: {
+      label: 'Name',
+      name: 'name',
+      rules: [
+        { message: 'Name is required', required: true },
+        { max: 300, message: 'Name must be 150 characters as much' }
+      ]
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Description',
-    name: 'description',
-    rules: [{ max: 300, message: 'Description must be 300 characters as much' }]
+    config: {
+      label: 'Description',
+      name: 'description',
+      rules: [{ max: 300, message: 'Description must be 300 characters as much' }]
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Year of release',
-    name: 'releaseYear',
-    rules: [
-      { message: 'Year of release is required', required: true },
-      { max: 3000, min: 1850, type: 'number' }
-    ],
-    type: 'number'
+    config: {
+      label: 'Year of release',
+      name: 'releaseYear',
+      rules: [
+        { message: 'Year of release is required', required: true },
+        { max: 3000, min: 1850, type: 'number' }
+      ],
+      type: 'number'
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Country',
-    name: 'countryMade',
-    rules: [{ message: 'Country is required', required: true }]
+    config: {
+      label: 'Country',
+      name: 'countryMade',
+      rules: [{ message: 'Country is required', required: true }]
+    },
+    typeOfInput: 'input'
   }
 ]
 
-export const ReactMovieForm: FC = () => {
+export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
   const isSystemLoading = useStore($contextLoading)
   const [movieForm] = Form.useForm<MovieFormModel>()
 
   const memoizedFormButtons = useMemo(() => {
+    console.warn(genreList)
     const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
 
-    return [
-      { htmlType: 'submit', title: submitButtonText, type: 'primary' }
-    ] as ReactFormButtonProps[]
-  }, [selectedMovieInContext])
+    return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButton[]
+  }, [selectedMovieInContext, genreList])
 
   $contextSelectedMovie.listen(_movie => {
     if (_movie) {

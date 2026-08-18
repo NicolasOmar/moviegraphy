@@ -1,13 +1,19 @@
 ---
+import type { CustomAstroLocals } from '@ts/entities'
+
+import { getGenreList } from '@api/genres'
 import { ReactMovieForm } from '@components/movies/ReactMovieForm'
 import MovieTable from '@islands/MovieTable/index.astro'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
 import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
+
+const loggedUserId = (Astro.locals as CustomAstroLocals).loggedUserId
+const genreList = await getGenreList(loggedUserId).catch(() => [])
 ---
 
 <NavigationLayout>
   <TwoColumnsLayout>
-    <ReactMovieForm client:visible />
+    <ReactMovieForm client:visible genreList={genreList} />
     <MovieTable />
   </TwoColumnsLayout>
 </NavigationLayout>

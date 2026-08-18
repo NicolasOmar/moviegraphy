@@ -5,7 +5,7 @@ import { mockReset } from 'vitest-mock-extended'
 
 import { genreMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
-import { createGenre, deleteGenre, findGenres, updateGenre } from '../genres'
+import { createGenre, deleteGenre, getGenreList, updateGenre } from '../genres'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
@@ -114,11 +114,11 @@ describe('updateGenre', () => {
   })
 })
 
-describe('findGenres', () => {
+describe('getGenreList', () => {
   it('resolves the genres owned by the logged user', async () => {
     mockedPrisma.genres.findMany.mockResolvedValue(genreMocks)
 
-    const result = await findGenres(genreMocks[0].userId)
+    const result = await getGenreList(genreMocks[0].userId)
 
     expect(mockedPrisma.genres.findMany).toHaveBeenCalledWith({
       where: { userId: genreMocks[0].userId }
@@ -130,7 +130,7 @@ describe('findGenres', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.genres.findMany.mockRejectedValue(new Error('connection refused'))
 
-    await expect(findGenres(genreMocks[0].userId)).rejects.toEqual(
+    await expect(getGenreList(genreMocks[0].userId)).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })

@@ -1,4 +1,4 @@
-import type { InputType } from '@ts/types'
+import type { FormInputType } from '@ts/types'
 import type { Rule } from 'antd/es/form'
 import type { FC } from 'react'
 
@@ -9,7 +9,7 @@ interface ReactInputProps {
   label?: string
   name: string
   rules?: Rule[]
-  type?: InputType
+  type?: FormInputType
 }
 
 const ReactFormInput: FC<ReactInputProps> = ({

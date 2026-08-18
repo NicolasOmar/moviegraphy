@@ -1,7 +1,7 @@
 import type { UserFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
@@ -12,79 +12,94 @@ import { Form } from 'antd'
 import { type FC } from 'react'
 
 const userFormTitle = 'Sign up'
-const userFormInputs: FormInputList<UserFormModel> = [
+const userFormInputs: FormConfig<UserFormModel> = [
   {
-    label: 'Name',
-    name: 'name',
-    rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
+    config: {
+      label: 'Name',
+      name: 'name',
+      rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Username',
-    name: 'username',
-    rules: [
-      { message: 'Username is required', required: true },
-      { max: 50, message: 'Username must be 50 characters as much' }
-    ]
+    config: {
+      label: 'Username',
+      name: 'username',
+      rules: [
+        { message: 'Username is required', required: true },
+        { max: 50, message: 'Username must be 50 characters as much' }
+      ]
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Email',
-    name: 'email',
-    rules: [
-      { message: 'Email is required', required: true },
-      { message: 'Please, provide a correct email format', type: 'email' },
-      { max: 50, message: 'Email must be 50 characters as much' }
-    ]
+    config: {
+      label: 'Email',
+      name: 'email',
+      rules: [
+        { message: 'Email is required', required: true },
+        { message: 'Please, provide a correct email format', type: 'email' },
+        { max: 50, message: 'Email must be 50 characters as much' }
+      ]
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Password',
-    name: 'password',
-    rules: [
-      { message: 'Password is required', required: true },
-      { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'Password must be 25 characters as much' },
-      formInstace => {
-        return {
-          validator: (_, passwordValue) => {
-            const repeatedPassword = formInstace.getFieldValue('repeatPassword')
-            const passwordMatch = arePassworsEqual(repeatedPassword, passwordValue)
+    config: {
+      label: 'Password',
+      name: 'password',
+      rules: [
+        { message: 'Password is required', required: true },
+        { message: 'Password must have minimun 4 characters', min: 4 },
+        { max: 25, message: 'Password must be 25 characters as much' },
+        formInstace => {
+          return {
+            validator: (_, passwordValue) => {
+              const repeatedPassword = formInstace.getFieldValue('repeatPassword')
+              const passwordMatch = arePassworsEqual(repeatedPassword, passwordValue)
 
-            if (passwordMatch) {
-              return Promise.resolve()
+              if (passwordMatch) {
+                return Promise.resolve()
+              }
+
+              return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
             }
-
-            return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
           }
         }
-      }
-    ],
-    type: 'password'
+      ],
+      type: 'password'
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Repeat Password',
-    name: 'repeatPassword',
-    rules: [
-      { message: 'Repeat Password is required', required: true },
-      { message: 'Repeat Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'Repeat Password must be 25 characters as much' },
-      formInstace => {
-        return {
-          validator: (_, repeatPassword) => {
-            const passwordValue = formInstace.getFieldValue('password')
-            const passwordMatch = arePassworsEqual(passwordValue, repeatPassword)
+    config: {
+      label: 'Repeat Password',
+      name: 'repeatPassword',
+      rules: [
+        { message: 'Repeat Password is required', required: true },
+        { message: 'Repeat Password must have minimun 4 characters', min: 4 },
+        { max: 25, message: 'Repeat Password must be 25 characters as much' },
+        formInstace => {
+          return {
+            validator: (_, repeatPassword) => {
+              const passwordValue = formInstace.getFieldValue('password')
+              const passwordMatch = arePassworsEqual(passwordValue, repeatPassword)
 
-            if (passwordMatch) {
-              return Promise.resolve()
+              if (passwordMatch) {
+                return Promise.resolve()
+              }
+
+              return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
             }
-
-            return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
           }
         }
-      }
-    ],
-    type: 'password'
+      ],
+      type: 'password'
+    },
+    typeOfInput: 'input'
   }
 ]
-const userFormButtons: ReactFormButtonProps[] = [
+const userFormButtons: FormButton[] = [
   { htmlType: 'submit', title: 'Create', type: 'primary' },
   { children: <a href="/login">Log In</a>, htmlType: 'button', type: 'text' }
 ]

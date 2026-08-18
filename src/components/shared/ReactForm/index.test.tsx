@@ -1,5 +1,5 @@
 import type { UserLoginFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 import type { FC } from 'react'
 
 import { render, screen } from '@testing-library/react'
@@ -7,9 +7,9 @@ import userEvent from '@testing-library/user-event'
 import { Form } from 'antd'
 import { describe, expect, it, vi } from 'vitest'
 
-import { ReactForm, type ReactFormButtonProps, type ReactFormProps } from './index'
+import { type FormButton, ReactForm, type ReactFormProps } from './index'
 
-const formInputs: FormInputList<UserLoginFormModel> = [
+const formInputs: FormConfig<UserLoginFormModel> = [
   {
     label: 'Username or Email',
     name: 'username',
@@ -23,9 +23,7 @@ const formInputs: FormInputList<UserLoginFormModel> = [
   }
 ]
 
-const formButtons: ReactFormButtonProps[] = [
-  { htmlType: 'submit', title: 'Log In', type: 'primary' }
-]
+const formButtons: FormButton[] = [{ htmlType: 'submit', title: 'Log In', type: 'primary' }]
 
 const Wrapper: FC<Partial<ReactFormProps<UserLoginFormModel>>> = props => {
   const [formInstance] = Form.useForm<UserLoginFormModel>()
