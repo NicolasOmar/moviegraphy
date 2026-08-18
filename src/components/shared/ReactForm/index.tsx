@@ -3,8 +3,8 @@ import type { FormConfig, FormInput, FormSelect } from '@ts/types'
 import { Button, type ButtonProps, Flex, Form, type FormInstance, Typography } from 'antd'
 import React, { useMemo } from 'react'
 
-import ReactFormInput from '../ReactFormInput'
-import ReactFormSelect from '../ReactFormSelect'
+import { ReactFormInput } from '../ReactFormInput'
+import { ReactFormSelect } from '../ReactFormSelect'
 
 export interface FormButton {
   children?: React.ReactNode
@@ -46,7 +46,7 @@ export const ReactForm = <T,>({
             {...(config as FormInput<T>)}
           />
         ) : (
-          <ReactFormSelect key={`user-form-${_inputIndex}`} {...(config as FormSelect)} />
+          <ReactFormSelect key={`user-form-${_inputIndex}`} {...(config as FormSelect<T>)} />
         )
       }),
     [formInputs, isLoading]

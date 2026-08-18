@@ -36,7 +36,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
 }
 
 export const PATCH: APIRoute = async ({ locals, request }) => {
-  const updateMovieModel = await parseRequestToModel<MoviesModel>(request)
+  const updateMovieModel = await parseRequestToModel<MovieFormModel>(request)
   const movieUpdateZod = await MovieUpdateSchema.safeParseAsync(updateMovieModel)
 
   if (movieUpdateZod.error) {

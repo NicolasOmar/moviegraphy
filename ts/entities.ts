@@ -79,7 +79,9 @@ export const GenreUpdateSchema = z.strictObject({
 export type MovieApiModel = CustomAstroLocals & MovieFormModel
 
 /** Used at `/components` and `/pages/api` for data handling */
-export type MovieFormModel = Omit<MoviesModel, 'userId'>
+export type MovieFormModel = Omit<MoviesModel, 'userId'> & {
+  genres: string[]
+}
 
 // ---------- MOVIES / SCHEMAS ----------
 /** Used at `/pages/api` for data validation */

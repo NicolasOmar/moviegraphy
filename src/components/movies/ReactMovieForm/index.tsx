@@ -71,17 +71,30 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   const [movieForm] = Form.useForm<MovieFormModel>()
 
   const memoizedFormButtons = useMemo(() => {
-    console.warn(genreList)
     const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
 
     return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButton[]
-  }, [selectedMovieInContext, genreList])
+  }, [selectedMovieInContext])
 
   $contextSelectedMovie.listen(_movie => {
     if (_movie) {
       movieForm.setFieldsValue(_movie)
     }
   })
+  const memoizedFormInputs = useMemo(() => {
+    return [
+      ...movieFormInputs,
+      {
+        config: {
+          label: 'Genres',
+          name: 'genres',
+          options: genreList.map(_genre => ({ label: _genre.name, value: _genre.id })),
+          values: []
+        },
+        typeOfInput: 'select'
+      }
+    ] as FormConfig<MovieFormModel>
+  }, [genreList])
 
   const handleSubmit = async (_movieToSubmit: MovieFormModel) => {
     setLoadingSystemState(true)
@@ -141,7 +154,7 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   return (
     <ReactForm
       formButtons={memoizedFormButtons}
-      formInputs={movieFormInputs}
+      formInputs={memoizedFormInputs}
       formInstance={movieForm}
       formTitle={movieFormTitle}
       isLoading={isSystemLoading}

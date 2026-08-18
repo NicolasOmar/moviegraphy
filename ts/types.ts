@@ -22,11 +22,15 @@ export type DeleteOne = (_identifier: string) => Promise<boolean>
 export type FormConfig<T> = Array<FormItemConfig<T>>
 
 //----------INPUTS----------
-export type FormInput<T> = {
+export type FormInput<T> = FormInputBase<T> & {
+  type?: FormInputType
+}
+
+export type FormInputBase<T> = {
+  isDisabled?: boolean
   label: string
   name: Extract<keyof T, string>
   rules?: Rule[]
-  type?: FormInputType
 }
 
 export type FormInputType =
@@ -54,12 +58,11 @@ export type FormInputType =
   | 'week'
 
 export type FormItemConfig<T> = {
-  config: FormInput<T> | FormSelect
+  config: FormInput<T> | FormSelect<T>
   typeOfInput: 'input' | 'select'
 }
 
-export type FormSelect = {
-  handleChange: (value: string[]) => void
+export type FormSelect<T> = FormInputBase<T> & {
   options: SelectProps['options']
   values: string[]
 }

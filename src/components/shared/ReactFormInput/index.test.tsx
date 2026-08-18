@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { Form } from 'antd'
 import { describe, expect, it, vi } from 'vitest'
 
-import ReactFormInput from './index'
+import { ReactFormInput } from './index'
 
 const renderWithForm = (
   onValuesChange: (changedValues: object, allValues: object) => void = vi.fn(),

@@ -11,15 +11,21 @@ import { type FormButton, ReactForm, type ReactFormProps } from './index'
 
 const formInputs: FormConfig<UserLoginFormModel> = [
   {
-    label: 'Username or Email',
-    name: 'username',
-    rules: [{ message: 'Username or Email is required', required: true }]
+    config: {
+      label: 'Username or Email',
+      name: 'username',
+      rules: [{ message: 'Username or Email is required', required: true }]
+    },
+    typeOfInput: 'input'
   },
   {
-    label: 'Password',
-    name: 'password',
-    rules: [{ message: 'Password is required', required: true }],
-    type: 'password'
+    config: {
+      label: 'Password',
+      name: 'password',
+      rules: [{ message: 'Password is required', required: true }],
+      type: 'password'
+    },
+    typeOfInput: 'input'
   }
 ]
 

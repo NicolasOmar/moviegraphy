@@ -12,7 +12,7 @@ interface ReactInputProps {
   type?: FormInputType
 }
 
-const ReactFormInput: FC<ReactInputProps> = ({
+export const ReactFormInput: FC<ReactInputProps> = ({
   isDisabled = false,
   label,
   name,
@@ -28,5 +28,3 @@ const ReactFormInput: FC<ReactInputProps> = ({
     </Form.Item>
   )
 }
-
-export default ReactFormInput

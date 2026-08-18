@@ -7,7 +7,7 @@ import { $globalNotifications } from '@store/notifications'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
-import { movieMocks } from '@ts/mocks'
+import { genreMocks, movieMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReactMovieForm } from './index'
@@ -51,7 +51,7 @@ describe('ReactMovieForm', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: createdMovie }), { status: 200 })
     )
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
 
     await fillForm(user)
     await user.click(screen.getByRole('button', { name: 'Create' }))
@@ -71,7 +71,7 @@ describe('ReactMovieForm', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Name is required' }), { status: 400 })
     )
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
 
     await fillForm(user)
     await user.click(screen.getByRole('button', { name: 'Create' }))
@@ -86,7 +86,7 @@ describe('ReactMovieForm', () => {
   it('updates a movie: pre-fills the form on selection, submits a PATCH request, updates the list, and clears the selection', async () => {
     const user = userEvent.setup()
     const [movieToEdit] = movieMocks
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
     $contextMovieList.set([movieToEdit])
 
     act(() => {
@@ -116,7 +116,7 @@ describe('ReactMovieForm', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Update rejected' }), { status: 500 })
     )
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
     $contextMovieList.set([movieToEdit])
 
     act(() => {
@@ -135,7 +135,7 @@ describe('ReactMovieForm', () => {
 
   it('shows a generic invalidation message and never calls fetch when required fields are empty', async () => {
     const user = userEvent.setup()
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
 

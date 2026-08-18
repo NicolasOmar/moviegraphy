@@ -3,7 +3,7 @@ import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
-import { movieMocks } from '../../../ts/mocks'
+import { genreMocks, movieMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
 import { createMovie, deleteMovie, getMovieList, updateMovie } from '../movies'
 
@@ -38,15 +38,16 @@ describe('getMovieList', () => {
 })
 
 describe('createMovie', () => {
-  it('creates a movie for the logged user without leaking the loggedUserId into the stored data', async () => {
+  it('creates a movie for the logged user without leaking the loggedUserId into the stored data, wiring genres into a nested create', async () => {
     const [movie] = movieMocks
     const { userId, ...movieForm } = movie
+    const genres = [genreMocks[0].id]
     mockedPrisma.movies.create.mockResolvedValue(movie)
 
-    const result = await createMovie({ ...movieForm, loggedUserId: userId })
+    const result = await createMovie({ ...movieForm, genres, loggedUserId: userId })
 
     expect(mockedPrisma.movies.create).toHaveBeenCalledWith({
-      data: { ...movieForm, userId }
+      data: { ...movieForm, genres: { create: [{ genreId: genres[0] }] }, userId }
     })
     expect(result).toEqual(movie)
   })
@@ -56,23 +57,27 @@ describe('createMovie', () => {
     const { userId, ...movieForm } = movieMocks[0]
     mockedPrisma.movies.create.mockRejectedValue(new Error('unique constraint failed'))
 
-    await expect(createMovie({ ...movieForm, loggedUserId: userId })).rejects.toEqual(
+    await expect(createMovie({ ...movieForm, genres: [], loggedUserId: userId })).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'unique constraint failed')
     )
   })
 })
 
 describe('updateMovie', () => {
-  it('strips the id and loggedUserId out of data, scopes the where clause to the logged user, and returns the updated record', async () => {
+  it('strips the id and loggedUserId out of data, scopes the where clause to the logged user, replaces genres, and returns the updated record', async () => {
     const [movie] = movieMocks
     const { userId, ...movieForm } = movie
     const { id, ...dataToUpdate } = movieForm
+    const genres = [genreMocks[0].id]
     mockedPrisma.movies.update.mockResolvedValue(movie)
 
-    const result = await updateMovie({ ...movieForm, loggedUserId: userId })
+    const result = await updateMovie({ ...movieForm, genres, loggedUserId: userId })
 
     expect(mockedPrisma.movies.update).toHaveBeenCalledWith({
-      data: dataToUpdate,
+      data: {
+        ...dataToUpdate,
+        genres: { create: [{ genreId: genres[0] }], deleteMany: {} }
+      },
       where: { id, userId }
     })
     expect(result).toEqual(movie)
@@ -83,7 +88,7 @@ describe('updateMovie', () => {
     const { userId, ...movieForm } = movieMocks[0]
     mockedPrisma.movies.update.mockRejectedValue(new Error('record not found'))
 
-    await expect(updateMovie({ ...movieForm, loggedUserId: userId })).rejects.toEqual(
+    await expect(updateMovie({ ...movieForm, genres: [], loggedUserId: userId })).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'record not found')
     )
   })
