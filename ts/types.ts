@@ -30,6 +30,7 @@ export type FormInputBase<T> = {
   isDisabled?: boolean
   label: string
   name: Extract<keyof T, string>
+  placeholder?: string
   rules?: Rule[]
 }
 
@@ -59,12 +60,11 @@ export type FormInputType =
 
 export type FormItemConfig<T> = {
   config: FormInput<T> | FormSelect<T>
-  typeOfInput: 'input' | 'select'
+  type: 'input' | 'select'
 }
 
 export type FormSelect<T> = FormInputBase<T> & {
   options: SelectProps['options']
-  values: string[]
 }
 
 /** Used for `[GET]` API method. Focused on a list of elements/registries

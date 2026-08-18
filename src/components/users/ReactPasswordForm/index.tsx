@@ -24,7 +24,7 @@ const passwordChangeInputs: FormConfig<PasswordUpdateFormModel> = [
       ],
       type: 'password'
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -51,7 +51,7 @@ const passwordChangeInputs: FormConfig<PasswordUpdateFormModel> = [
       ],
       type: 'password'
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -78,7 +78,7 @@ const passwordChangeInputs: FormConfig<PasswordUpdateFormModel> = [
       ],
       type: 'password'
     },
-    typeOfInput: 'input'
+    type: 'input'
   }
 ]
 const passwordChangeButtons: FormButton[] = [

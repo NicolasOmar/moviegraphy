@@ -19,7 +19,7 @@ const updateFormInputs: FormConfig<UserUpdateFormModel> = [
       name: 'name',
       rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -30,7 +30,7 @@ const updateFormInputs: FormConfig<UserUpdateFormModel> = [
         { max: 50, message: 'Username must be 50 characters as much' }
       ]
     },
-    typeOfInput: 'input'
+    type: 'input'
   }
 ]
 const updateFormButtons: FormButton[] = [{ htmlType: 'submit', title: 'Update', type: 'primary' }]

@@ -19,7 +19,7 @@ const userFormInputs: FormConfig<UserFormModel> = [
       name: 'name',
       rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -30,7 +30,7 @@ const userFormInputs: FormConfig<UserFormModel> = [
         { max: 50, message: 'Username must be 50 characters as much' }
       ]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -42,7 +42,7 @@ const userFormInputs: FormConfig<UserFormModel> = [
         { max: 50, message: 'Email must be 50 characters as much' }
       ]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -69,7 +69,7 @@ const userFormInputs: FormConfig<UserFormModel> = [
       ],
       type: 'password'
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -96,7 +96,7 @@ const userFormInputs: FormConfig<UserFormModel> = [
       ],
       type: 'password'
     },
-    typeOfInput: 'input'
+    type: 'input'
   }
 ]
 const userFormButtons: FormButton[] = [

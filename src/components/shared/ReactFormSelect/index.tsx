@@ -7,18 +7,16 @@ export const ReactFormSelect = <T,>({
   label,
   name,
   options,
-  rules,
-  values
+  placeholder,
+  rules
 }: FormSelect<T>) => (
   <Form.Item label={label} name={name as string} rules={rules}>
     <Select
       allowClear
-      defaultValue={values}
       disabled={isDisabled}
       mode="multiple"
       options={options}
-      // style={{ width: '100%' }}
-      placeholder="Please select"
+      placeholder={placeholder}
     />
   </Form.Item>
 )

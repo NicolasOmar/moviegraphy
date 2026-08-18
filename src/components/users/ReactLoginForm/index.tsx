@@ -18,7 +18,7 @@ const loginFormInputs: FormConfig<UserLoginFormModel> = [
       name: 'username',
       rules: [{ message: 'Username or Email is required', required: true }]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -31,7 +31,7 @@ const loginFormInputs: FormConfig<UserLoginFormModel> = [
       ],
       type: 'password'
     },
-    typeOfInput: 'input'
+    type: 'input'
   }
 ]
 const loginFormButtons: FormButton[] = [

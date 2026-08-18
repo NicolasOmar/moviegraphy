@@ -80,7 +80,7 @@ export type MovieApiModel = CustomAstroLocals & MovieFormModel
 
 /** Used at `/components` and `/pages/api` for data handling */
 export type MovieFormModel = Omit<MoviesModel, 'userId'> & {
-  genres: string[]
+  genres: string
 }
 
 // ---------- MOVIES / SCHEMAS ----------
@@ -88,6 +88,7 @@ export type MovieFormModel = Omit<MoviesModel, 'userId'> & {
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),
   description: z.string().max(300).optional(),
+  genres: z.string().optional(),
   name: z.string().max(150),
   releaseYear: z.coerce.number().min(1850).max(3000)
 })

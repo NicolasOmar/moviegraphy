@@ -38,8 +38,8 @@ export const ReactForm = <T,>({
 }: ReactFormProps<T>): React.ReactElement => {
   const memoizedInputs = useMemo(
     () =>
-      formInputs.map(({ config, typeOfInput }, _inputIndex) => {
-        return typeOfInput === 'input' ? (
+      formInputs.map(({ config, type }, _inputIndex) => {
+        return type === 'input' ? (
           <ReactFormInput
             isDisabled={isLoading}
             key={`user-form-${_inputIndex}`}

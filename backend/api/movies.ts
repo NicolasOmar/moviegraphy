@@ -31,7 +31,7 @@ export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
     return await prismaInstance.movies.create({
       data: {
         ...movieData,
-        genres: { create: genres.map(_genreId => ({ genreId: _genreId })) },
+        genres: { create: genres.split(',').map(_genreId => ({ genreId: _genreId })) },
         userId: loggedUserId
       }
     })
@@ -52,7 +52,10 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
     return await prismaInstance.movies.update({
       data: {
         ...dataToUpdate,
-        genres: { create: genres.map(_genreId => ({ genreId: _genreId })), deleteMany: {} }
+        genres: {
+          create: genres.split(',').map(_genreId => ({ genreId: _genreId })),
+          deleteMany: {}
+        }
       },
       where: { id: movieId, userId: loggedUserId }
     })

@@ -27,7 +27,7 @@ const genreFormInputs: FormConfig<GenreFormModel> = [
       rules: [{ message: 'The name is required', required: true }, { max: 300 }],
       type: 'text'
     },
-    typeOfInput: 'input'
+    type: 'input'
   }
 ]
 

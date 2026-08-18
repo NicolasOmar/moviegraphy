@@ -33,7 +33,7 @@ const movieFormInputs: FormConfig<MovieFormModel> = [
         { max: 300, message: 'Name must be 150 characters as much' }
       ]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -41,7 +41,7 @@ const movieFormInputs: FormConfig<MovieFormModel> = [
       name: 'description',
       rules: [{ max: 300, message: 'Description must be 300 characters as much' }]
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -53,7 +53,7 @@ const movieFormInputs: FormConfig<MovieFormModel> = [
       ],
       type: 'number'
     },
-    typeOfInput: 'input'
+    type: 'input'
   },
   {
     config: {
@@ -61,7 +61,7 @@ const movieFormInputs: FormConfig<MovieFormModel> = [
       name: 'countryMade',
       rules: [{ message: 'Country is required', required: true }]
     },
-    typeOfInput: 'input'
+    type: 'input'
   }
 ]
 
@@ -91,7 +91,7 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
           options: genreList.map(_genre => ({ label: _genre.name, value: _genre.id })),
           values: []
         },
-        typeOfInput: 'select'
+        type: 'select'
       }
     ] as FormConfig<MovieFormModel>
   }, [genreList])

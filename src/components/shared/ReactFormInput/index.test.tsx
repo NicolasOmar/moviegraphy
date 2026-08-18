@@ -7,16 +7,22 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ReactFormInput } from './index'
 
+type TestFormValues = {
+  name: string
+  password: string
+  releaseYear: number
+}
+
 const renderWithForm = (
   onValuesChange: (changedValues: object, allValues: object) => void = vi.fn(),
-  props: Partial<ComponentProps<typeof ReactFormInput>> = {}
+  props: Partial<ComponentProps<typeof ReactFormInput<TestFormValues>>> = {}
 ) => {
   const Wrapper = () => {
     const [form] = Form.useForm()
 
     return (
       <Form form={form} onValuesChange={onValuesChange}>
-        <ReactFormInput label="Name" name="name" {...props} />
+        <ReactFormInput<TestFormValues> label="Name" name="name" {...props} />
       </Form>
     )
   }
