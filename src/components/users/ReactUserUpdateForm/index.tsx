@@ -1,35 +1,39 @@
 import type { UserUpdateFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 import type { FC } from 'react'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const updateFormTitle = 'Update user data'
-const updateFormInputs: FormInputList<UserUpdateFormModel> = [
+const updateFormInputs: FormConfig<UserUpdateFormModel> = [
   {
-    label: 'Name',
-    name: 'name',
-    rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
+    config: {
+      label: 'Name',
+      name: 'name',
+      rules: [{ max: 25, message: 'Name must be 25 characters as much' }]
+    },
+    type: 'input'
   },
   {
-    label: 'Username',
-    name: 'username',
-    rules: [
-      { message: 'Username is required', required: true },
-      { max: 50, message: 'Username must be 50 characters as much' }
-    ]
+    config: {
+      label: 'Username',
+      name: 'username',
+      rules: [
+        { message: 'Username is required', required: true },
+        { max: 50, message: 'Username must be 50 characters as much' }
+      ]
+    },
+    type: 'input'
   }
 ]
-const updateFormButtons: ReactFormButtonProps[] = [
-  { htmlType: 'submit', title: 'Update', type: 'primary' }
-]
+const updateFormButtons: FormButton[] = [{ htmlType: 'submit', title: 'Update', type: 'primary' }]
 
 export const ReactUserUpdateForm: FC = () => {
   const [userUpdateForm] = Form.useForm<UserUpdateFormModel>()
@@ -47,16 +51,16 @@ export const ReactUserUpdateForm: FC = () => {
 
     if (userUpdateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(userUpdateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
-      addMessageToContext({ content: 'User correctly updated', type: 'success' })
+      publishNotification({ content: 'User correctly updated', type: 'success' })
     }
 
     setLoadingSystemState(false)
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm

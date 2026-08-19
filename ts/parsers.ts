@@ -50,6 +50,17 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
   return parseFormDataToModel<UserDefinedModel>(extractedFormData)
 }
 
+/** Normalizes a movie form's `genres` field into a clean list of genre ids
+ *
+ * - Accepts either a comma-separated string (as sent through `FormData`) or an array
+ * - Filters out empty values, so an unselected/empty field never yields a bogus id
+ *
+ * @param _genres - Raw `genres` value coming from a form submission
+ * @returns Array of non-empty genre id strings
+ */
+export const parseGenresToIds = (_genres: string | string[]): string[] =>
+  (Array.isArray(_genres) ? _genres : _genres.split(',')).filter(Boolean)
+
 /** Extract error's message or creates a string out of the error object itself
  *
  * - If the `_error` is an instance of `Error`. It return its `message` property
@@ -61,10 +72,22 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
 export const getErrorMessage = (_error: unknown) =>
   _error instanceof Error ? _error.message : String(_error)
 
-/** Extract Response's  message from the `/pages/api` request and
+/** Extract Response's success message from the `/pages/api` request and
+ * displays it as a user-defined entity (which is `object` by default)
+ *
+ * @param _response - An API `Response` (in this case, a success)
+ * @returns An common `object` or an user-defined one to be displayed by the front-end
+ */
+export const parseResponseMessageToEntity = async <OutputEntity = object>(
+  _response: Response
+): Promise<OutputEntity> => {
+  return (await _response.json()).message as OutputEntity
+}
+
+/** Extract Response's error message from the `/pages/api` request and
  * displays it (even if is an array of strings, it joins them)
  *
- * @param _response - An API `Response` (mostly an error)
+ * @param _response - An API `Response` (in this case, an error)
  * @returns A single string to be displayed by the front-end
  */
 export const parseResponseErrorToMessage = async (_response: Response) => {

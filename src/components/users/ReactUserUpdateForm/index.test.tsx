@@ -1,4 +1,4 @@
-import { $contextMessageList } from '@store/messages'
+import { $globalNotifications } from '@store/notifications'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ReactUserUpdateForm } from './index'
 
 beforeEach(() => {
-  $contextMessageList.set(null)
+  $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: true }), { status: 200 }))
@@ -38,7 +38,7 @@ describe('ReactUserUpdateForm', () => {
       )
     )
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: 'User correctly updated',
         type: 'success'
       })
@@ -58,7 +58,7 @@ describe('ReactUserUpdateForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: "Username 'trinity' is already taken",
         type: 'error'
       })
@@ -74,7 +74,7 @@ describe('ReactUserUpdateForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: 'Check the form messages',
         type: 'error'
       })

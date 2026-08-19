@@ -1,32 +1,21 @@
-import type { InputType } from '@ts/types'
-import type { Rule } from 'antd/es/form'
-import type { FC } from 'react'
+import type { FormInput } from '@ts/types'
 
 import { Form, Input } from 'antd'
 
-interface ReactInputProps {
-  isDisabled?: boolean
-  label?: string
-  name: string
-  rules?: Rule[]
-  type?: InputType
-}
-
-const ReactFormInput: FC<ReactInputProps> = ({
+export const ReactFormInput = <InputEntity,>({
   isDisabled = false,
   label,
   name,
+  placeholder,
   rules,
   type = 'text'
-}) => {
+}: FormInput<InputEntity>) => {
   const normalize =
     type === 'number' ? (value: string) => (value ? Number(value) : value) : undefined
 
   return (
-    <Form.Item label={label} name={name} normalize={normalize} rules={rules}>
-      <Input disabled={isDisabled} type={type} />
+    <Form.Item label={label} name={name as string} normalize={normalize} rules={rules}>
+      <Input disabled={isDisabled} placeholder={placeholder} type={type} />
     </Form.Item>
   )
 }
-
-export default ReactFormInput

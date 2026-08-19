@@ -1,13 +1,13 @@
-import { $contextMessageList } from '@store/messages'
 import {
   $contextMovieList,
   $contextSelectedMovie,
   updateSelectedMovieOnContext
 } from '@store/movies'
+import { $globalNotifications } from '@store/notifications'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
-import { movieMocks } from '@ts/mocks'
+import { genreMocks, movieMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReactMovieForm } from './index'
@@ -17,7 +17,7 @@ vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
 beforeEach(() => {
   $contextMovieList.set([])
   $contextSelectedMovie.set(null)
-  $contextMessageList.set(null)
+  $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -51,7 +51,7 @@ describe('ReactMovieForm', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: createdMovie }), { status: 200 })
     )
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
 
     await fillForm(user)
     await user.click(screen.getByRole('button', { name: 'Create' }))
@@ -62,6 +62,8 @@ describe('ReactMovieForm', () => {
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
+    const [, submittedRequest] = vi.mocked(fetch).mock.calls[0]
+    expect((submittedRequest?.body as FormData).get('genres')).toBe('')
     expect($contextMovieList.get()).toEqual([createdMovie])
     await waitFor(() => expect(screen.getByLabelText('Name')).toHaveValue(''))
   })
@@ -71,13 +73,13 @@ describe('ReactMovieForm', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Name is required' }), { status: 400 })
     )
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
 
     await fillForm(user)
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({ content: 'Name is required', type: 'error' })
+      expect($globalNotifications.get()).toEqual({ content: 'Name is required', type: 'error' })
     )
     expect($contextMovieList.get()).toEqual([])
     expect(screen.getByLabelText('Name')).toHaveValue('The Matrix')
@@ -86,7 +88,7 @@ describe('ReactMovieForm', () => {
   it('updates a movie: pre-fills the form on selection, submits a PATCH request, updates the list, and clears the selection', async () => {
     const user = userEvent.setup()
     const [movieToEdit] = movieMocks
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
     $contextMovieList.set([movieToEdit])
 
     act(() => {
@@ -110,13 +112,32 @@ describe('ReactMovieForm', () => {
     expect($contextSelectedMovie.get()).toBeNull()
   })
 
+  it('pre-fills the genres select from the movie current genres, then resets the form and clears the selection when Cancel is clicked', async () => {
+    const user = userEvent.setup()
+    const [movieToEdit] = movieMocks
+    const [genre] = genreMocks
+    render(<ReactMovieForm genreList={genreMocks} />)
+
+    act(() => {
+      updateSelectedMovieOnContext({ ...movieToEdit, genres: [genre] })
+    })
+
+    expect(await screen.findByLabelText('Name')).toHaveValue(movieToEdit.name)
+    expect(screen.getByText(genre.name)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(screen.getByLabelText('Name')).toHaveValue('')
+    expect($contextSelectedMovie.get()).toBeNull()
+  })
+
   it('shows an error message and keeps the selection when an update fails', async () => {
     const user = userEvent.setup()
     const [movieToEdit] = movieMocks
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Update rejected' }), { status: 500 })
     )
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
     $contextMovieList.set([movieToEdit])
 
     act(() => {
@@ -127,7 +148,7 @@ describe('ReactMovieForm', () => {
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({ content: 'Update rejected', type: 'error' })
+      expect($globalNotifications.get()).toEqual({ content: 'Update rejected', type: 'error' })
     )
     expect($contextMovieList.get()).toEqual([movieToEdit])
     expect($contextSelectedMovie.get()).toEqual(movieToEdit)
@@ -135,12 +156,12 @@ describe('ReactMovieForm', () => {
 
   it('shows a generic invalidation message and never calls fetch when required fields are empty', async () => {
     const user = userEvent.setup()
-    render(<ReactMovieForm />)
+    render(<ReactMovieForm genreList={genreMocks} />)
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: 'Check the form messages',
         type: 'error'
       })

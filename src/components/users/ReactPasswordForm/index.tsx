@@ -1,78 +1,87 @@
 import type { PasswordUpdateFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 import type { FC } from 'react'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual, fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 
 const passwordChangeTitle = 'Change password'
-const passwordChangeInputs: FormInputList<PasswordUpdateFormModel> = [
+const passwordChangeInputs: FormConfig<PasswordUpdateFormModel> = [
   {
-    label: 'Old password',
-    name: 'old',
-    rules: [
-      { message: 'The password is required', required: true },
-      { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'The password must be 25 characters as much' }
-    ],
-    type: 'password'
+    config: {
+      label: 'Old password',
+      name: 'old',
+      rules: [
+        { message: 'The password is required', required: true },
+        { message: 'Password must have minimun 4 characters', min: 4 },
+        { max: 25, message: 'The password must be 25 characters as much' }
+      ],
+      type: 'password'
+    },
+    type: 'input'
   },
   {
-    label: 'New password',
-    name: 'new',
-    rules: [
-      { message: 'The password is required', required: true },
-      { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'The password must be 25 characters as much' },
-      formInstace => {
-        return {
-          validator: (_, newPassword) => {
-            const repeatNewValue = formInstace.getFieldValue('repeatNew')
-            const passwordMatch = arePassworsEqual(repeatNewValue, newPassword)
+    config: {
+      label: 'New password',
+      name: 'new',
+      rules: [
+        { message: 'The password is required', required: true },
+        { message: 'Password must have minimun 4 characters', min: 4 },
+        { max: 25, message: 'The password must be 25 characters as much' },
+        formInstace => {
+          return {
+            validator: (_, newPassword) => {
+              const repeatNewValue = formInstace.getFieldValue('repeatNew')
+              const passwordMatch = arePassworsEqual(repeatNewValue, newPassword)
 
-            if (passwordMatch) {
-              return Promise.resolve()
+              if (passwordMatch) {
+                return Promise.resolve()
+              }
+
+              return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
             }
-
-            return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
           }
         }
-      }
-    ],
-    type: 'password'
+      ],
+      type: 'password'
+    },
+    type: 'input'
   },
   {
-    label: 'Repeat new password',
-    name: 'repeatNew',
-    rules: [
-      { message: 'The password is required', required: true },
-      { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'The password must be 25 characters as much' },
-      formInstace => {
-        return {
-          validator: (_, repeatedPassword) => {
-            const firstNewPassword = formInstace.getFieldValue('new')
-            const passwordMatch = arePassworsEqual(firstNewPassword, repeatedPassword)
+    config: {
+      label: 'Repeat new password',
+      name: 'repeatNew',
+      rules: [
+        { message: 'The password is required', required: true },
+        { message: 'Password must have minimun 4 characters', min: 4 },
+        { max: 25, message: 'The password must be 25 characters as much' },
+        formInstace => {
+          return {
+            validator: (_, repeatedPassword) => {
+              const firstNewPassword = formInstace.getFieldValue('new')
+              const passwordMatch = arePassworsEqual(firstNewPassword, repeatedPassword)
 
-            if (passwordMatch) {
-              return Promise.resolve()
+              if (passwordMatch) {
+                return Promise.resolve()
+              }
+
+              return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
             }
-
-            return Promise.reject(USER_ERROR_MESSAGES.PASSWORD_MISMATCH)
           }
         }
-      }
-    ],
-    type: 'password'
+      ],
+      type: 'password'
+    },
+    type: 'input'
   }
 ]
-const passwordChangeButtons: ReactFormButtonProps[] = [
+const passwordChangeButtons: FormButton[] = [
   { htmlType: 'submit', title: 'Update', type: 'primary' }
 ]
 
@@ -92,10 +101,10 @@ export const ReactPasswordForm: FC = () => {
 
     if (passwordUpdateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(passwordUpdateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       passwordForm.resetFields()
-      addMessageToContext({ content: 'Password updated', type: 'success' })
+      publishNotification({ content: 'Password updated', type: 'success' })
     }
 
     setLoadingSystemState(false)
@@ -103,7 +112,7 @@ export const ReactPasswordForm: FC = () => {
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm

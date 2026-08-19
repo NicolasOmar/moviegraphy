@@ -73,7 +73,7 @@ const currentPath = Astro.url.pathname.replace(/(.+)\/$/, '$1')
 </html>
 
 <script>
-  import { addMessageToContext } from '@store/messages'
+  import { publishNotification } from '@store/notifications'
   import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL } from '@ts/constants'
   import { fetchWithAuth } from '@ts/helpers'
   import { parseResponseErrorToMessage } from '@ts/parsers'
@@ -88,7 +88,7 @@ const currentPath = Astro.url.pathname.replace(/(.+)\/$/, '$1')
 
       if (logOutRespose.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(logOutRespose)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
         window.location.href = PAGE_URL.HOME
       }

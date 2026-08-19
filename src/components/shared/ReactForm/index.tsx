@@ -1,20 +1,22 @@
-import type { FormInputList } from '@ts/types'
+import type { FormConfig, FormInput, FormSelect } from '@ts/types'
 
 import { Button, type ButtonProps, Flex, Form, type FormInstance, Typography } from 'antd'
 import React, { useMemo } from 'react'
 
-import ReactFormInput from '../ReactFormInput'
+import { ReactFormInput } from '../ReactFormInput'
+import { ReactFormSelect } from '../ReactFormSelect'
 
-export interface ReactFormButtonProps {
+export interface FormButton {
   children?: React.ReactNode
   htmlType: ButtonProps['htmlType']
+  onClick?: ButtonProps['onClick']
   title?: string
   type: ButtonProps['type']
 }
 
 export interface ReactFormProps<T> {
-  formButtons: ReactFormButtonProps[]
-  formInputs: FormInputList<T>
+  formButtons: FormButton[]
+  formInputs: FormConfig<T>
   formInstance: FormInstance
   formTitle?: string
   isLoading?: boolean
@@ -37,9 +39,17 @@ export const ReactForm = <T,>({
 }: ReactFormProps<T>): React.ReactElement => {
   const memoizedInputs = useMemo(
     () =>
-      formInputs.map((_inputConfig, _inputIndex) => (
-        <ReactFormInput isDisabled={isLoading} key={`user-form-${_inputIndex}`} {..._inputConfig} />
-      )),
+      formInputs.map(({ config, type }, _inputIndex) => {
+        return type === 'input' ? (
+          <ReactFormInput
+            isDisabled={isLoading}
+            key={`user-form-${_inputIndex}`}
+            {...(config as FormInput<T>)}
+          />
+        ) : (
+          <ReactFormSelect key={`user-form-${_inputIndex}`} {...(config as FormSelect<T>)} />
+        )
+      }),
     [formInputs, isLoading]
   )
   const memoizedButtons = useMemo(
@@ -56,6 +66,7 @@ export const ReactForm = <T,>({
                 disabled={isLoading}
                 htmlType={_buttonConfig.htmlType}
                 key={`button-form-${_buttonIndex}`}
+                onClick={_buttonConfig.onClick}
                 type={_buttonConfig.type}
               >
                 {buttonChild}

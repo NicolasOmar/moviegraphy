@@ -1,5 +1,5 @@
-import { $contextMessageList } from '@store/messages'
 import { $contextMovieList, $contextSelectedMovie } from '@store/movies'
+import { $globalNotifications } from '@store/notifications'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
@@ -13,7 +13,7 @@ const columns = [{ dataIndex: 'name', title: 'Name' }]
 beforeEach(() => {
   $contextMovieList.set([])
   $contextSelectedMovie.set(null)
-  $contextMessageList.set(null)
+  $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
     vi
@@ -59,8 +59,12 @@ describe('ReactMovieTable', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
   })
 
-  it('selects a movie for editing when its edit button is clicked', async () => {
+  it('fetches the full movie with its genres and selects it for editing when its edit button is clicked', async () => {
     const user = userEvent.setup()
+    const movieWithGenres = { ...movieMocks[0], genres: [] }
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: movieWithGenres }), { status: 200 })
+    )
     render(<ReactMovieTable columns={columns} dataSource={movieMocks} />)
     await waitFor(() => expect(screen.getByText(movieMocks[0].name)).toBeInTheDocument())
 
@@ -68,7 +72,31 @@ describe('ReactMovieTable', () => {
     const [editButton] = within(firstRow).getAllByRole('button')
     await user.click(editButton)
 
-    expect($contextSelectedMovie.get()).toEqual(movieMocks[0])
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_URLS.MOVIES}/${movieMocks[0].id}`,
+        expect.objectContaining({ method: 'GET' })
+      )
+    )
+    expect($contextSelectedMovie.get()).toEqual(movieWithGenres)
+  })
+
+  it('shows an error message and never selects a movie for editing when the GET request fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Movie not found' }), { status: 404 })
+    )
+    render(<ReactMovieTable columns={columns} dataSource={movieMocks} />)
+    await waitFor(() => expect(screen.getByText(movieMocks[0].name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [editButton] = within(firstRow).getAllByRole('button')
+    await user.click(editButton)
+
+    await waitFor(() =>
+      expect($globalNotifications.get()).toEqual({ content: 'Movie not found', type: 'error' })
+    )
+    expect($contextSelectedMovie.get()).toBeNull()
   })
 
   it('deletes a movie via a DELETE request and clears the selection', async () => {
@@ -102,7 +130,7 @@ describe('ReactMovieTable', () => {
     await user.click(deleteButton)
 
     await waitFor(() =>
-      expect($contextMessageList.get()).toEqual({
+      expect($globalNotifications.get()).toEqual({
         content: 'Movie is referenced elsewhere',
         type: 'error'
       })

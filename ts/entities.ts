@@ -62,6 +62,10 @@ export type GenreApiModel = CustomAstroLocals & GenreFormModel
 /** Used at `/components` and `/pages/api` for data handling */
 export type GenreFormModel = Omit<GenresModel, 'userId'>
 
+export type GenreWithMovieAmount = GenresModel & {
+  moviesAmount?: number
+}
+
 // ---------- GENRES / SCHEMAS ----------
 /** Used at `/pages/api` for data validation */
 export const GenreCreateSchema = z.strictObject({
@@ -79,13 +83,20 @@ export const GenreUpdateSchema = z.strictObject({
 export type MovieApiModel = CustomAstroLocals & MovieFormModel
 
 /** Used at `/components` and `/pages/api` for data handling */
-export type MovieFormModel = Omit<MoviesModel, 'userId'>
+export type MovieFormModel = Omit<MoviesModel, 'userId'> & {
+  genres: string | string[]
+}
+
+export type MovieWithGenresModel = MoviesModel & {
+  genres?: GenresModel[]
+}
 
 // ---------- MOVIES / SCHEMAS ----------
 /** Used at `/pages/api` for data validation */
 export const MovieCreateSchema = z.strictObject({
   countryMade: z.string(),
   description: z.string().max(300).optional(),
+  genres: z.string().optional(),
   name: z.string().max(150),
   releaseYear: z.coerce.number().min(1850).max(3000)
 })

@@ -5,7 +5,7 @@ import { mockReset } from 'vitest-mock-extended'
 
 import { genreMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
-import { createGenre, deleteGenre, findGenres, updateGenre } from '../genres'
+import { createGenre, deleteGenre, getGenreList, updateGenre } from '../genres'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 vi.mock('uuid', () => ({ v6: () => 'fixed-test-id' }))
@@ -114,30 +114,35 @@ describe('updateGenre', () => {
   })
 })
 
-describe('findGenres', () => {
-  it('resolves the genres owned by the logged user', async () => {
-    mockedPrisma.genres.findMany.mockResolvedValue(genreMocks)
+describe('getGenreList', () => {
+  it('resolves the genres owned by the logged user, mapping their movie count to moviesAmount', async () => {
+    const genresWithCount = genreMocks.map(_genre => ({
+      ..._genre,
+      _count: { movies: 3 }
+    }))
+    mockedPrisma.genres.findMany.mockResolvedValue(genresWithCount)
 
-    const result = await findGenres(genreMocks[0].userId)
+    const result = await getGenreList(genreMocks[0].userId)
 
     expect(mockedPrisma.genres.findMany).toHaveBeenCalledWith({
+      include: { _count: { select: { movies: true } } },
       where: { userId: genreMocks[0].userId }
     })
-    expect(result).toEqual(genreMocks)
+    expect(result).toEqual(genreMocks.map(_genre => ({ ..._genre, moviesAmount: 3 })))
   })
 
   it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.genres.findMany.mockRejectedValue(new Error('connection refused'))
 
-    await expect(findGenres(genreMocks[0].userId)).rejects.toEqual(
+    await expect(getGenreList(genreMocks[0].userId)).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })
 })
 
 describe('deleteGenre', () => {
-  it('deletes by id and always resolves true regardless of what mockedPrisma.genres.delete resolves', async () => {
+  it('deletes by id and resolves true, relying on ON DELETE CASCADE to clean up its movie relations', async () => {
     const [genre] = genreMocks
     mockedPrisma.genres.delete.mockResolvedValue(genre)
 

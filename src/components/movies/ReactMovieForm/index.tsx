@@ -1,70 +1,85 @@
-import type { MoviesModel } from '@models'
+import type { GenresModel, MoviesModel } from '@models'
 import type { MovieFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
 import {
   $contextSelectedMovie,
   addMovieToListContext,
   updateMovieOnListContext,
   updateSelectedMovieOnContext
 } from '@store/movies'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
-import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
+import {
+  parseModelToFormData,
+  parseResponseErrorToMessage,
+  parseResponseMessageToEntity
+} from '@ts/parsers'
 import { Form } from 'antd'
-import { type FC, useMemo } from 'react'
+import { type FC, useCallback, useMemo } from 'react'
 
-const movieFormTitle = 'Create a new movie'
-const movieFormInputs: FormInputList<MovieFormModel> = [
-  {
-    label: 'Name',
-    name: 'name',
-    rules: [
-      { message: 'Name is required', required: true },
-      { max: 300, message: 'Name must be 150 characters as much' }
-    ]
-  },
-  {
-    label: 'Description',
-    name: 'description',
-    rules: [{ max: 300, message: 'Description must be 300 characters as much' }]
-  },
-  {
-    label: 'Year of release',
-    name: 'releaseYear',
-    rules: [
-      { message: 'Year of release is required', required: true },
-      { max: 3000, min: 1850, type: 'number' }
-    ],
-    type: 'number'
-  },
-  {
-    label: 'Country',
-    name: 'countryMade',
-    rules: [{ message: 'Country is required', required: true }]
-  }
-]
+import { movieFormInputs, movieFormTitle } from './configs'
 
-export const ReactMovieForm: FC = () => {
+interface ReactMovieFormProps {
+  genreList: GenresModel[]
+}
+
+export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
   const isSystemLoading = useStore($contextLoading)
   const [movieForm] = Form.useForm<MovieFormModel>()
 
+  const handleCancel = useCallback(() => {
+    movieForm.resetFields()
+    updateSelectedMovieOnContext(null)
+  }, [movieForm])
+
+  const memoizedFormInputs = useMemo(() => {
+    return [
+      ...movieFormInputs,
+      {
+        config: {
+          initialValue: [],
+          label: 'Genres',
+          name: 'genres',
+          options: genreList.map(_genre => ({ label: _genre.name, value: _genre.id }))
+        },
+        type: 'select'
+      }
+    ] as FormConfig<MovieFormModel>
+  }, [genreList])
   const memoizedFormButtons = useMemo(() => {
     const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
+    const submitButton: FormButton = {
+      htmlType: 'submit',
+      title: submitButtonText,
+      type: 'primary'
+    }
+    const buttons: FormButton[] = selectedMovieInContext
+      ? [
+          submitButton,
+          {
+            htmlType: 'button',
+            onClick: () => handleCancel(),
+            title: 'Cancel',
+            type: 'text'
+          }
+        ]
+      : [submitButton]
 
-    return [
-      { htmlType: 'submit', title: submitButtonText, type: 'primary' }
-    ] as ReactFormButtonProps[]
-  }, [selectedMovieInContext])
+    return buttons
+  }, [selectedMovieInContext, handleCancel])
 
   $contextSelectedMovie.listen(_movie => {
     if (_movie) {
-      movieForm.setFieldsValue(_movie)
+      movieForm.setFieldsValue({
+        ..._movie,
+        genres: _movie.genres?.map(({ id }) => id) ?? []
+      })
     }
   })
 
@@ -85,13 +100,13 @@ export const ReactMovieForm: FC = () => {
 
       if (movieCreateResponse.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(movieCreateResponse)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
-        const newMovieFinal = (await movieCreateResponse.json()).message as MoviesModel
+        const newMovieFinal = await parseResponseMessageToEntity<MoviesModel>(movieCreateResponse)
 
-        movieForm.resetFields()
+        handleCancel()
         addMovieToListContext(newMovieFinal)
-        addMessageToContext({ content: 'Movie created', type: 'success' })
+        publishNotification({ content: 'Movie created', type: 'success' })
       }
     } else {
       const movieUpdateResponse = await fetchWithAuth(API_URLS.MOVIES, {
@@ -101,16 +116,21 @@ export const ReactMovieForm: FC = () => {
 
       if (movieUpdateResponse.status !== HTTP_STATUS.OK) {
         const errorMessage = await parseResponseErrorToMessage(movieUpdateResponse)
-        addMessageToContext({ content: errorMessage, type: 'error' })
+        publishNotification({ content: errorMessage, type: 'error' })
       } else {
-        movieForm.resetFields()
-        updateSelectedMovieOnContext(null)
+        const { countryMade, description, name, releaseYear } = _movieToSubmit
+
+        handleCancel()
         updateMovieOnListContext({
-          ...selectedMovieInContext,
-          ..._movieToSubmit
+          countryMade,
+          description,
+          id: selectedMovieInContext.id,
+          name,
+          releaseYear,
+          userId: selectedMovieInContext.userId
         })
 
-        addMessageToContext({
+        publishNotification({
           content: `Movie '${_movieToSubmit.name}' updated`,
           type: 'success'
         })
@@ -121,12 +141,12 @@ export const ReactMovieForm: FC = () => {
   }
 
   const handleInvalidation = () =>
-    addMessageToContext({ content: 'Check the form messages', type: 'error' })
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm
       formButtons={memoizedFormButtons}
-      formInputs={movieFormInputs}
+      formInputs={memoizedFormInputs}
       formInstance={movieForm}
       formTitle={movieFormTitle}
       isLoading={isSystemLoading}

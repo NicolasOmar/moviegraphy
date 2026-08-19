@@ -1,34 +1,40 @@
 import type { UserLoginFormModel } from '@ts/entities'
-import type { FormInputList } from '@ts/types'
+import type { FormConfig } from '@ts/types'
 
-import { ReactForm, type ReactFormButtonProps } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { addMessageToContext } from '@store/messages'
+import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC } from 'react'
 
 const loginFormTitle = 'Welcome to Moviegraphy'
-const loginFormInputs: FormInputList<UserLoginFormModel> = [
+const loginFormInputs: FormConfig<UserLoginFormModel> = [
   {
-    label: 'Username or Email',
-    name: 'username',
-    rules: [{ message: 'Username or Email is required', required: true }]
+    config: {
+      label: 'Username or Email',
+      name: 'username',
+      rules: [{ message: 'Username or Email is required', required: true }]
+    },
+    type: 'input'
   },
   {
-    label: 'Password',
-    name: 'password',
-    rules: [
-      { message: 'Password is required', required: true },
-      { message: 'Password must have minimun 4 characters', min: 4 },
-      { max: 25, message: 'Password must be 25 characters as much' }
-    ],
-    type: 'password'
+    config: {
+      label: 'Password',
+      name: 'password',
+      rules: [
+        { message: 'Password is required', required: true },
+        { message: 'Password must have minimun 4 characters', min: 4 },
+        { max: 25, message: 'Password must be 25 characters as much' }
+      ],
+      type: 'password'
+    },
+    type: 'input'
   }
 ]
-const loginFormButtons: ReactFormButtonProps[] = [
+const loginFormButtons: FormButton[] = [
   { htmlType: 'submit', title: 'Log In', type: 'primary' },
   { children: <a href={PAGE_URL.USERS_CREATE}>Sign Up</a>, htmlType: 'submit', type: 'text' }
 ]
@@ -49,7 +55,7 @@ export const ReactLoginForm: FC = () => {
 
     if (userCreateResponse.status !== HTTP_STATUS.OK) {
       const errorMessage = await parseResponseErrorToMessage(userCreateResponse)
-      addMessageToContext({ content: errorMessage, type: 'error' })
+      publishNotification({ content: errorMessage, type: 'error' })
     } else {
       window.location.href = PAGE_URL.HOME
     }
