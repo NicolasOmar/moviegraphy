@@ -81,6 +81,24 @@ describe('ReactMovieTable', () => {
     expect($contextSelectedMovie.get()).toEqual(movieWithGenres)
   })
 
+  it('shows an error message and never selects a movie for editing when the GET request fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Movie not found' }), { status: 404 })
+    )
+    render(<ReactMovieTable columns={columns} dataSource={movieMocks} />)
+    await waitFor(() => expect(screen.getByText(movieMocks[0].name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [editButton] = within(firstRow).getAllByRole('button')
+    await user.click(editButton)
+
+    await waitFor(() =>
+      expect($globalNotifications.get()).toEqual({ content: 'Movie not found', type: 'error' })
+    )
+    expect($contextSelectedMovie.get()).toBeNull()
+  })
+
   it('deletes a movie via a DELETE request and clears the selection', async () => {
     const user = userEvent.setup()
     render(<ReactMovieTable columns={columns} dataSource={movieMocks} />)

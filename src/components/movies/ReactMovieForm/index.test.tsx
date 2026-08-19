@@ -62,6 +62,8 @@ describe('ReactMovieForm', () => {
         expect.objectContaining({ body: expect.any(FormData), method: 'POST' })
       )
     )
+    const [, submittedRequest] = vi.mocked(fetch).mock.calls[0]
+    expect((submittedRequest?.body as FormData).get('genres')).toBe('')
     expect($contextMovieList.get()).toEqual([createdMovie])
     await waitFor(() => expect(screen.getByLabelText('Name')).toHaveValue(''))
   })

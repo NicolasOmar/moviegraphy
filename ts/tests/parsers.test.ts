@@ -7,6 +7,7 @@ import {
   getErrorMessage,
   parseApiErrorToHttpError,
   parseFormDataToModel,
+  parseGenresToIds,
   parseHttpErrorToResponse,
   parseMessageToResponse,
   parseModelToFormData,
@@ -72,6 +73,20 @@ describe('parseRequestToModel', () => {
       releaseYear: String(movie.releaseYear),
       userId: movie.userId
     })
+  })
+})
+
+describe('parseGenresToIds', () => {
+  it('splits a comma-separated string into its individual ids', () => {
+    expect(parseGenresToIds('genre-1,genre-2')).toEqual(['genre-1', 'genre-2'])
+  })
+
+  it('returns an array unchanged, aside from dropping empty entries', () => {
+    expect(parseGenresToIds(['genre-1', '', 'genre-2'])).toEqual(['genre-1', 'genre-2'])
+  })
+
+  it('returns an empty array for an empty string instead of a bogus single id', () => {
+    expect(parseGenresToIds('')).toEqual([])
   })
 })
 

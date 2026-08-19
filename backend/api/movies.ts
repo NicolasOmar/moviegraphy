@@ -2,7 +2,7 @@ import type { MoviesModel } from '@models'
 import type { MovieApiModel, MovieWithGenresModel } from '@ts/entities'
 
 import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
-import { parseApiErrorToHttpError } from '@ts/parsers'
+import { parseApiErrorToHttpError, parseGenresToIds } from '@ts/parsers'
 import {
   type CreateOrUpdateOne,
   type DeleteOne,
@@ -28,14 +28,20 @@ export const getMovieList: GetMany<string, MoviesModel> = async _loggedUserId =>
 
 /** `[GET]` function for a single movie, including its related genres
  *
+ * - Scoped to the logged user, so a movie id belonging to another user is never returned
+ *
  * @param _movieId - A string related to an existing movie in the database
+ * @param _loggedUserId - Logged user's id to scope the lookup to its own movies
  * @returns The `MovieWithGenresModel` matching `_movieId`
  */
-export const getMovieWithGenres: GetOne<string, MovieWithGenresModel> = async _movieId => {
+export const getMovieWithGenres: GetOne<
+  { loggedUserId: string; movieId: string },
+  MovieWithGenresModel
+> = async ({ loggedUserId, movieId }) => {
   try {
     const movieWithGenres = await prismaInstance.movies.findUnique({
       include: { genres: { include: { genre: true } } },
-      where: { id: _movieId }
+      where: { id: movieId, userId: loggedUserId }
     })
 
     if (!movieWithGenres) {
@@ -60,7 +66,7 @@ export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
     return await prismaInstance.movies.create({
       data: {
         ...movieData,
-        genres: { create: (genres as string).split(',').map(_genreId => ({ genreId: _genreId })) },
+        genres: { create: parseGenresToIds(genres).map(_genreId => ({ genreId: _genreId })) },
         userId: loggedUserId
       }
     })
@@ -83,7 +89,7 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
       prismaInstance.movies.update({
         data: {
           ...dataToUpdate,
-          genres: { create: (genres as string).split(',').map(_genreId => ({ genreId: _genreId })) }
+          genres: { create: parseGenresToIds(genres).map(_genreId => ({ genreId: _genreId })) }
         },
         where: { id: movieId, userId: loggedUserId }
       })

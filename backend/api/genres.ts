@@ -97,15 +97,14 @@ export const getGenreList: GetMany<string, GenreWithMovieAmount> = async _logged
 
 /** `[DELETE]` function for a single genre
  *
+ * - Its related `GenresOnMovies` records are removed automatically via `ON DELETE CASCADE`
+ *
  * @param _genreId - A string related to an existing movie in the database
  * @returns A `true`
  */
 export const deleteGenre: DeleteOne = async _genreId => {
   try {
-    await prismaInstance.$transaction([
-      prismaInstance.genresOnMovies.deleteMany({ where: { genreId: _genreId } }),
-      prismaInstance.genres.delete({ where: { id: _genreId } })
-    ])
+    await prismaInstance.genres.delete({ where: { id: _genreId } })
 
     return true
   } catch (_deleteGenreError) {

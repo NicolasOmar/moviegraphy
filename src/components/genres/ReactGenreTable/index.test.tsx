@@ -1,6 +1,8 @@
 import { $contextGenreList, $contextSelectedGenre } from '@store/genres'
+import { $contextLoading } from '@store/loading'
+import { $globalModal } from '@store/modals'
 import { $globalNotifications } from '@store/notifications'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { API_URLS } from '@ts/constants'
 import { genreMocks } from '@ts/mocks'
@@ -12,7 +14,9 @@ const columns = [{ dataIndex: 'name', title: 'Name' }]
 
 beforeEach(() => {
   $contextGenreList.set([])
+  $contextLoading.set(false)
   $contextSelectedGenre.set(null)
+  $globalModal.set(null)
   $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
@@ -92,5 +96,57 @@ describe('ReactGenreTable', () => {
       })
     )
     expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument()
+  })
+
+  it('opens a confirmation modal before deleting a genre with related movies, deleting it once confirmed', async () => {
+    const user = userEvent.setup()
+    const genreWithMovies = { ...genreMocks[0], moviesAmount: 3 }
+    render(<ReactGenreTable columns={columns} dataSource={[genreWithMovies]} />)
+    await waitFor(() => expect(screen.getByText(genreWithMovies.name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    await user.click(deleteButton)
+
+    await waitFor(() => expect($globalModal.get()).not.toBeNull())
+    expect($globalModal.get()?.content).toBe(
+      "The genre 'Sci-Fi' has 3 movies registered, are you sure you want to delete the genre anyways?"
+    )
+    expect(fetch).not.toHaveBeenCalled()
+    expect($contextLoading.get()).toBe(true)
+
+    act(() => {
+      $globalModal.get()?.onOk?.()
+    })
+
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        API_URLS.GENRES,
+        expect.objectContaining({ body: expect.any(FormData), method: 'DELETE' })
+      )
+    )
+    expect($contextSelectedGenre.get()).toBeNull()
+    await waitFor(() => expect($contextLoading.get()).toBe(false))
+  })
+
+  it('stays in a loading state while the deletion is still awaiting confirmation, clearing it if cancelled', async () => {
+    const user = userEvent.setup()
+    const genreWithMovies = { ...genreMocks[0], moviesAmount: 3 }
+    render(<ReactGenreTable columns={columns} dataSource={[genreWithMovies]} />)
+    await waitFor(() => expect(screen.getByText(genreWithMovies.name)).toBeInTheDocument())
+
+    const [firstRow] = screen.getAllByRole('row').slice(1)
+    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    await user.click(deleteButton)
+
+    await waitFor(() => expect($globalModal.get()).not.toBeNull())
+    expect($contextLoading.get()).toBe(true)
+
+    act(() => {
+      $globalModal.get()?.onCancel?.()
+    })
+
+    expect(fetch).not.toHaveBeenCalled()
+    await waitFor(() => expect($contextLoading.get()).toBe(false))
   })
 })

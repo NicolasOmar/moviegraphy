@@ -50,6 +50,17 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
   return parseFormDataToModel<UserDefinedModel>(extractedFormData)
 }
 
+/** Normalizes a movie form's `genres` field into a clean list of genre ids
+ *
+ * - Accepts either a comma-separated string (as sent through `FormData`) or an array
+ * - Filters out empty values, so an unselected/empty field never yields a bogus id
+ *
+ * @param _genres - Raw `genres` value coming from a form submission
+ * @returns Array of non-empty genre id strings
+ */
+export const parseGenresToIds = (_genres: string | string[]): string[] =>
+  (Array.isArray(_genres) ? _genres : _genres.split(',')).filter(Boolean)
+
 /** Extract error's message or creates a string out of the error object itself
  *
  * - If the `_error` is an instance of `Error`. It return its `message` property

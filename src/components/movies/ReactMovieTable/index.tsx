@@ -66,10 +66,16 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
     const movieCompleteResponse = await fetchWithAuth(`${API_URLS.MOVIES}/${_movieIdToEdit}`, {
       method: API_METHODS.GET
     })
-    const movieCompleteModel =
-      await parseResponseMessageToEntity<MovieWithGenresModel>(movieCompleteResponse)
 
-    updateSelectedMovieOnContext(movieCompleteModel)
+    if (movieCompleteResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(movieCompleteResponse)
+      publishNotification({ content: errorMessage, type: 'error' })
+    } else {
+      const movieCompleteModel =
+        await parseResponseMessageToEntity<MovieWithGenresModel>(movieCompleteResponse)
+
+      updateSelectedMovieOnContext(movieCompleteModel)
+    }
   }
 
   const handleMovieDelete = async (_movieId: string) => {

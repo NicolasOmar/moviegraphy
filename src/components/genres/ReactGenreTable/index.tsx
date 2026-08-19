@@ -11,7 +11,12 @@ import {
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { callModal } from '@store/modals'
 import { publishNotification } from '@store/notifications'
-import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
+import {
+  API_METHODS,
+  API_URLS,
+  buildGenreDeleteConfirmationMessage,
+  HTTP_STATUS
+} from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Button, Typography } from 'antd'
@@ -49,14 +54,20 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
 
     if (_genreToDelete.moviesAmount && _genreToDelete.moviesAmount > 0) {
       callModal({
-        content: `The genre '${_genreToDelete.name}' has ${_genreToDelete.moviesAmount} movies registered, are you sure you want to delete the genre anyways?`,
-        onOk: async () => await executeDelete(_genreToDelete.id)
+        content: buildGenreDeleteConfirmationMessage(
+          _genreToDelete.name,
+          _genreToDelete.moviesAmount
+        ),
+        onCancel: () => setLoadingSystemState(false),
+        onOk: async () => {
+          await executeDelete(_genreToDelete.id)
+          setLoadingSystemState(false)
+        }
       })
     } else {
       await executeDelete(_genreToDelete.id)
+      setLoadingSystemState(false)
     }
-
-    setLoadingSystemState(false)
   }, [])
 
   const memoizedGenreTable = useMemo(() => {

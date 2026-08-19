@@ -3,6 +3,7 @@ import type { FormSelect } from '@ts/types'
 import { Form, Select } from 'antd'
 
 export const ReactFormSelect = <T,>({
+  initialValue,
   isDisabled,
   label,
   name,
@@ -10,7 +11,7 @@ export const ReactFormSelect = <T,>({
   placeholder,
   rules
 }: FormSelect<T>) => (
-  <Form.Item label={label} name={name as string} rules={rules}>
+  <Form.Item initialValue={initialValue} label={label} name={name as string} rules={rules}>
     <Select
       allowClear
       disabled={isDisabled}

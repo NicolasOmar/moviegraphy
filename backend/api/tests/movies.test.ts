@@ -38,7 +38,7 @@ describe('getMovieList', () => {
 })
 
 describe('getMovieWithGenres', () => {
-  it('resolves the movie with its genres mapped from the join table records', async () => {
+  it('resolves the movie with its genres mapped from the join table records, scoped to the logged user', async () => {
     const [movie] = movieMocks
     const [genre] = genreMocks
     const movieWithGenres = {
@@ -47,31 +47,31 @@ describe('getMovieWithGenres', () => {
     }
     mockedPrisma.movies.findUnique.mockResolvedValue(movieWithGenres)
 
-    const result = await getMovieWithGenres(movie.id)
+    const result = await getMovieWithGenres({ loggedUserId: movie.userId, movieId: movie.id })
 
     expect(mockedPrisma.movies.findUnique).toHaveBeenCalledWith({
       include: { genres: { include: { genre: true } } },
-      where: { id: movie.id }
+      where: { id: movie.id, userId: movie.userId }
     })
     expect(result).toEqual({ ...movie, genres: [genre] })
   })
 
-  it('rejects with a 404 HttpError and never maps genres when the movie does not exist', async () => {
+  it('rejects with a 404 HttpError and never maps genres when the movie does not exist or is not owned by the logged user', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movies.findUnique.mockResolvedValue(null)
 
-    await expect(getMovieWithGenres('missing-id')).rejects.toEqual(
-      new HttpError(HTTP_STATUS.NOT_FOUND, MOVIE_ERROR_MESSAGES.NOT_FOUND)
-    )
+    await expect(
+      getMovieWithGenres({ loggedUserId: 'someone-else', movieId: 'missing-id' })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.NOT_FOUND, MOVIE_ERROR_MESSAGES.NOT_FOUND))
   })
 
   it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mockedPrisma.movies.findUnique.mockRejectedValue(new Error('connection refused'))
 
-    await expect(getMovieWithGenres(movieMocks[0].id)).rejects.toEqual(
-      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
-    )
+    await expect(
+      getMovieWithGenres({ loggedUserId: movieMocks[0].userId, movieId: movieMocks[0].id })
+    ).rejects.toEqual(new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused'))
   })
 })
 
@@ -88,6 +88,18 @@ describe('createMovie', () => {
       data: { ...movieForm, genres: { create: [{ genreId: genres }] }, userId }
     })
     expect(result).toEqual(movie)
+  })
+
+  it('creates a movie with no genre links when genres is an empty string, instead of a bogus empty genreId', async () => {
+    const [movie] = movieMocks
+    const { userId, ...movieForm } = movie
+    mockedPrisma.movies.create.mockResolvedValue(movie)
+
+    await createMovie({ ...movieForm, genres: '', loggedUserId: userId })
+
+    expect(mockedPrisma.movies.create).toHaveBeenCalledWith({
+      data: { ...movieForm, genres: { create: [] }, userId }
+    })
   })
 
   it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
@@ -122,6 +134,22 @@ describe('updateMovie', () => {
       where: { id, userId }
     })
     expect(result).toEqual(movie)
+  })
+
+  it('updates a movie with no genre links when genres is an empty string, instead of a bogus empty genreId', async () => {
+    const [movie] = movieMocks
+    const { userId, ...movieForm } = movie
+    const { id, ...dataToUpdate } = movieForm
+    mockedPrisma.genresOnMovies.deleteMany.mockResolvedValue({ count: 1 })
+    mockedPrisma.movies.update.mockResolvedValue(movie)
+    mockedPrisma.$transaction.mockResolvedValue([{ count: 1 }, movie])
+
+    await updateMovie({ ...movieForm, genres: '', loggedUserId: userId })
+
+    expect(mockedPrisma.movies.update).toHaveBeenCalledWith({
+      data: { ...dataToUpdate, genres: { create: [] } },
+      where: { id, userId }
+    })
   })
 
   it('wraps a rejection into a 500 HttpError carrying the original message', async () => {

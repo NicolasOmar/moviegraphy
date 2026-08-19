@@ -36,6 +36,18 @@ export enum MOVIE_ERROR_MESSAGES {
   NOT_FOUND = 'Movie not found'
 }
 
+/** Builds the confirmation message shown before deleting a genre that still has movies linked to it
+ *
+ * @param _genreName - Name of the genre about to be deleted
+ * @param _moviesAmount - Amount of movies currently linked to that genre
+ * @returns The confirmation message to display on the deletion modal
+ */
+export const buildGenreDeleteConfirmationMessage = (
+  _genreName: string,
+  _moviesAmount: number
+): string =>
+  `The genre '${_genreName}' has ${_moviesAmount} movies registered, are you sure you want to delete the genre anyways?`
+
 export enum PAGE_URL {
   GENRES = '/genres',
   HOME = '/',

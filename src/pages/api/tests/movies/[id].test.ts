@@ -14,21 +14,24 @@ vi.mock('@api/movies', () => ({
 
 const mockedGetMovieWithGenres = vi.mocked(getMovieWithGenres)
 
+const loggedUserId = movieMocks[0].userId
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
 
-const buildContext = (id: string): APIContext => ({ params: { id } }) as unknown as APIContext
+const buildContext = (id: string): APIContext =>
+  ({ locals: { loggedUserId }, params: { id } }) as unknown as APIContext
 
 describe('GET', () => {
-  it('forwards the route id to getMovieWithGenres and returns 200 with the resolved movie', async () => {
+  it('forwards the route id and the logged user id to getMovieWithGenres, returning 200 with the resolved movie', async () => {
     const [movie] = movieMocks
     const movieWithGenres = { ...movie, genres: [genreMocks[0]] }
     mockedGetMovieWithGenres.mockResolvedValue(movieWithGenres)
 
     const response = await GET(buildContext(movie.id))
 
-    expect(mockedGetMovieWithGenres).toHaveBeenCalledWith(movie.id)
+    expect(mockedGetMovieWithGenres).toHaveBeenCalledWith({ loggedUserId, movieId: movie.id })
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(await response.json()).toEqual({ message: movieWithGenres })
   })

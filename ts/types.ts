@@ -81,6 +81,8 @@ export type FormItemConfig<ConfigEntity> = {
  * @typeParam ConfigEntity - Type/Entity/Model used to format type's parent properties
  */
 export type FormSelect<ConfigEntity> = FormInputBase<ConfigEntity> & {
+  /** `[Optional]` Default value(s) selected when the form first renders */
+  initialValue?: SelectProps['value']
   options: SelectProps['options']
 }
 

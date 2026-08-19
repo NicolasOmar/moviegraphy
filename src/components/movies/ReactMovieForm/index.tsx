@@ -43,10 +43,10 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
       ...movieFormInputs,
       {
         config: {
+          initialValue: [],
           label: 'Genres',
           name: 'genres',
-          options: genreList.map(_genre => ({ label: _genre.name, value: _genre.id })),
-          values: []
+          options: genreList.map(_genre => ({ label: _genre.name, value: _genre.id }))
         },
         type: 'select'
       }
