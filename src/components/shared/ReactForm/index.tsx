@@ -9,6 +9,7 @@ import { ReactFormSelect } from '../ReactFormSelect'
 export interface FormButton {
   children?: React.ReactNode
   htmlType: ButtonProps['htmlType']
+  onClick?: ButtonProps['onClick']
   title?: string
   type: ButtonProps['type']
 }
@@ -65,6 +66,7 @@ export const ReactForm = <T,>({
                 disabled={isLoading}
                 htmlType={_buttonConfig.htmlType}
                 key={`button-form-${_buttonIndex}`}
+                onClick={_buttonConfig.onClick}
                 type={_buttonConfig.type}
               >
                 {buttonChild}

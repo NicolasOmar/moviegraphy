@@ -28,6 +28,8 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
   const isSystemLoading = useStore($contextLoading)
   const [searchParam, setSearchParam] = useState<string>('')
 
+  const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
+
   const memoizedMovieTable = useMemo(() => {
     const filteredDataSource =
       searchParam.length > 0
@@ -59,8 +61,6 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
   )
 
   useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
-
-  const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
 
   const handleMovieEdit = async (_movieIdToEdit: string) => {
     const movieCompleteResponse = await fetchWithAuth(`${API_URLS.MOVIES}/${_movieIdToEdit}`, {

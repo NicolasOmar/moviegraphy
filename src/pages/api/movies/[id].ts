@@ -11,7 +11,7 @@ export const GET: APIRoute = async ({ params }) => {
     const movieCreated = await getMovieWithGenres(movieId)
 
     return parseMessageToResponse(movieCreated, HTTP_STATUS.OK)
-  } catch (_createMovieError) {
-    return parseHttpErrorToResponse(_createMovieError)
+  } catch (_getMovieWithGenresError) {
+    return parseHttpErrorToResponse(_getMovieWithGenresError)
   }
 }

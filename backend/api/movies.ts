@@ -60,7 +60,7 @@ export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
     return await prismaInstance.movies.create({
       data: {
         ...movieData,
-        genres: { create: genres.split(',').map(_genreId => ({ genreId: _genreId })) },
+        genres: { create: (genres as string).split(',').map(_genreId => ({ genreId: _genreId })) },
         userId: loggedUserId
       }
     })
@@ -78,16 +78,18 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
   const { genres, id: movieId, loggedUserId, ...dataToUpdate } = _modifiedMovie
 
   try {
-    return await prismaInstance.movies.update({
-      data: {
-        ...dataToUpdate,
-        genres: {
-          create: (genres as string).split(',').map(_genreId => ({ genreId: _genreId })),
-          deleteMany: {}
-        }
-      },
-      where: { id: movieId, userId: loggedUserId }
-    })
+    const [, updatedMovie] = await prismaInstance.$transaction([
+      prismaInstance.genresOnMovies.deleteMany({ where: { movieId } }),
+      prismaInstance.movies.update({
+        data: {
+          ...dataToUpdate,
+          genres: { create: (genres as string).split(',').map(_genreId => ({ genreId: _genreId })) }
+        },
+        where: { id: movieId, userId: loggedUserId }
+      })
+    ])
+
+    return updatedMovie
   } catch (_updateMovieError) {
     throw parseApiErrorToHttpError(_updateMovieError, '[PATCH /api/movies]')
   }

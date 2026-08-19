@@ -14,9 +14,13 @@ import {
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
-import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
+import {
+  parseModelToFormData,
+  parseResponseErrorToMessage,
+  parseResponseMessageToEntity
+} from '@ts/parsers'
 import { Form } from 'antd'
-import { type FC, useMemo } from 'react'
+import { type FC, useCallback, useMemo } from 'react'
 
 import { movieFormInputs, movieFormTitle } from './configs'
 
@@ -29,11 +33,11 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   const isSystemLoading = useStore($contextLoading)
   const [movieForm] = Form.useForm<MovieFormModel>()
 
-  const memoizedFormButtons = useMemo(() => {
-    const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
+  const handleCancel = useCallback(() => {
+    movieForm.resetFields()
+    updateSelectedMovieOnContext(null)
+  }, [movieForm])
 
-    return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButton[]
-  }, [selectedMovieInContext])
   const memoizedFormInputs = useMemo(() => {
     return [
       ...movieFormInputs,
@@ -48,6 +52,27 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
       }
     ] as FormConfig<MovieFormModel>
   }, [genreList])
+  const memoizedFormButtons = useMemo(() => {
+    const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
+    const submitButton: FormButton = {
+      htmlType: 'submit',
+      title: submitButtonText,
+      type: 'primary'
+    }
+    const buttons: FormButton[] = selectedMovieInContext
+      ? [
+          submitButton,
+          {
+            htmlType: 'button',
+            onClick: () => handleCancel(),
+            title: 'Cancel',
+            type: 'text'
+          }
+        ]
+      : [submitButton]
+
+    return buttons
+  }, [selectedMovieInContext, handleCancel])
 
   $contextSelectedMovie.listen(_movie => {
     if (_movie) {
@@ -77,9 +102,9 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
         const errorMessage = await parseResponseErrorToMessage(movieCreateResponse)
         publishNotification({ content: errorMessage, type: 'error' })
       } else {
-        const newMovieFinal = (await movieCreateResponse.json()).message as MoviesModel
+        const newMovieFinal = await parseResponseMessageToEntity<MoviesModel>(movieCreateResponse)
 
-        movieForm.resetFields()
+        handleCancel()
         addMovieToListContext(newMovieFinal)
         publishNotification({ content: 'Movie created', type: 'success' })
       }
@@ -93,8 +118,7 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
         const errorMessage = await parseResponseErrorToMessage(movieUpdateResponse)
         publishNotification({ content: errorMessage, type: 'error' })
       } else {
-        movieForm.resetFields()
-        updateSelectedMovieOnContext(null)
+        handleCancel()
         updateMovieOnListContext({
           ...selectedMovieInContext,
           ..._movieToSubmit
