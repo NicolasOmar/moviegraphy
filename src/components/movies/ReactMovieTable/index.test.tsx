@@ -59,8 +59,12 @@ describe('ReactMovieTable', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
   })
 
-  it('selects a movie for editing when its edit button is clicked', async () => {
+  it('fetches the full movie with its genres and selects it for editing when its edit button is clicked', async () => {
     const user = userEvent.setup()
+    const movieWithGenres = { ...movieMocks[0], genres: [] }
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: movieWithGenres }), { status: 200 })
+    )
     render(<ReactMovieTable columns={columns} dataSource={movieMocks} />)
     await waitFor(() => expect(screen.getByText(movieMocks[0].name)).toBeInTheDocument())
 
@@ -68,7 +72,13 @@ describe('ReactMovieTable', () => {
     const [editButton] = within(firstRow).getAllByRole('button')
     await user.click(editButton)
 
-    expect($contextSelectedMovie.get()).toEqual(movieMocks[0])
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_URLS.MOVIES}/${movieMocks[0].id}`,
+        expect.objectContaining({ method: 'GET' })
+      )
+    )
+    expect($contextSelectedMovie.get()).toEqual(movieWithGenres)
   })
 
   it('deletes a movie via a DELETE request and clears the selection', async () => {

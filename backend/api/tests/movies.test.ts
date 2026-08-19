@@ -1,11 +1,11 @@
-import { HTTP_STATUS } from '@ts/constants'
+import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
 import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
 import { genreMocks, movieMocks } from '../../../ts/mocks'
 import prisma from '../../prisma'
-import { createMovie, deleteMovie, getMovieList, updateMovie } from '../movies'
+import { createMovie, deleteMovie, getMovieList, getMovieWithGenres, updateMovie } from '../movies'
 
 vi.mock('../../prisma', () => import('../mocks/prisma'))
 
@@ -32,6 +32,44 @@ describe('getMovieList', () => {
     mockedPrisma.movies.findMany.mockRejectedValue(new Error('connection refused'))
 
     await expect(getMovieList(movieMocks[0].userId)).rejects.toEqual(
+      new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
+    )
+  })
+})
+
+describe('getMovieWithGenres', () => {
+  it('resolves the movie with its genres mapped from the join table records', async () => {
+    const [movie] = movieMocks
+    const [genre] = genreMocks
+    const movieWithGenres = {
+      ...movie,
+      genres: [{ assignedAt: new Date(), genre, genreId: genre.id, movieId: movie.id }]
+    }
+    mockedPrisma.movies.findUnique.mockResolvedValue(movieWithGenres)
+
+    const result = await getMovieWithGenres(movie.id)
+
+    expect(mockedPrisma.movies.findUnique).toHaveBeenCalledWith({
+      include: { genres: { include: { genre: true } } },
+      where: { id: movie.id }
+    })
+    expect(result).toEqual({ ...movie, genres: [genre] })
+  })
+
+  it('rejects with a 404 HttpError and never maps genres when the movie does not exist', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedPrisma.movies.findUnique.mockResolvedValue(null)
+
+    await expect(getMovieWithGenres('missing-id')).rejects.toEqual(
+      new HttpError(HTTP_STATUS.NOT_FOUND, MOVIE_ERROR_MESSAGES.NOT_FOUND)
+    )
+  })
+
+  it('wraps any other rejection into a 500 HttpError carrying the original message', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedPrisma.movies.findUnique.mockRejectedValue(new Error('connection refused'))
+
+    await expect(getMovieWithGenres(movieMocks[0].id)).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'connection refused')
     )
   })
@@ -64,19 +102,22 @@ describe('createMovie', () => {
 })
 
 describe('updateMovie', () => {
-  it('strips the id and loggedUserId out of data, scopes the where clause to the logged user, replaces genres, and returns the updated record', async () => {
+  it('deletes the movie previous genre links before recreating them, strips the id and loggedUserId out of data, scopes the where clause to the logged user, and returns the updated record', async () => {
     const [movie] = movieMocks
     const { userId, ...movieForm } = movie
     const { id, ...dataToUpdate } = movieForm
     const genres = genreMocks[0].id
+    mockedPrisma.genresOnMovies.deleteMany.mockResolvedValue({ count: 1 })
     mockedPrisma.movies.update.mockResolvedValue(movie)
+    mockedPrisma.$transaction.mockResolvedValue([{ count: 1 }, movie])
 
     const result = await updateMovie({ ...movieForm, genres, loggedUserId: userId })
 
+    expect(mockedPrisma.genresOnMovies.deleteMany).toHaveBeenCalledWith({ where: { movieId: id } })
     expect(mockedPrisma.movies.update).toHaveBeenCalledWith({
       data: {
         ...dataToUpdate,
-        genres: { create: [{ genreId: genres }], deleteMany: {} }
+        genres: { create: [{ genreId: genres }] }
       },
       where: { id, userId }
     })
@@ -86,7 +127,7 @@ describe('updateMovie', () => {
   it('wraps a rejection into a 500 HttpError carrying the original message', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const { userId, ...movieForm } = movieMocks[0]
-    mockedPrisma.movies.update.mockRejectedValue(new Error('record not found'))
+    mockedPrisma.$transaction.mockRejectedValue(new Error('record not found'))
 
     await expect(updateMovie({ ...movieForm, genres: '', loggedUserId: userId })).rejects.toEqual(
       new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'record not found')

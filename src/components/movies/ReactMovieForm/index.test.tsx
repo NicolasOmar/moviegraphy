@@ -110,6 +110,25 @@ describe('ReactMovieForm', () => {
     expect($contextSelectedMovie.get()).toBeNull()
   })
 
+  it('pre-fills the genres select from the movie current genres, then resets the form and clears the selection when Cancel is clicked', async () => {
+    const user = userEvent.setup()
+    const [movieToEdit] = movieMocks
+    const [genre] = genreMocks
+    render(<ReactMovieForm genreList={genreMocks} />)
+
+    act(() => {
+      updateSelectedMovieOnContext({ ...movieToEdit, genres: [genre] })
+    })
+
+    expect(await screen.findByLabelText('Name')).toHaveValue(movieToEdit.name)
+    expect(screen.getByText(genre.name)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(screen.getByLabelText('Name')).toHaveValue('')
+    expect($contextSelectedMovie.get()).toBeNull()
+  })
+
   it('shows an error message and keeps the selection when an update fails', async () => {
     const user = userEvent.setup()
     const [movieToEdit] = movieMocks

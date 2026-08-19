@@ -118,10 +118,16 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
         const errorMessage = await parseResponseErrorToMessage(movieUpdateResponse)
         publishNotification({ content: errorMessage, type: 'error' })
       } else {
+        const { countryMade, description, name, releaseYear } = _movieToSubmit
+
         handleCancel()
         updateMovieOnListContext({
-          ...selectedMovieInContext,
-          ..._movieToSubmit
+          countryMade,
+          description,
+          id: selectedMovieInContext.id,
+          name,
+          releaseYear,
+          userId: selectedMovieInContext.userId
         })
 
         publishNotification({
