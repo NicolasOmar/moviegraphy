@@ -1,3 +1,21 @@
+# [1.10.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.9.0...v1.10.0) (2026-08-19)
+
+
+### Bug Fixes
+
+* change notification service from messages to notifications ([60e8620](https://github.com/NicolasOmar/moviegraphy/commit/60e8620ac8907966935612693ee98d609440958b))
+* improving integration between movies and genres on creation ([9270f66](https://github.com/NicolasOmar/moviegraphy/commit/9270f6699652d604ac83613ef849227d0cbfea01))
+* reanming properties related to form configuration ([2add583](https://github.com/NicolasOmar/moviegraphy/commit/2add583a4f7d36be0f135dcb2df13298c562ef35))
+
+
+### Features
+
+* adding basic modal for genre deletion if has related movies ([3d81f28](https://github.com/NicolasOmar/moviegraphy/commit/3d81f2888d1b8ab992a94b7c066ee5ef4aa9153f))
+* first integration of movie genres ([8f94481](https://github.com/NicolasOmar/moviegraphy/commit/8f9448171a0a18eb8fb8ff642b3bc8bb8ebb2638))
+* first integration of movie getter with genres in called from movies table to edit form ([13b1d21](https://github.com/NicolasOmar/moviegraphy/commit/13b1d2149d2d72e59cd3cba4c8735040cb42b4cd))
+* first many-to-many relation on genres and movies. small naming change in notification context ([3e58ad6](https://github.com/NicolasOmar/moviegraphy/commit/3e58ad6545ff6f9072df25eef73b5098ab370a44))
+* integration with movie update added ([822798d](https://github.com/NicolasOmar/moviegraphy/commit/822798d99d24c3cbf1ed4a8216ea14b25a0e7062))
+
 # [1.9.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.8.0...v1.9.0) (2026-08-16)
 
 
