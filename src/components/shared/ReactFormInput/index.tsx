@@ -2,14 +2,14 @@ import type { FormInput } from '@ts/types'
 
 import { Form, Input } from 'antd'
 
-export const ReactFormInput = <T,>({
+export const ReactFormInput = <InputEntity,>({
   isDisabled = false,
   label,
   name,
   placeholder,
   rules,
   type = 'text'
-}: FormInput<T>) => {
+}: FormInput<InputEntity>) => {
   const normalize =
     type === 'number' ? (value: string) => (value ? Number(value) : value) : undefined
 

@@ -1,8 +1,15 @@
 import type { MoviesModel } from '@models'
-import type { MovieApiModel } from '@ts/entities'
+import type { MovieApiModel, MovieWithGenresModel } from '@ts/entities'
 
+import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
-import { type CreateOrUpdateOne, type DeleteOne, type GetMany } from '@ts/types'
+import {
+  type CreateOrUpdateOne,
+  type DeleteOne,
+  type GetMany,
+  type GetOne,
+  HttpError
+} from '@ts/types'
 
 import prismaInstance from '../prisma'
 
@@ -16,6 +23,28 @@ export const getMovieList: GetMany<string, MoviesModel> = async _loggedUserId =>
     return await prismaInstance.movies.findMany({ where: { userId: _loggedUserId } })
   } catch (_getMovieListError) {
     throw parseApiErrorToHttpError(_getMovieListError, '[GET /api/movies]')
+  }
+}
+
+/** `[GET]` function for a single movie, including its related genres
+ *
+ * @param _movieId - A string related to an existing movie in the database
+ * @returns The `MovieWithGenresModel` matching `_movieId`
+ */
+export const getMovieWithGenres: GetOne<string, MovieWithGenresModel> = async _movieId => {
+  try {
+    const movieWithGenres = await prismaInstance.movies.findUnique({
+      include: { genres: { include: { genre: true } } },
+      where: { id: _movieId }
+    })
+
+    if (!movieWithGenres) {
+      throw new HttpError(HTTP_STATUS.NOT_FOUND, MOVIE_ERROR_MESSAGES.NOT_FOUND)
+    }
+
+    return { ...movieWithGenres, genres: movieWithGenres.genres.map(({ genre }) => genre) }
+  } catch (_getMovieWithGenresError) {
+    throw parseApiErrorToHttpError(_getMovieWithGenresError, '[GET /api/movies]')
   }
 }
 
@@ -53,7 +82,7 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
       data: {
         ...dataToUpdate,
         genres: {
-          create: genres.split(',').map(_genreId => ({ genreId: _genreId })),
+          create: (genres as string).split(',').map(_genreId => ({ genreId: _genreId })),
           deleteMany: {}
         }
       },

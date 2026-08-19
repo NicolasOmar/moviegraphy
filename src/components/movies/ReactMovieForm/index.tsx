@@ -18,52 +18,11 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
+import { movieFormInputs, movieFormTitle } from './configs'
+
 interface ReactMovieFormProps {
   genreList: GenresModel[]
 }
-
-const movieFormTitle = 'Create a new movie'
-const movieFormInputs: FormConfig<MovieFormModel> = [
-  {
-    config: {
-      label: 'Name',
-      name: 'name',
-      rules: [
-        { message: 'Name is required', required: true },
-        { max: 300, message: 'Name must be 150 characters as much' }
-      ]
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Description',
-      name: 'description',
-      rules: [{ max: 300, message: 'Description must be 300 characters as much' }]
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Year of release',
-      name: 'releaseYear',
-      rules: [
-        { message: 'Year of release is required', required: true },
-        { max: 3000, min: 1850, type: 'number' }
-      ],
-      type: 'number'
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Country',
-      name: 'countryMade',
-      rules: [{ message: 'Country is required', required: true }]
-    },
-    type: 'input'
-  }
-]
 
 export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
@@ -75,12 +34,6 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
 
     return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButton[]
   }, [selectedMovieInContext])
-
-  $contextSelectedMovie.listen(_movie => {
-    if (_movie) {
-      movieForm.setFieldsValue(_movie)
-    }
-  })
   const memoizedFormInputs = useMemo(() => {
     return [
       ...movieFormInputs,
@@ -95,6 +48,15 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
       }
     ] as FormConfig<MovieFormModel>
   }, [genreList])
+
+  $contextSelectedMovie.listen(_movie => {
+    if (_movie) {
+      movieForm.setFieldsValue({
+        ..._movie,
+        genres: _movie.genres?.map(({ id }) => id) ?? []
+      })
+    }
+  })
 
   const handleSubmit = async (_movieToSubmit: MovieFormModel) => {
     setLoadingSystemState(true)

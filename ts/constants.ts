@@ -2,6 +2,7 @@ const API_ROUTE_BASE = '/api'
 
 export enum API_METHODS {
   DELETE = 'DELETE',
+  GET = 'GET',
   PATCH = 'PATCH',
   POST = 'POST'
 }
@@ -26,8 +27,13 @@ export enum HTTP_STATUS {
   OK = 200,
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
+  NOT_FOUND = 404,
   CONFLICT = 409,
   INTERNAL_SERVER_ERROR = 500
+}
+
+export enum MOVIE_ERROR_MESSAGES {
+  NOT_FOUND = 'Movie not found'
 }
 
 export enum PAGE_URL {

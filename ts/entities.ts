@@ -80,7 +80,11 @@ export type MovieApiModel = CustomAstroLocals & MovieFormModel
 
 /** Used at `/components` and `/pages/api` for data handling */
 export type MovieFormModel = Omit<MoviesModel, 'userId'> & {
-  genres: string
+  genres: string | string[]
+}
+
+export type MovieWithGenresModel = MoviesModel & {
+  genres?: GenresModel[]
 }
 
 // ---------- MOVIES / SCHEMAS ----------

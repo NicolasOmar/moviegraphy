@@ -61,10 +61,22 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
 export const getErrorMessage = (_error: unknown) =>
   _error instanceof Error ? _error.message : String(_error)
 
-/** Extract Response's  message from the `/pages/api` request and
+/** Extract Response's success message from the `/pages/api` request and
+ * displays it as a user-defined entity (which is `object` by default)
+ *
+ * @param _response - An API `Response` (in this case, a success)
+ * @returns An common `object` or an user-defined one to be displayed by the front-end
+ */
+export const parseResponseMessageToEntity = async <OutputEntity = object>(
+  _response: Response
+): Promise<OutputEntity> => {
+  return (await _response.json()).message as OutputEntity
+}
+
+/** Extract Response's error message from the `/pages/api` request and
  * displays it (even if is an array of strings, it joins them)
  *
- * @param _response - An API `Response` (mostly an error)
+ * @param _response - An API `Response` (in this case, an error)
  * @returns A single string to be displayed by the front-end
  */
 export const parseResponseErrorToMessage = async (_response: Response) => {
