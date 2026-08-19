@@ -62,6 +62,10 @@ export type GenreApiModel = CustomAstroLocals & GenreFormModel
 /** Used at `/components` and `/pages/api` for data handling */
 export type GenreFormModel = Omit<GenresModel, 'userId'>
 
+export type GenreWithMovieAmount = GenresModel & {
+  moviesAmount?: number
+}
+
 // ---------- GENRES / SCHEMAS ----------
 /** Used at `/pages/api` for data validation */
 export const GenreCreateSchema = z.strictObject({

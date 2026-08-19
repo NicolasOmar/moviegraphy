@@ -40,10 +40,10 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
       render: (_singleMovie: MoviesModel) => (
         <>
           <Button disabled={isSystemLoading} onClick={() => handleMovieEdit(_singleMovie.id)}>
-            E
+            Edit
           </Button>
           <Button disabled={isSystemLoading} onClick={() => handleMovieDelete(_singleMovie.id)}>
-            D
+            Delete
           </Button>
         </>
       ),

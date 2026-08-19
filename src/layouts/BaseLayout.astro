@@ -1,4 +1,5 @@
 ---
+import { ReactModal } from '@components/shared/ReactModal'
 import { ReactNotifications } from '@components/shared/ReactNotifications'
 import { ClientRouter } from 'astro:transitions'
 ---
@@ -18,6 +19,7 @@ import { ClientRouter } from 'astro:transitions'
   <body>
     <slot />
     <ReactNotifications client:load transition:persist />
+    <ReactModal client:load transition:persist />
   </body>
 </html>
 

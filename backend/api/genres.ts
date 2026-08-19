@@ -1,5 +1,5 @@
 import type { GenresModel } from '@models'
-import type { GenreApiModel } from '@ts/entities'
+import type { GenreApiModel, GenreWithMovieAmount } from '@ts/entities'
 
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
@@ -75,11 +75,21 @@ export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
  * - Gets user's ids based on its session token
  *
  * @param _loggeduserId - Logged user's id to access its registered genres
- * @returns A list of `GenreModel`
+ * @returns A list of `GenreWithMovieAmount`
  */
-export const getGenreList: GetMany<string, GenresModel> = async _loggeduserId => {
+export const getGenreList: GetMany<string, GenreWithMovieAmount> = async _loggeduserId => {
   try {
-    return await prismaInstance.genres.findMany({ where: { userId: _loggeduserId } })
+    const genreList = await prismaInstance.genres.findMany({
+      include: { _count: { select: { movies: true } } },
+      where: { userId: _loggeduserId }
+    })
+
+    return genreList.map(_genre => ({
+      id: _genre.id,
+      moviesAmount: _genre._count.movies,
+      name: _genre.name,
+      userId: _genre.userId
+    }))
   } catch (_getGenreListError) {
     throw parseApiErrorToHttpError(_getGenreListError, '[GET /api/genres]')
   }
@@ -92,7 +102,10 @@ export const getGenreList: GetMany<string, GenresModel> = async _loggeduserId =>
  */
 export const deleteGenre: DeleteOne = async _genreId => {
   try {
-    await prismaInstance.genres.delete({ where: { id: _genreId } })
+    await prismaInstance.$transaction([
+      prismaInstance.genresOnMovies.deleteMany({ where: { genreId: _genreId } }),
+      prismaInstance.genres.delete({ where: { id: _genreId } })
+    ])
 
     return true
   } catch (_deleteGenreError) {
