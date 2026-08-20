@@ -22,7 +22,9 @@ jobs:
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get install -y postgresql-client-17
       - name: 5/8 | Backup database
-        run: /usr/lib/postgresql/17/bin/pg_dump "${{ secrets.MIGRATIONS_URL }}" -F c -f backup.dump
+        run: /usr/lib/postgresql/17/bin/pg_dump "$MIGRATIONS_URL" -F c -f backup.dump
+        env:
+          MIGRATIONS_URL: ${{ secrets.MIGRATIONS_URL }}
       - name: 6/8 | Run migrations
         id: migrate
         run: npm run db:migrate:prod
@@ -30,7 +32,9 @@ jobs:
           DATABASE_URL: ${{ secrets.MIGRATIONS_URL }}
       - name: 7/8 | Restore backup on failure
         if: failure() && steps.migrate.outcome == 'failure'
-        run: /usr/lib/postgresql/17/bin/pg_restore --clean --if-exists -d "${{ secrets.MIGRATIONS_URL }}" backup.dump
+        run: /usr/lib/postgresql/17/bin/pg_restore --clean --if-exists -d "$MIGRATIONS_URL" backup.dump
+        env:
+          MIGRATIONS_URL: ${{ secrets.MIGRATIONS_URL }}
       - name: 8/8 | Upload backup artifact
         if: always()
         uses: actions/upload-artifact@v7

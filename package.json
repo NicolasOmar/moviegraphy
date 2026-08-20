@@ -43,7 +43,7 @@
     "test:back": "vitest run --config configs/vitest.config.backend.ts",
     "test:back:coverage": "npm run test:back -- --coverage",
     "test:coverage": "npm run test:front:coverage && npm run test:back:coverage",
-    "setup": "npm ci && husky && npm run setup:env && npm run db:migrate",
+    "setup": "npm ci && husky && npm run setup:env && npm run db:migrate && npm run db:seed",
     "setup:env": "echo \"DATABASE_URL=postgresql://postgres:admin@localhost:5432/moviegraphy?schema=public\" > .env && echo \"JWT_TOKEN=HERE_GOES_YOUR_JWT_SECRET\" >> .env",
     "update": "npm run update:astro && npm run update:deps",
     "update:astro": "npx @astrojs/upgrade",
