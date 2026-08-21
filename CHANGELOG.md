@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.10.0...v1.11.0) (2026-08-21)
+
+
+### Bug Fixes
+
+* solving several issues regarding sonar integration ([f77c386](https://github.com/NicolasOmar/moviegraphy/commit/f77c38622a4383994a88e6f2da0d143ad3bac412))
+
+
+### Features
+
+* first seed method added for setup script ([0f721ef](https://github.com/NicolasOmar/moviegraphy/commit/0f721ef8686495c7524e0628a13e9a50c2d1f335))
+
 # [1.10.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.9.0...v1.10.0) (2026-08-19)
 
 
