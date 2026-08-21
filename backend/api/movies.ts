@@ -56,7 +56,7 @@ export const getMovieWithGenres: GetOne<
 
 /** `[CREATE]` function for movies
  *
- * @param _newMovie - A `MoviesModel` object to be inserted into the database
+ * @param _newMovie - A `MovieApiModel` object to be inserted into the database
  * @returns The new `MoviesModel`
  */
 export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async _newMovie => {

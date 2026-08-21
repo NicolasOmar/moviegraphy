@@ -2,7 +2,7 @@ import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { sessionMocks, userMocks } from '@ts/mocks'
 import { compareHashed, hashString } from '@ts/tokens'
 import { HttpError } from '@ts/types'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 
 import prisma from '../../prisma'
@@ -21,6 +21,11 @@ const mockedPrisma = vi.mocked(prisma, { deep: true })
 
 beforeEach(() => {
   mockReset(mockedPrisma)
+  vi.stubEnv('JWT_SECRET', 'test-jwt-secret')
+})
+
+afterEach(() => {
+  vi.unstubAllEnvs()
 })
 
 describe('createUser', () => {

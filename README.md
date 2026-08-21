@@ -96,7 +96,6 @@ cd moviegraphy
 From this point, you have two options for configuring it.
 
 ### One-command method (recommended)
-
 Only run the following setup script.
 ```sh
 npm run setup
@@ -106,9 +105,9 @@ That will:
 - Install all the packages (with husky hooks for future development)
 - Generate an `.env` file with a reference to a default local database url
 - Execute all the migrations from the `backend/prisma/migrations` folder
+- Execute a seed script, populating with base data such as the list of countries at `backend/prisma/countries.json`
 
 ### Manual method
-
 First, install all the dependencies.
 ```sh
 npm ci
@@ -122,9 +121,10 @@ JWT_SECRET=HERE_GOES_YOUR_JWT_SECRET
 
 > If you want to run with a test database, copy and paste the following connection string: `postgresql://postgres:admin@localhost:5432/moviegraphy?schema=public`
 
-Lastly, once you have inserted the database url to work on the project, execute the following script to apply all the needed migrations.
+Lastly, once you have inserted the database url to work on the project, execute the following script to apply all the needed migrations and populate the database with the country list.
 ```sh
 npm run db:migrate
+npm run db:seed
 ```
 
 ## How to run it
@@ -139,7 +139,7 @@ In case you have cloned the repo, it will show you the following folders:
 - `.husky:` Dedicated to [Husky](https://typicode.github.io/husky/) configuration files.
 - `backend:` Used to wrap the system's gateway to its database through Prisma through REST.
   - `api:` Location of all front-end endpoints that communicate with Prisma.
-  - `prisma:` Location of the Prisma implementation with its `models/entities` and migrations to mirror the entity relationships in the database.
+  - `prisma:` Location of the Prisma implementation with its `models/entities`, seed scripts, and migrations to mirror the entity relationships in the database.
 - `configs:` Used to wrap all the configuration files related to local and third-party services (for a cleaner project organization).
 - `src:` Location of all used components, partially following Astro guidance:
   - `assets:` SVG files for specific purposes.

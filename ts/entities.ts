@@ -87,6 +87,9 @@ export type MovieFormModel = Omit<MoviesModel, 'userId'> & {
   genres: string | string[]
 }
 
+/** Used at `/pages/api/movies/[id]` GET call to return the the movie model
+ * with its related `GenresModel`
+ */
 export type MovieWithGenresModel = MoviesModel & {
   genres?: GenresModel[]
 }
