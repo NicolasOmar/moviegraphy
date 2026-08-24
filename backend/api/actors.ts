@@ -28,6 +28,7 @@ export const createActor: CreateOrUpdateOne<ActorApiModel, ActorsModel> = async 
     return await prismaInstance.actors.create({
       data: {
         ...actorToCreate,
+        countries: { create: [] },
         id: v6(),
         userId: loggedUserId
       }

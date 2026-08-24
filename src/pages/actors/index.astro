@@ -1,15 +1,17 @@
 ---
+import { getCountryList } from '@api/countries'
 import { getGenderList } from '@api/genders'
 import { ReactActorForm } from '@components/actors/ReactActorForm'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
 import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
 
+const countryList = await getCountryList(null).catch(() => [])
 const genderList = await getGenderList(null).catch(() => [])
 ---
 
 <NavigationLayout>
   <TwoColumnsLayout>
-    <ReactActorForm client:visible genderList={genderList} />
+    <ReactActorForm client:visible countryList={countryList} genderList={genderList} />
     <section>Testng List</section>
   </TwoColumnsLayout>
 </NavigationLayout>

@@ -1,6 +1,5 @@
-import type { GendersModel } from '@models'
+import type { CountriesModel, GendersModel } from '@models'
 import type { ActorFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
@@ -8,50 +7,14 @@ import { $contextLoading } from '@store/loading'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
+import { actorFormInputs, actorFormTitle } from './configs'
+
 interface ReactActorFormProps {
+  countryList: CountriesModel[]
   genderList: GendersModel[]
 }
 
-export const actorFormTitle = 'Create a new actor'
-export const actorFormInputs: FormConfig<ActorFormModel> = [
-  {
-    config: {
-      label: 'Name',
-      name: 'name'
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Lastname',
-      name: 'lastName'
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Born date',
-      name: 'bornDate'
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Passed date',
-      name: 'deadDate'
-    },
-    type: 'input'
-  },
-  {
-    config: {
-      label: 'Gender',
-      name: 'genderId'
-    },
-    type: 'radio'
-  }
-]
-
-export const ReactActorForm: FC<ReactActorFormProps> = ({ genderList }) => {
+export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderList }) => {
   const isSystemLoading = useStore($contextLoading)
   const [actorForm] = Form.useForm<ActorFormModel>()
 
@@ -65,18 +28,31 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ genderList }) => {
     ]
   }, [])
   const memoizedFormInputs = useMemo(() => {
-    return actorFormInputs.map(_inputConfig => {
-      return _inputConfig.config.name === 'genderId'
-        ? {
+    const parsedInputConfig = actorFormInputs.map(_inputConfig => {
+      switch (_inputConfig.config.name) {
+        case 'countries':
+          return {
+            ..._inputConfig,
+            config: {
+              ..._inputConfig.config,
+              options: countryList.map(_country => ({ label: _country.name, value: _country.id }))
+            }
+          }
+        case 'genderId':
+          return {
             ..._inputConfig,
             config: {
               ..._inputConfig.config,
               options: genderList.map(_gender => ({ label: _gender.name, value: _gender.id }))
             }
           }
-        : _inputConfig
+        default:
+          return _inputConfig
+      }
     })
-  }, [genderList])
+
+    return parsedInputConfig
+  }, [genderList, countryList])
 
   const handleSubmit = (_actorToSubmit: ActorFormModel) => {
     console.warn(_actorToSubmit)
