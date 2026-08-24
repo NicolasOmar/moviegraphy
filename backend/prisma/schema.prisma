@@ -34,6 +34,20 @@ model Sessions {
   @@index([userId])
 }
 
+model Countries {
+  id           String  @id @unique
+  name         String  @unique
+  officialName String? @unique
+  alpha2       String  @unique
+  alpha3       String  @unique
+}
+
+model Genders {
+  id     String   @id @unique
+  name   String   @unique
+  actors Actors[]
+}
+
 model Movies {
   countryMade String
   description String?          @db.VarChar(300)
@@ -63,10 +77,12 @@ model GenresOnMovies {
   @@id([movieId, genreId])
 }
 
-model Countries {
-  id           String  @id @unique
-  name         String  @unique
-  officialName String? @unique
-  alpha2       String  @unique
-  alpha3       String  @unique
+model Actors {
+  id       String    @id @unique
+  name     String    @db.VarChar(100)
+  lastName String    @db.VarChar(100)
+  bornDate DateTime
+  deadDate DateTime?
+  genderId String
+  gender   Genders   @relation(fields: [genderId], references: [id], onDelete: Cascade)
 }

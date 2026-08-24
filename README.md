@@ -105,7 +105,7 @@ That will:
 - Install all the packages (with husky hooks for future development)
 - Generate an `.env` file with a reference to a default local database url
 - Execute all the migrations from the `backend/prisma/migrations` folder
-- Execute a seed script, populating with base data such as the list of countries at `backend/prisma/countries.json`
+- Execute a seed script, populating with base data such as the list of countries and genders at `backend/prisma/rawData.json`
 
 ### Manual method
 First, install all the dependencies.
