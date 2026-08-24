@@ -1,4 +1,4 @@
-import type { SelectProps } from 'antd'
+import type { RadioProps, SelectProps } from 'antd'
 import type { Rule } from 'antd/es/form'
 import type { ChangeEventHandler } from 'react'
 
@@ -73,7 +73,12 @@ export type FormInputType =
  */
 export type FormItemConfig<ConfigEntity> = {
   config: FormInput<ConfigEntity> | FormSelect<ConfigEntity>
-  type: 'input' | 'select'
+  type: 'input' | 'radio' | 'select'
+}
+
+export type FormRadioGroup<ConfigEntity> = FormInputBase<ConfigEntity> & {
+  initialValue?: RadioProps['value']
+  options: SelectProps['options']
 }
 
 /** Used for dropdown-based form inputs, includes a specific `options` property

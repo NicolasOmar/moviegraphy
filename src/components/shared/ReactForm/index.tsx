@@ -1,9 +1,10 @@
-import type { FormConfig, FormInput, FormSelect } from '@ts/types'
+import type { FormConfig, FormInput, FormRadioGroup, FormSelect } from '@ts/types'
 
 import { Button, type ButtonProps, Flex, Form, type FormInstance, Typography } from 'antd'
 import React, { useMemo } from 'react'
 
 import { ReactFormInput } from '../ReactFormInput'
+import { ReactFormRadio } from '../ReactFormRadio'
 import { ReactFormSelect } from '../ReactFormSelect'
 
 export interface FormButton {
@@ -40,15 +41,20 @@ export const ReactForm = <T,>({
   const memoizedInputs = useMemo(
     () =>
       formInputs.map(({ config, type }, _inputIndex) => {
-        return type === 'input' ? (
-          <ReactFormInput
-            isDisabled={isLoading}
-            key={`user-form-${_inputIndex}`}
-            {...(config as FormInput<T>)}
-          />
-        ) : (
-          <ReactFormSelect key={`user-form-${_inputIndex}`} {...(config as FormSelect<T>)} />
-        )
+        const inputKey = `user-form-${_inputIndex}`
+
+        switch (type) {
+          case 'input':
+            return (
+              <ReactFormInput isDisabled={isLoading} key={inputKey} {...(config as FormInput<T>)} />
+            )
+          case 'radio':
+            return <ReactFormRadio key={inputKey} {...(config as FormRadioGroup<T>)} />
+          case 'select':
+            return <ReactFormSelect key={inputKey} {...(config as FormSelect<T>)} />
+          default:
+            return null
+        }
       }),
     [formInputs, isLoading]
   )
