@@ -4,10 +4,9 @@ import type { GetMany } from '@ts/types'
 import prismaInstance from '@prisma/index'
 import { parseApiErrorToHttpError } from '@ts/parsers'
 
-/** `[GET]` function for registered movies
+/** `[GET]` function for registered genders
  *
- * @param _loggeduserId - Logged user's id to access its registered movies
- * @returns A list of `MoviesModel`
+ * @returns A list of `GendersModel`
  */
 export const getGenderList: GetMany<null, GendersModel> = async () => {
   try {

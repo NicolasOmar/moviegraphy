@@ -104,7 +104,7 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
 /** `[DELETE]` function for a single movie
  *
  * @param _movieId - A string related to an existing movie in the database
- * @returns A `true`
+ * @returns A boolean `true`
  */
 export const deleteMovie: DeleteOne = async _movieId => {
   try {

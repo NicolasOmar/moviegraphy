@@ -13,7 +13,7 @@ import prismaInstance from '../prisma'
  * Asks for a raw session token, it looks for it in the registered sessions for its existence.
  *
  * @param _rawToken - token without hashing (that could even not be sended)
- * @returns A boolean if is a valid one or not.
+ * @returns A boolean to corroborate if the `_rawToken` is valid or not.
  */
 export const isSessionValid = async (_rawToken?: null | string): Promise<boolean> => {
   if (_rawToken === undefined || _rawToken === null) {
@@ -41,7 +41,7 @@ export const isSessionValid = async (_rawToken?: null | string): Promise<boolean
  * - Creates a new session with the hashed session token and user's id
  *
  * @param _userToLogin - of type `UserLoginFormModel`
- * @returns the raw session token
+ * @returns a raw session token
  */
 export const loginUser: CreateOrUpdateOne<UserLoginFormModel, string> = async ({
   password,
@@ -85,7 +85,7 @@ export const loginUser: CreateOrUpdateOne<UserLoginFormModel, string> = async ({
  * - Deletes the saved session from the hashed token
  *
  * @param _token - A raw session token in string format
- * @returns True
+ * @returns A boolean `true`
  */
 export const logoutUser: DeleteOne = async _token => {
   const hashedToken = hashToken(_token)
