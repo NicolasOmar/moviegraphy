@@ -49,6 +49,7 @@ export const buildGenreDeleteConfirmationMessage = (
   `The genre '${_genreName}' has ${_moviesAmount} movies registered, are you sure you want to delete the genre anyways?`
 
 export enum PAGE_URL {
+  ACTORS = '/actors',
   GENRES = '/genres',
   HOME = '/',
   LOGIN = '/login',

@@ -21,6 +21,7 @@ model Users {
   tokens   Sessions[]
   movies   Movies[]
   genres   Genres[]
+  actors   Actors[]
 }
 
 model Sessions {
@@ -85,4 +86,6 @@ model Actors {
   deadDate DateTime?
   genderId String
   gender   Genders   @relation(fields: [genderId], references: [id], onDelete: Cascade)
+  userId   String
+  user     Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -1,0 +1,12 @@
+---
+import { ReactActorForm } from '@components/actors/ReactActorForm'
+import NavigationLayout from '@layouts/NavigationLayout.astro'
+import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
+---
+
+<NavigationLayout>
+  <TwoColumnsLayout>
+    <ReactActorForm client:visible />
+    <section>Testng List</section>
+  </TwoColumnsLayout>
+</NavigationLayout>
