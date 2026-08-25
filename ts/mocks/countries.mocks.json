@@ -1,0 +1,16 @@
+[
+  {
+    "alpha2": "US",
+    "alpha3": "USA",
+    "id": "5c3c1a2e-4444-4a1a-9a1a-000000000001",
+    "name": "United States",
+    "officialName": "United States of America"
+  },
+  {
+    "alpha2": "FR",
+    "alpha3": "FRA",
+    "id": "5c3c1a2e-4444-4a1a-9a1a-000000000002",
+    "name": "France",
+    "officialName": "French Republic"
+  }
+]

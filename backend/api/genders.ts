@@ -1,8 +1,9 @@
 import type { GendersModel } from '@models'
 import type { GetMany } from '@ts/types'
 
-import prismaInstance from '@prisma/index'
 import { parseApiErrorToHttpError } from '@ts/parsers'
+
+import prismaInstance from '../prisma'
 
 /** `[GET]` function for registered genders
  *

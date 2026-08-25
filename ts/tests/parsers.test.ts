@@ -88,6 +88,10 @@ describe('parseIdStringToArray', () => {
   it('returns an empty array for an empty string instead of a bogus single id', () => {
     expect(parseIdStringToArray('')).toEqual([])
   })
+
+  it('splits using a custom separator when one is provided', () => {
+    expect(parseIdStringToArray('country-1|country-2', '|')).toEqual(['country-1', 'country-2'])
+  })
 })
 
 describe('getErrorMessage', () => {

@@ -1,0 +1,20 @@
+[
+  {
+    "bornDate": "1964-09-02T00:00:00.000Z",
+    "deadDate": null,
+    "genderId": "6c3c1a2e-5555-4a1a-9a1a-000000000001",
+    "id": "7c3c1a2e-6666-4a1a-9a1a-000000000001",
+    "lastName": "Reeves",
+    "name": "Keanu",
+    "userId": "9d3c1a2e-2222-4a1a-9a1a-000000000001"
+  },
+  {
+    "bornDate": "1967-03-31T00:00:00.000Z",
+    "deadDate": null,
+    "genderId": "6c3c1a2e-5555-4a1a-9a1a-000000000002",
+    "id": "7c3c1a2e-6666-4a1a-9a1a-000000000002",
+    "lastName": "Moss",
+    "name": "Carrie-Anne",
+    "userId": "9d3c1a2e-2222-4a1a-9a1a-000000000002"
+  }
+]

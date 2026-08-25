@@ -1,14 +1,15 @@
 import type { ActorsModel } from '@models'
 import type { ActorApiModel } from '@ts/entities'
 
-import prismaInstance from '@prisma/index'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError, parseIdStringToArray } from '@ts/parsers'
 import { type CreateOrUpdateOne, HttpError } from '@ts/types'
 
+import prismaInstance from '../prisma'
+
 /** `[CREATE]` function for actors
  *
- * - If the provided name on the genre has been already added, it will return an error
+ * - If the provided name/lastName combination has already been added, it will return an error
  *
  * @param _actorFormData - A `ActorApiModel` object to be created in the database
  * @returns The new `ActorsModel`
@@ -20,7 +21,7 @@ export const createActor: CreateOrUpdateOne<ActorApiModel, ActorsModel> = async 
       countryId: _countryId
     }))
     const alreadyUsedName = await prismaInstance.actors.findUnique({
-      where: { id: '', lastName: _actorFormData.lastName, name: _actorFormData.name }
+      where: { name_lastName: { lastName: _actorFormData.lastName, name: _actorFormData.name } }
     })
 
     if (alreadyUsedName) {

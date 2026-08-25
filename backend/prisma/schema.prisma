@@ -90,6 +90,8 @@ model Actors {
   userId    String
   user      Users               @relation(fields: [userId], references: [id], onDelete: Cascade)
   countries CountriesOnActors[]
+
+  @@unique([name, lastName])
 }
 
 model CountriesOnActors {
