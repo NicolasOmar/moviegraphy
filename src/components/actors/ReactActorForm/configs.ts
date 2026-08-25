@@ -22,14 +22,14 @@ export const actorFormInputs: FormConfig<ActorFormModel> = [
       label: 'Born date',
       name: 'bornDate'
     },
-    type: 'input'
+    type: 'date'
   },
   {
     config: {
       label: 'Passed date',
       name: 'deadDate'
     },
-    type: 'input'
+    type: 'date'
   },
   {
     config: {

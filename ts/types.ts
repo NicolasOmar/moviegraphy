@@ -73,7 +73,7 @@ export type FormInputType =
  */
 export type FormItemConfig<ConfigEntity> = {
   config: FormInput<ConfigEntity> | FormSelect<ConfigEntity>
-  type: 'input' | 'radio' | 'select'
+  type: 'date' | 'input' | 'radio' | 'select'
 }
 
 export type FormRadioGroup<ConfigEntity> = FormInputBase<ConfigEntity> & {

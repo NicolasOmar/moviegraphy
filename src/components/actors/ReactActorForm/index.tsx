@@ -1,9 +1,17 @@
-import type { CountriesModel, GendersModel } from '@models'
+import type { ActorsModel, CountriesModel, GendersModel } from '@models'
 import type { ActorFormModel } from '@ts/entities'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading } from '@store/loading'
+import { publishNotification } from '@store/notifications'
+import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
+import { fetchWithAuth } from '@ts/helpers'
+import {
+  parseModelToFormData,
+  parseResponseErrorToMessage,
+  parseResponseMessageToEntity
+} from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
@@ -54,8 +62,23 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
     return parsedInputConfig
   }, [genderList, countryList])
 
-  const handleSubmit = (_actorToSubmit: ActorFormModel) => {
+  const handleSubmit = async (_actorToSubmit: ActorFormModel) => {
     console.warn(_actorToSubmit)
+    const actorFormData = parseModelToFormData(_actorToSubmit)
+    const actorCreateResponse = await fetchWithAuth(API_URLS.ACTORS, {
+      body: actorFormData,
+      method: API_METHODS.POST
+    })
+
+    if (actorCreateResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(actorCreateResponse)
+      publishNotification({ content: errorMessage, type: 'error' })
+    } else {
+      const newActorFinal = await parseResponseMessageToEntity<ActorsModel>(actorCreateResponse)
+
+      console.warn(newActorFinal)
+      publishNotification({ content: 'Actor created', type: 'success' })
+    }
   }
 
   const handleError = () => {

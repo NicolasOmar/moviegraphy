@@ -113,14 +113,15 @@ export const MovieUpdateSchema = z.strictObject({
 // ---------- ACTORS / INTERFACES ----------
 export type ActorApiModel = ActorFormModel & CustomAstroLocals
 
-export type ActorFormModel = Omit<ActorsModel, 'id'> & {
+export type ActorFormModel = Omit<ActorsModel, 'userId'> & {
   countries: string | string[]
 }
 
 // ---------- ACTORS / SCHEMAS ----------
 export const ActorCreateSchema = z.strictObject({
-  bornDate: z.coerce.number().min(1850).max(3000),
-  deadDate: z.coerce.number().min(1850).max(3000),
+  bornDate: z.string(),
+  countries: z.string().optional(),
+  deadDate: z.string(),
   genderId: z.string(),
   lastName: z.string().min(2).max(100),
   name: z.string().min(2).max(100)

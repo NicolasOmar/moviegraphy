@@ -50,16 +50,23 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
   return parseFormDataToModel<UserDefinedModel>(extractedFormData)
 }
 
-/** Normalizes a movie form's `genres` field into a clean list of genre ids
+/** Normalizes a concatenated list of id strings into a clean list of individual ones
  *
- * - Accepts either a comma-separated string (as sent through `FormData`) or an array
+ * - Accepts either a comma (or specific separator) separated string (as sent through `FormData`) or an array
  * - Filters out empty values, so an unselected/empty field never yields a bogus id
  *
- * @param _genres - Raw `genres` value coming from a form submission
- * @returns Array of non-empty genre id strings
+ * @param _concatenatedString - Raw `genres` value coming from a form submission
+ * @param _separator - `_concatenatedString` separator to return the individual ones. Is a comma (`,`) by default
+ * @returns An array of non-empty strings
  */
-export const parseGenresToIds = (_genres: string | string[]): string[] =>
-  (Array.isArray(_genres) ? _genres : _genres.split(',')).filter(Boolean)
+export const parseIdStringToArray = (
+  _concatenatedString: string | string[],
+  _separator: string = ','
+): string[] =>
+  (Array.isArray(_concatenatedString)
+    ? _concatenatedString
+    : _concatenatedString.split(_separator)
+  ).filter(Boolean)
 
 /** Extract error's message or creates a string out of the error object itself
  *

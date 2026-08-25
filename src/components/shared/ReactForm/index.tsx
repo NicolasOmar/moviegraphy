@@ -3,6 +3,7 @@ import type { FormConfig, FormInput, FormRadioGroup, FormSelect } from '@ts/type
 import { Button, type ButtonProps, Flex, Form, type FormInstance, Typography } from 'antd'
 import React, { useMemo } from 'react'
 
+import { ReactFormDatePicker } from '../ReactFormDatePicker'
 import { ReactFormInput } from '../ReactFormInput'
 import { ReactFormRadio } from '../ReactFormRadio'
 import { ReactFormSelect } from '../ReactFormSelect'
@@ -42,16 +43,20 @@ export const ReactForm = <T,>({
     () =>
       formInputs.map(({ config, type }, _inputIndex) => {
         const inputKey = `user-form-${_inputIndex}`
+        const customConfig = {
+          ...config,
+          isDisabled: isLoading
+        }
 
         switch (type) {
+          case 'date':
+            return <ReactFormDatePicker key={inputKey} {...(customConfig as FormInput<T>)} />
           case 'input':
-            return (
-              <ReactFormInput isDisabled={isLoading} key={inputKey} {...(config as FormInput<T>)} />
-            )
+            return <ReactFormInput key={inputKey} {...(customConfig as FormInput<T>)} />
           case 'radio':
-            return <ReactFormRadio key={inputKey} {...(config as FormRadioGroup<T>)} />
+            return <ReactFormRadio key={inputKey} {...(customConfig as FormRadioGroup<T>)} />
           case 'select':
-            return <ReactFormSelect key={inputKey} {...(config as FormSelect<T>)} />
+            return <ReactFormSelect key={inputKey} {...(customConfig as FormSelect<T>)} />
           default:
             return null
         }
