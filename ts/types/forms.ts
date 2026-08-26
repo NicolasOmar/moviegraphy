@@ -56,7 +56,7 @@ export type FormInputType =
  * @typeParam ConfigEntity - Type/Entity/Model used to format the `config` object
  */
 export type FormItemConfig<ConfigEntity> = {
-  config: FormInput<ConfigEntity> | FormSelect<ConfigEntity>
+  config: FormInput<ConfigEntity> | FormRadioGroup<ConfigEntity> | FormSelect<ConfigEntity>
   type: 'date' | 'input' | 'radio' | 'select'
 }
 

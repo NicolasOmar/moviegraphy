@@ -21,11 +21,11 @@ export const createActor: CreateOrUpdateOne<ActorApiModel, ActorsModel> = async 
       countryId: _countryId
     }))
 
-    const alreadyUsedName = await prismaInstance.actors.findUnique({
+    const isActorNameAlreadyUsed = await prismaInstance.actors.findUnique({
       where: { name_lastName: { lastName: _actorFormData.lastName, name: _actorFormData.name } }
     })
 
-    if (alreadyUsedName) {
+    if (isActorNameAlreadyUsed) {
       throw new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Name already used')
     }
 

@@ -25,6 +25,15 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+const fillRequiredFields = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.type(screen.getByLabelText('Name'), 'Keanu')
+  await user.type(screen.getByLabelText('Lastname'), 'Reeves')
+  await user.type(screen.getByLabelText('Born date'), '1964-09-02{enter}')
+  await user.click(screen.getByRole('radio', { name: genderMocks[0].name }))
+  await user.click(screen.getByLabelText('Countries'))
+  await user.click(await screen.findByText(countryMocks[0].name))
+}
+
 describe('ReactActorForm', () => {
   it('renders the form title', () => {
     render(<ReactActorForm countryList={countryMocks} genderList={genderMocks} />)
@@ -62,7 +71,7 @@ describe('ReactActorForm', () => {
     const user = userEvent.setup()
     render(<ReactActorForm countryList={countryMocks} genderList={genderMocks} />)
 
-    await user.type(screen.getByLabelText('Name'), 'Keanu')
+    await fillRequiredFields(user)
     await user.click(screen.getByRole('button', { name: 'Confirm' }))
 
     await waitFor(() =>
@@ -83,7 +92,7 @@ describe('ReactActorForm', () => {
     )
     render(<ReactActorForm countryList={countryMocks} genderList={genderMocks} />)
 
-    await user.type(screen.getByLabelText('Name'), 'Keanu')
+    await fillRequiredFields(user)
     await user.click(screen.getByRole('button', { name: 'Confirm' }))
 
     await waitFor(() =>

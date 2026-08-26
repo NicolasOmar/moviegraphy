@@ -27,13 +27,15 @@ export const parseModelToFormData = <UserDefinedModel extends object>(
 export const parseFormDataToModel = <UserDefinedModel extends object>(
   _formData: FormData
 ): UserDefinedModel => {
-  return Array.from(_formData.entries()).reduce(
-    (_finalModel, [_formDataKey, _formDataValue]) => ({
+  return Array.from(_formData.entries()).reduce((_finalModel, [_formDataKey, _formDataValue]) => {
+    const parsedFormDataValue =
+      _formDataValue === 'null' ? null : _formDataValue === 'undefined' ? null : _formDataValue
+
+    return {
       ..._finalModel,
-      [_formDataKey]: _formDataValue
-    }),
-    {} as UserDefinedModel
-  )
+      [_formDataKey]: parsedFormDataValue
+    }
+  }, {} as UserDefinedModel)
 }
 
 /** Handles an API `Request` and obtains its `FormData` object to be parsed

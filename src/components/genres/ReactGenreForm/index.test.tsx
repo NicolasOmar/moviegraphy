@@ -71,7 +71,12 @@ describe('ReactGenreForm', () => {
 
     expect(await screen.findByText('The name is required')).toBeInTheDocument()
     expect(fetch).not.toHaveBeenCalled()
-    expect($globalNotifications.get()).toBeNull()
+    await waitFor(() =>
+      expect($globalNotifications.get()).toEqual({
+        content: 'Check the form messages',
+        type: 'error'
+      })
+    )
   })
 
   it('updates a genre: pre-fills the form on selection, submits a PATCH request, updates the list, and clears the selection', async () => {

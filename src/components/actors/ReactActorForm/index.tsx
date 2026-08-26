@@ -63,8 +63,10 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
   }, [genderList, countryList])
 
   const handleSubmit = async (_actorToSubmit: ActorFormModel) => {
-    console.warn(_actorToSubmit)
-    const actorFormData = parseModelToFormData(_actorToSubmit)
+    const actorFormData = parseModelToFormData({
+      ..._actorToSubmit,
+      deadDate: _actorToSubmit.deadDate ?? null
+    })
     const actorCreateResponse = await fetchWithAuth(API_URLS.ACTORS, {
       body: actorFormData,
       method: API_METHODS.POST
@@ -74,16 +76,14 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
       const errorMessage = await parseResponseErrorToMessage(actorCreateResponse)
       publishNotification({ content: errorMessage, type: 'error' })
     } else {
-      const newActorFinal = await parseResponseMessageToEntity<ActorsModel>(actorCreateResponse)
+      await parseResponseMessageToEntity<ActorsModel>(actorCreateResponse)
 
-      console.warn(newActorFinal)
       publishNotification({ content: 'Actor created', type: 'success' })
     }
   }
 
-  const handleError = () => {
-    console.error('Error')
-  }
+  const handleInvalidation = () =>
+    publishNotification({ content: 'Check the form messages', type: 'error' })
 
   return (
     <ReactForm
@@ -93,7 +93,7 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
       formTitle={actorFormTitle}
       isLoading={isSystemLoading}
       onSubmit={handleSubmit}
-      onSubmitFailed={handleError}
+      onSubmitFailed={handleInvalidation}
     />
   )
 }

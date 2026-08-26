@@ -6,21 +6,30 @@ export const actorFormInputs: FormConfig<ActorFormModel> = [
   {
     config: {
       label: 'Name',
-      name: 'name'
+      name: 'name',
+      rules: [
+        { message: 'Name is required', required: true },
+        { max: 100, message: 'Name must be between 2 and 100 characters', min: 2 }
+      ]
     },
     type: 'input'
   },
   {
     config: {
       label: 'Lastname',
-      name: 'lastName'
+      name: 'lastName',
+      rules: [
+        { message: 'Lastname is required', required: true },
+        { max: 100, message: 'Lastname must be between 2 and 100 characters', min: 2 }
+      ]
     },
     type: 'input'
   },
   {
     config: {
       label: 'Born date',
-      name: 'bornDate'
+      name: 'bornDate',
+      rules: [{ message: 'Born date is required', required: true }]
     },
     type: 'date'
   },
@@ -34,14 +43,16 @@ export const actorFormInputs: FormConfig<ActorFormModel> = [
   {
     config: {
       label: 'Gender',
-      name: 'genderId'
+      name: 'genderId',
+      rules: [{ message: 'Gender is required', required: true }]
     },
     type: 'radio'
   },
   {
     config: {
       label: 'Countries',
-      name: 'countries'
+      name: 'countries',
+      rules: [{ message: 'Countries are required', required: true }]
     },
     type: 'select'
   }

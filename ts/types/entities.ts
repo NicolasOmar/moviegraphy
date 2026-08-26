@@ -120,8 +120,8 @@ export type ActorFormModel = Omit<ActorsModel, 'userId'> & {
 // ---------- ACTORS / SCHEMAS ----------
 export const ActorCreateSchema = z.strictObject({
   bornDate: z.string(),
-  countries: z.string().optional(),
-  deadDate: z.string(),
+  countries: z.string(),
+  deadDate: z.string().nullable(),
   genderId: z.string(),
   lastName: z.string().min(2).max(100),
   name: z.string().min(2).max(100)
