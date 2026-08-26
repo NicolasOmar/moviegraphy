@@ -1,9 +1,9 @@
 import type { APIContext } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { movieMocks } from '@ts/mocks'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DELETE, PATCH, POST } from '../movies'

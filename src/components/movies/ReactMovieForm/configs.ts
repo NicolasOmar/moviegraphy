@@ -1,5 +1,5 @@
-import type { MovieFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { MovieFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 
 export const movieFormTitle = 'Create a new movie'
 export const movieFormInputs: FormConfig<MovieFormModel> = [

@@ -1,5 +1,5 @@
-import type { UserLoginFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { UserLoginFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 import type { FC } from 'react'
 
 import { render, screen } from '@testing-library/react'

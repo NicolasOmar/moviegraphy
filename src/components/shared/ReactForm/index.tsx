@@ -1,4 +1,4 @@
-import type { FormConfig, FormInput, FormRadioGroup, FormSelect } from '@ts/types'
+import type { FormConfig, FormInput, FormRadioGroup, FormSelect } from '@ts-types/forms'
 
 import { Button, type ButtonProps, Flex, Form, type FormInstance, Typography } from 'antd'
 import React, { useMemo } from 'react'

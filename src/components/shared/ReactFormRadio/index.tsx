@@ -1,4 +1,4 @@
-import type { FormRadioGroup } from '@ts/types'
+import type { FormRadioGroup } from '@ts-types/forms'
 
 import { Form, Radio } from 'antd'
 

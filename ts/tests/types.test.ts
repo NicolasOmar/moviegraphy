@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { HttpError } from '../types'
+import { HttpError } from '../types/api'
 
 describe('HttpError', () => {
   it('carries the given status and message, and identifies itself as an HttpError', () => {

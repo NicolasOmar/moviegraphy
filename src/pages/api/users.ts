@@ -1,14 +1,14 @@
 import type { APIRoute } from 'astro'
 
 import { createUser, updateUser } from '@api/users'
-import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import {
   type CustomAstroLocals,
   UserCreateSchema,
   type UserFormModel,
   type UserUpdateFormModel,
   UserUpdateSchema
-} from '@ts/entities'
+} from '@ts-types/entities'
+import { HTTP_STATUS, SESSION_COOKIE_NAME, USER_ERROR_MESSAGES } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 

@@ -1,6 +1,6 @@
 import type { GenresModel } from '@models'
-import type { GenreFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { GenreFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'

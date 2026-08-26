@@ -5,8 +5,7 @@ import {
   arePassworsEqual,
   fetchWithAuth,
   getCurrentISODate,
-  getISODateWithDaysOffset,
-  parseToIsoDate
+  getISODateWithDaysOffset
 } from '../helpers'
 
 describe('fetchWithAuth', () => {
@@ -87,29 +86,5 @@ describe('getISODateWithDaysOffset', () => {
     const result = getISODateWithDaysOffset(-1)
 
     expect(result.getTime()).toBeLessThan(now)
-  })
-})
-
-describe('parseToIsoDate', () => {
-  it('rebuilds a Date instance through an ISO round-trip', () => {
-    const original = new Date('2024-01-15T10:30:00.000Z')
-
-    const result = parseToIsoDate(original)
-
-    expect(result.toISOString()).toBe(original.toISOString())
-  })
-
-  it('parses a date string into a Date matching its ISO representation', () => {
-    const result = parseToIsoDate('2024-01-15')
-
-    expect(result.toISOString()).toBe(new Date('2024-01-15').toISOString())
-  })
-
-  it('parses a timestamp number into a Date matching its ISO representation', () => {
-    const timestamp = 1705315800000
-
-    const result = parseToIsoDate(timestamp)
-
-    expect(result.toISOString()).toBe(new Date(timestamp).toISOString())
   })
 })

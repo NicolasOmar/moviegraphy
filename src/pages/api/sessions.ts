@@ -1,4 +1,4 @@
-import type { UserLoginFormModel } from '@ts/entities'
+import type { UserLoginFormModel } from '@ts-types/entities'
 import type { APIRoute } from 'astro'
 
 import { loginUser, logoutUser } from '@api/sessions'

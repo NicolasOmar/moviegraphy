@@ -1,6 +1,6 @@
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { countryMocks } from '@ts/mocks'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 

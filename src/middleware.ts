@@ -1,4 +1,4 @@
-import type { CustomAstroLocals } from '@ts/entities'
+import type { CustomAstroLocals } from '@ts-types/entities'
 
 import { isSessionValid } from '@api/sessions'
 import { findUserBySession } from '@api/users'

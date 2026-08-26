@@ -1,12 +1,12 @@
 import type { UsersModel } from '@models'
-import type { PasswordUpdateModel, UserUpdateFormModel } from '@ts/entities'
-import type { CreateOrUpdateOne, GetOne } from '@ts/types'
+import type { CreateOrUpdateOne, GetOne } from '@ts-types/api'
+import type { PasswordUpdateModel, UserUpdateFormModel } from '@ts-types/entities'
 
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getISODateWithDaysOffset } from '@ts/helpers'
 import { parseApiErrorToHttpError } from '@ts/parsers'
 import { compareHashed, createToken, hashString, hashToken } from '@ts/tokens'
-import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'

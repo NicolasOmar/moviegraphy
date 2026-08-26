@@ -1,9 +1,9 @@
 import type { APIContext } from 'astro'
 
 import { createActor } from '@api/actors'
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { actorMocks } from '@ts/mocks'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { POST } from '../actors'

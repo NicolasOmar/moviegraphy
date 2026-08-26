@@ -1,5 +1,5 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from './constants'
-import { HttpError } from './types'
+import { HttpError } from './types/api'
 
 /** Converts a raw data object into a FormData for API consumption
  *
@@ -68,17 +68,6 @@ export const parseIdStringToArray = (
     : _concatenatedString.split(_separator)
   ).filter(Boolean)
 
-/** Extract error's message or creates a string out of the error object itself
- *
- * - If the `_error` is an instance of `Error`. It return its `message` property
- * - Else, the `_error` is stringified and returned as the message
- *
- * @param _error - An `unknown` error object to be parsed
- * @returns Error's message
- */
-export const getErrorMessage = (_error: unknown) =>
-  _error instanceof Error ? _error.message : String(_error)
-
 /** Extract Response's success message from the `/pages/api` request and
  * displays it as a user-defined entity (which is `object` by default)
  *
@@ -141,8 +130,8 @@ export const parseHttpErrorToResponse = (_error: HttpError | unknown): Response 
  * the `/pages/api` handlers
  *
  * - Consoles the error at the `backend/api` level
- * - If the error is an instance of HttpError, it returns it withour adjust it
- * - Else, it creates an error message from the original error
+ * - If the `_error` is an instance of `Error`. It return its `message` property
+ * - Else, the `_error` is stringified and returned as the message
  * - Then, it returns the parsed message with a `INTERNAL_SERVER_ERROR` HTTP code
  *
  * @param _error - The error to be handled
@@ -159,7 +148,22 @@ export const parseApiErrorToHttpError = (
     return _error
   }
 
-  const errorMessage = getErrorMessage(_error)
+  const errorMessage = _error instanceof Error ? _error.message : String(_error)
 
   return new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+}
+
+/** Handles a value into a date formatted into ISO format (as standar)
+ *
+ * - If the _rawDate is a date, it will parse into a ISO-format string
+ * - If is a string or a number, it will create a new Date to parse into ISO-format
+ *
+ * @param _rawDate - Date to be parsed from a string, number or a Date
+ * @returns An ISO-formatted Date object
+ */
+export const parseValueToIsoDate = (_rawDate: Date | number | string): Date => {
+  const dateIsoString =
+    _rawDate instanceof Date ? _rawDate.toISOString() : new Date(_rawDate).toISOString()
+
+  return new Date(dateIsoString)
 }

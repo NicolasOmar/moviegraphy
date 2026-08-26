@@ -1,10 +1,14 @@
 import type { APIRoute } from 'astro'
 
 import { createActor } from '@api/actors'
+import { ActorCreateSchema, type ActorFormModel, type CustomAstroLocals } from '@ts-types/entities'
 import { HTTP_STATUS } from '@ts/constants'
-import { ActorCreateSchema, type ActorFormModel, type CustomAstroLocals } from '@ts/entities'
-import { parseToIsoDate } from '@ts/helpers'
-import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
+import {
+  parseHttpErrorToResponse,
+  parseMessageToResponse,
+  parseRequestToModel,
+  parseValueToIsoDate
+} from '@ts/parsers'
 import { v6 } from 'uuid'
 
 export const POST: APIRoute = async ({ locals, request }) => {
@@ -19,8 +23,8 @@ export const POST: APIRoute = async ({ locals, request }) => {
   try {
     const genreCreated = await createActor({
       ...newActorModel,
-      bornDate: parseToIsoDate(newActorModel.bornDate),
-      deadDate: newActorModel.deadDate ? parseToIsoDate(newActorModel.deadDate) : null,
+      bornDate: parseValueToIsoDate(newActorModel.bornDate),
+      deadDate: newActorModel.deadDate ? parseValueToIsoDate(newActorModel.deadDate) : null,
       id: v6(),
       loggedUserId: (locals as CustomAstroLocals).loggedUserId
     })

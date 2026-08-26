@@ -1,5 +1,5 @@
 import type { ActorsModel, CountriesModel, GendersModel } from '@models'
-import type { ActorFormModel } from '@ts/entities'
+import type { ActorFormModel } from '@ts-types/entities'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'

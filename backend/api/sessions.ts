@@ -1,10 +1,10 @@
-import type { UserLoginFormModel } from '@ts/entities'
+import type { UserLoginFormModel } from '@ts-types/entities'
 
+import { type CreateOrUpdateOne, type DeleteOne, HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getCurrentISODate, getISODateWithDaysOffset } from '@ts/helpers'
 import { parseApiErrorToHttpError } from '@ts/parsers'
 import { compareHashed, createToken, hashToken } from '@ts/tokens'
-import { type CreateOrUpdateOne, type DeleteOne, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'

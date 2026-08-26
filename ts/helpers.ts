@@ -35,21 +35,6 @@ export const arePassworsEqual = (_firstPassword?: string, _secondPassword?: stri
   return true
 }
 
-/** Handles a value into a date formatted into ISO format (as standar)
- *
- * - If the _rawDate is a date, it will parse into a ISO-format string
- * - If is a string or a number, it will create a new Date to parse into ISO-format
- *
- * @param _rawDate - Date to be parsed from a string, number or a Date
- * @returns An ISO-formatted Date object
- */
-export const parseToIsoDate = (_rawDate: Date | number | string): Date => {
-  const dateIsoString =
-    _rawDate instanceof Date ? _rawDate.toISOString() : new Date(_rawDate).toISOString()
-
-  return new Date(dateIsoString)
-}
-
 /**
  * Current moment rebuilt from its ISO 8601 UTC string representation, so dates
  * persisted to the database stay independent of the server's local timezone.

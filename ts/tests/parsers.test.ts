@@ -1,10 +1,9 @@
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { HttpError } from '@ts/types'
 import { describe, expect, it, vi } from 'vitest'
 
 import { movieMocks } from '../mocks'
 import {
-  getErrorMessage,
   parseApiErrorToHttpError,
   parseFormDataToModel,
   parseHttpErrorToResponse,
@@ -12,7 +11,8 @@ import {
   parseMessageToResponse,
   parseModelToFormData,
   parseRequestToModel,
-  parseResponseErrorToMessage
+  parseResponseErrorToMessage,
+  parseValueToIsoDate
 } from '../parsers'
 
 describe('parseModelToFormData', () => {
@@ -94,19 +94,6 @@ describe('parseIdStringToArray', () => {
   })
 })
 
-describe('getErrorMessage', () => {
-  it('extracts the message from an Error instance', () => {
-    expect(getErrorMessage(new Error('database connection failed'))).toBe(
-      'database connection failed'
-    )
-  })
-
-  it('coerces non-Error values to a string', () => {
-    expect(getErrorMessage('plain string failure')).toBe('plain string failure')
-    expect(getErrorMessage({ code: 500 })).toBe('[object Object]')
-  })
-})
-
 describe('parseResponseErrorToMessage', () => {
   it('returns the message as-is when the response body carries a single string', async () => {
     const response = new Response(JSON.stringify({ message: 'Name is required' }))
@@ -178,5 +165,29 @@ describe('parseHttpErrorToResponse', () => {
 
     expect(response.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR)
     expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.UNEXPECTED })
+  })
+})
+
+describe('parseValueToIsoDate', () => {
+  it('rebuilds a Date instance through an ISO round-trip', () => {
+    const original = new Date('2024-01-15T10:30:00.000Z')
+
+    const result = parseValueToIsoDate(original)
+
+    expect(result.toISOString()).toBe(original.toISOString())
+  })
+
+  it('parses a date string into a Date matching its ISO representation', () => {
+    const result = parseValueToIsoDate('2024-01-15')
+
+    expect(result.toISOString()).toBe(new Date('2024-01-15').toISOString())
+  })
+
+  it('parses a timestamp number into a Date matching its ISO representation', () => {
+    const timestamp = 1705315800000
+
+    const result = parseValueToIsoDate(timestamp)
+
+    expect(result.toISOString()).toBe(new Date(timestamp).toISOString())
   })
 })

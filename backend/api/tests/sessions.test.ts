@@ -1,7 +1,7 @@
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { sessionMocks, userMocks } from '@ts/mocks'
 import { hashString } from '@ts/tokens'
-import { HttpError } from '@ts/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 

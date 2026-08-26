@@ -1,9 +1,9 @@
 import type { GenresModel } from '@models'
-import type { GenreApiModel, GenreWithMovieAmount } from '@ts/entities'
+import type { GenreApiModel, GenreWithMovieAmount } from '@ts-types/entities'
 
+import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
-import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'

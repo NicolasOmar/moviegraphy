@@ -1,9 +1,9 @@
 import type { ActorsModel } from '@models'
-import type { ActorApiModel } from '@ts/entities'
+import type { ActorApiModel } from '@ts-types/entities'
 
+import { type CreateOrUpdateOne, HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError, parseIdStringToArray } from '@ts/parsers'
-import { type CreateOrUpdateOne, HttpError } from '@ts/types'
 
 import prismaInstance from '../prisma'
 
@@ -20,6 +20,7 @@ export const createActor: CreateOrUpdateOne<ActorApiModel, ActorsModel> = async 
     const parsedCountries = parseIdStringToArray(countries).map(_countryId => ({
       countryId: _countryId
     }))
+
     const alreadyUsedName = await prismaInstance.actors.findUnique({
       where: { name_lastName: { lastName: _actorFormData.lastName, name: _actorFormData.name } }
     })

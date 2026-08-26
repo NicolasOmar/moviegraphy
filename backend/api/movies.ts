@@ -1,15 +1,15 @@
 import type { MoviesModel } from '@models'
-import type { MovieApiModel, MovieWithGenresModel } from '@ts/entities'
+import type { MovieApiModel, MovieWithGenresModel } from '@ts-types/entities'
 
-import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
-import { parseApiErrorToHttpError, parseIdStringToArray } from '@ts/parsers'
 import {
   type CreateOrUpdateOne,
   type DeleteOne,
   type GetMany,
   type GetOne,
   HttpError
-} from '@ts/types'
+} from '@ts-types/api'
+import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
+import { parseApiErrorToHttpError, parseIdStringToArray } from '@ts/parsers'
 
 import prismaInstance from '../prisma'
 

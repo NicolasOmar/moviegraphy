@@ -1,9 +1,9 @@
 import type { APIContext } from 'astro'
 
 import { getMovieWithGenres } from '@api/movies'
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
 import { genreMocks, movieMocks } from '@ts/mocks'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GET } from '../../movies/[id]'

@@ -16,7 +16,8 @@
       "@models": ["backend/prisma/generated/models"],
       "@prisma/*": ["backend/prisma/*"],
       "@store/*": ["store/*"],
-      "@ts/*": ["ts/*"]
+      "@ts/*": ["ts/*"],
+      "@ts-types/*": ["ts/types/*"]
     }
   }
 }

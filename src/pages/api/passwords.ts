@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro'
 
 import { updatePassword } from '@api/users'
-import { HTTP_STATUS } from '@ts/constants'
 import {
   type CustomAstroLocals,
   type PasswordUpdateFormModel,
   PasswordUpdateSchema
-} from '@ts/entities'
+} from '@ts-types/entities'
+import { HTTP_STATUS } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
 export const POST: APIRoute = async ({ locals, request }) => {

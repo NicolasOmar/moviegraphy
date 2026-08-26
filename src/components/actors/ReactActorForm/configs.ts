@@ -1,5 +1,5 @@
-import type { ActorFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { ActorFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 
 export const actorFormTitle = 'Create a new actor'
 export const actorFormInputs: FormConfig<ActorFormModel> = [

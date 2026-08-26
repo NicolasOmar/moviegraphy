@@ -1,4 +1,4 @@
-import type { FormInput } from '@ts/types'
+import type { FormInput } from '@ts-types/forms'
 
 import { DatePicker, Form } from 'antd'
 

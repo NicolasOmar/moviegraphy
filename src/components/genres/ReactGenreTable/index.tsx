@@ -1,4 +1,4 @@
-import type { GenreWithMovieAmount } from '@ts/entities'
+import type { GenreWithMovieAmount } from '@ts-types/entities'
 
 import { ReactTable, type ReactTableProps } from '@components/shared/ReactTable'
 import { useStore } from '@nanostores/react'

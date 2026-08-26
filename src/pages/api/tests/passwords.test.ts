@@ -1,8 +1,8 @@
 import type { APIContext } from 'astro'
 
 import { updatePassword } from '@api/users'
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { POST } from '../passwords'

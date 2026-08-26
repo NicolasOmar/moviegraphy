@@ -1,5 +1,5 @@
 import type { GendersModel } from '@models'
-import type { GetMany } from '@ts/types'
+import type { GetMany } from '@ts-types/api'
 
 import { parseApiErrorToHttpError } from '@ts/parsers'
 
