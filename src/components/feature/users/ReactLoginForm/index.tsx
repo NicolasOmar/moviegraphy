@@ -1,7 +1,7 @@
 import type { UserLoginFormModel } from '@ts-types/entities'
 import type { FormConfig } from '@ts-types/forms'
 
-import { type FormButton, ReactForm } from '@components/base/ReactForm'
+import { type FormButton, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { publishNotification } from '@store/notifications'

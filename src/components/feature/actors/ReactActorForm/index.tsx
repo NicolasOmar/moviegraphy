@@ -1,7 +1,7 @@
 import type { ActorsModel, CountriesModel, GendersModel } from '@models'
 import type { ActorFormModel } from '@ts-types/entities'
 
-import { type FormButton, ReactForm } from '@components/base/ReactForm'
+import { type FormButton, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading } from '@store/loading'
 import { publishNotification } from '@store/notifications'

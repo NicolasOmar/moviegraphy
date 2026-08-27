@@ -1,9 +1,9 @@
-import type { ReactTableProps } from '@components/base/ReactTable'
+import type { ReactTableProps } from '@base-components/ReactTable'
 import type { MoviesModel } from '@models'
 import type { MovieWithGenresModel } from '@ts-types/entities'
 import type { InputEventHandler } from '@ts-types/forms'
 
-import { ReactTable } from '@components/base/ReactTable'
+import { ReactTable } from '@base-components/ReactTable'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import {

@@ -10,7 +10,9 @@
     "paths": {
       "@api/*": ["backend/api/*"],
       "@assets/*": ["src/assets/*"],
-      "@components/*": ["src/components/*"],
+      "@base-components/*": ["src/components/base/*"],
+      "@composed-components/*": ["src/components/composed/*"],
+      "@feature-components/*": ["src/components/feature/*"],
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
       "@models": ["backend/prisma/generated/models"],

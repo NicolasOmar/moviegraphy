@@ -1,7 +1,7 @@
 import type { GenresModel } from '@models'
 import type { GenreFormModel } from '@ts-types/entities'
 
-import { type FormButton, ReactForm } from '@components/base/ReactForm'
+import { type FormButton, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedGenre,

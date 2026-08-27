@@ -1,8 +1,8 @@
 import { Table, Typography } from 'antd'
 
-import type { ReactTableProps } from '../ReactTable'
+import type { ReactTableProps } from '../../base/ReactTable'
 
-import { ReactResult, type ReactResultProps } from '../ReactResult'
+import { ReactResult, type ReactResultProps } from '../../base/ReactResult'
 
 export interface ReactComposedTableProps<T> {
   noDataConfig: ReactResultProps
