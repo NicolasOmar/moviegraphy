@@ -2,7 +2,7 @@ import type { GenresModel, MoviesModel } from '@models'
 import type { MovieFormModel } from '@ts-types/entities'
 import type { FormConfig } from '@ts-types/forms'
 
-import { type FormButton, ReactForm } from '@components/shared/ReactForm'
+import { type FormButton, ReactForm } from '@components/base/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import {

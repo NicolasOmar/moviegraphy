@@ -1,6 +1,7 @@
 import type { GenreWithMovieAmount } from '@ts-types/entities'
 
-import { ReactTable, type ReactTableProps } from '@components/shared/ReactTable'
+import { ReactComposedTable } from '@components/base/ReactComposedTable'
+import { type ReactTableProps } from '@components/base/ReactTable'
 import { useStore } from '@nanostores/react'
 import {
   $contextGenreList,
@@ -19,7 +20,7 @@ import {
 } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
-import { Button, Typography } from 'antd'
+import { Button } from 'antd'
 import { type FC, useCallback, useEffect, useMemo } from 'react'
 
 export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
@@ -85,7 +86,10 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       ),
       title: 'Options'
     }
-    return <ReactTable columns={[...columns, optionsColumn]} dataSource={genreListInContext} />
+    return {
+      columns: [...columns, optionsColumn],
+      dataSource: genreListInContext
+    }
   }, [genreListInContext, columns, isSystemLoading, handleGenreDelete])
 
   const handleGenreEdit = (_genreToEdit: GenreWithMovieAmount) =>
@@ -93,10 +97,13 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
 
   return (
     <section>
-      <Typography.Title level={2} style={{ textAlign: 'center' }}>
-        List of Genres
-      </Typography.Title>
-      {memoizedGenreTable}
+      <ReactComposedTable
+        noDataConfig={{
+          title: 'There are not registered Genres'
+        }}
+        tableConfig={memoizedGenreTable}
+        title="List of Genres"
+      />
     </section>
   )
 }
