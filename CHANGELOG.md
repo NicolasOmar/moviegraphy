@@ -1,3 +1,19 @@
+# [1.12.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.11.0...v1.12.0) (2026-08-27)
+
+
+### Bug Fixes
+
+* adding gender table and its seed script ([583288f](https://github.com/NicolasOmar/moviegraphy/commit/583288f7189ccd753c36aa4414bbad748cfb6420))
+* fixing zod schema error and its coverage ([a94f67d](https://github.com/NicolasOmar/moviegraphy/commit/a94f67d07a76fcf8eccbbadfa9bab90a8e6a6e63))
+* integrating new component reactformgroup in actors form. adding radio group component in form ([048a35d](https://github.com/NicolasOmar/moviegraphy/commit/048a35d73602e909b93ae360607376b8c3aef87c))
+* integration of countries to actors from databse level to form ([469c6b4](https://github.com/NicolasOmar/moviegraphy/commit/469c6b4b339b8a4a42b8ef5d4141622c6c82964d))
+
+
+### Features
+
+* creation of backend api call and action usage for actor creation ([c0fc137](https://github.com/NicolasOmar/moviegraphy/commit/c0fc137ca555bbb61c74c0e7cef73f49c9f24037))
+* first integration for actor form. new date picker input. methods documentation added ([97b0c2d](https://github.com/NicolasOmar/moviegraphy/commit/97b0c2d9d3fbc8780473bb0fc158b5071618cdc7))
+
 # [1.11.0](https://github.com/NicolasOmar/moviegraphy/compare/v1.10.0...v1.11.0) (2026-08-21)
 
 
