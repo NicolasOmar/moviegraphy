@@ -1,5 +1,5 @@
-import type { UserLoginFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { UserLoginFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 import type { FC } from 'react'
 
 import { render, screen } from '@testing-library/react'
@@ -115,5 +115,58 @@ describe('ReactForm', () => {
     await user.type(screen.getByLabelText('Username or Email'), 'n')
 
     expect(screen.getByLabelText('Username or Email')).toHaveValue('n')
+  })
+
+  it('renders a date picker for a "date" input and a radio group for a "radio" input', () => {
+    type ActorLikeValues = { bornDate: string; genderId: string }
+    const mixedInputs: FormConfig<ActorLikeValues> = [
+      { config: { label: 'Born date', name: 'bornDate' }, type: 'date' },
+      {
+        config: {
+          label: 'Gender',
+          name: 'genderId',
+          options: [{ label: 'Male', value: 'male-id' }]
+        },
+        type: 'radio'
+      }
+    ]
+    const MixedWrapper: FC = () => {
+      const [formInstance] = Form.useForm<ActorLikeValues>()
+
+      return (
+        <ReactForm
+          formButtons={formButtons}
+          formInputs={mixedInputs}
+          formInstance={formInstance}
+          onSubmit={vi.fn()}
+        />
+      )
+    }
+    render(<MixedWrapper />)
+
+    expect(screen.getByLabelText('Born date')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'Male' })).toBeInTheDocument()
+  })
+
+  it('renders nothing for a form input whose type does not match a known input kind', () => {
+    type UnknownValues = { mystery: string }
+    const unknownInputs = [
+      { config: { label: 'Mystery', name: 'mystery' }, type: 'unknown' }
+    ] as unknown as FormConfig<UnknownValues>
+    const UnknownWrapper: FC = () => {
+      const [formInstance] = Form.useForm<UnknownValues>()
+
+      return (
+        <ReactForm
+          formButtons={formButtons}
+          formInputs={unknownInputs}
+          formInstance={formInstance}
+          onSubmit={vi.fn()}
+        />
+      )
+    }
+    render(<UnknownWrapper />)
+
+    expect(screen.queryByText('Mystery')).not.toBeInTheDocument()
   })
 })

@@ -1,5 +1,5 @@
 import type { MoviesModel } from '@models'
-import type { MovieWithGenresModel } from '@ts/entities'
+import type { MovieWithGenresModel } from '@ts-types/entities'
 
 import { atom } from 'nanostores'
 

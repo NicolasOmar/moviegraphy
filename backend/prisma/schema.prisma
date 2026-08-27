@@ -21,6 +21,7 @@ model Users {
   tokens   Sessions[]
   movies   Movies[]
   genres   Genres[]
+  actors   Actors[]
 }
 
 model Sessions {
@@ -32,6 +33,21 @@ model Sessions {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model Countries {
+  id           String              @id @unique
+  name         String              @unique
+  officialName String?             @unique
+  alpha2       String              @unique
+  alpha3       String              @unique
+  actors       CountriesOnActors[]
+}
+
+model Genders {
+  id     String   @id @unique
+  name   String   @unique
+  actors Actors[]
 }
 
 model Movies {
@@ -63,10 +79,27 @@ model GenresOnMovies {
   @@id([movieId, genreId])
 }
 
-model Countries {
-  id           String  @id @unique
-  name         String  @unique
-  officialName String? @unique
-  alpha2       String  @unique
-  alpha3       String  @unique
+model Actors {
+  id        String              @id @unique
+  name      String              @db.VarChar(100)
+  lastName  String              @db.VarChar(100)
+  bornDate  DateTime
+  deadDate  DateTime?
+  genderId  String
+  gender    Genders             @relation(fields: [genderId], references: [id], onDelete: Cascade)
+  userId    String
+  user      Users               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  countries CountriesOnActors[]
+
+  @@unique([name, lastName])
+}
+
+model CountriesOnActors {
+  actor      Actors    @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actorId    String
+  country    Countries @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId  String
+  assignedAt DateTime  @default(now())
+
+  @@id([actorId, countryId])
 }

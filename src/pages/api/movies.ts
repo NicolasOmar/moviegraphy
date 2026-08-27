@@ -2,13 +2,13 @@ import type { MoviesModel } from '@models'
 import type { APIRoute } from 'astro'
 
 import { createMovie, deleteMovie, updateMovie } from '@api/movies'
-import { HTTP_STATUS } from '@ts/constants'
 import {
   type CustomAstroLocals,
   MovieCreateSchema,
   type MovieFormModel,
   MovieUpdateSchema
-} from '@ts/entities'
+} from '@ts-types/entities'
+import { HTTP_STATUS } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 import { v6 } from 'uuid'
 

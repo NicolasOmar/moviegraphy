@@ -1,9 +1,9 @@
 import type { GenresModel } from '@models'
-import type { GenreApiModel, GenreWithMovieAmount } from '@ts/entities'
+import type { GenreApiModel, GenreWithMovieAmount } from '@ts-types/entities'
 
+import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError } from '@ts/parsers'
-import { type CreateOrUpdateOne, type DeleteOne, type GetMany, HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
@@ -100,7 +100,7 @@ export const getGenreList: GetMany<string, GenreWithMovieAmount> = async _logged
  * - Its related `GenresOnMovies` records are removed automatically via `ON DELETE CASCADE`
  *
  * @param _genreId - A string related to an existing movie in the database
- * @returns A `true`
+ * @returns A boolean `true`
  */
 export const deleteGenre: DeleteOne = async _genreId => {
   try {

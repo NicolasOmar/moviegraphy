@@ -19,6 +19,14 @@ export const fetchWithAuth = async (
   return response
 }
 
+/** Compares two passwords if are equal
+ *
+ * - If both exists, it compare its values
+ * - If one of boths are null, it will return true
+ *
+ * @param _firstPassword - Password to compare, it could be null
+ * @param _secondPassword - Password to compare, it could be null
+ */
 export const arePassworsEqual = (_firstPassword?: string, _secondPassword?: string): boolean => {
   if (_firstPassword && _secondPassword) {
     return _firstPassword === _secondPassword

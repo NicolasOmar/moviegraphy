@@ -1,5 +1,5 @@
-import type { PasswordUpdateFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { PasswordUpdateFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 import type { FC } from 'react'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'

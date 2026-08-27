@@ -1,9 +1,9 @@
 import type { APIContext } from 'astro'
 
 import { createGenre, deleteGenre, updateGenre } from '@api/genres'
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { genreMocks } from '@ts/mocks'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DELETE, PATCH, POST } from '../genres'

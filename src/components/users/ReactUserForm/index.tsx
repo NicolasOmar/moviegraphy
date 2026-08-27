@@ -1,5 +1,5 @@
-import type { UserFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { UserFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'

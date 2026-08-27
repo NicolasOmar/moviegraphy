@@ -1,5 +1,5 @@
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
-import { HttpError } from '@ts/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockReset } from 'vitest-mock-extended'
 

@@ -1,4 +1,4 @@
-import type { GenresModel, MoviesModel, UsersModel } from '@models'
+import type { ActorsModel, GenresModel, MoviesModel, UsersModel } from '@models'
 
 import * as z from 'zod'
 
@@ -108,4 +108,21 @@ export const MovieCreateSchema = z.strictObject({
 export const MovieUpdateSchema = z.strictObject({
   ...MovieCreateSchema.shape,
   id: z.uuid()
+})
+
+// ---------- ACTORS / INTERFACES ----------
+export type ActorApiModel = ActorFormModel & CustomAstroLocals
+
+export type ActorFormModel = Omit<ActorsModel, 'userId'> & {
+  countries: string | string[]
+}
+
+// ---------- ACTORS / SCHEMAS ----------
+export const ActorCreateSchema = z.strictObject({
+  bornDate: z.string(),
+  countries: z.string(),
+  deadDate: z.string().nullable(),
+  genderId: z.string(),
+  lastName: z.string().min(2).max(100),
+  name: z.string().min(2).max(100)
 })

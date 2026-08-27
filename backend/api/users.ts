@@ -1,12 +1,12 @@
 import type { UsersModel } from '@models'
-import type { PasswordUpdateModel, UserUpdateFormModel } from '@ts/entities'
-import type { CreateOrUpdateOne, GetOne } from '@ts/types'
+import type { CreateOrUpdateOne, GetOne } from '@ts-types/api'
+import type { PasswordUpdateModel, UserUpdateFormModel } from '@ts-types/entities'
 
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { getISODateWithDaysOffset } from '@ts/helpers'
 import { parseApiErrorToHttpError } from '@ts/parsers'
 import { compareHashed, createToken, hashString, hashToken } from '@ts/tokens'
-import { HttpError } from '@ts/types'
 import { v6 } from 'uuid'
 
 import prismaInstance from '../prisma'
@@ -21,7 +21,7 @@ import { Prisma } from '../prisma/generated/client'
  * - Creates a session registry using the hashed session token and user id
  *
  * @param _newUser - A `UsersModel` object to be inserted into the database
- * @returns Newly created user session token (that it will be added as a cookie)
+ * @returns Newly created user's session token (that it will be added as a cookie)
  */
 export const createUser: CreateOrUpdateOne<UsersModel, string> = async _newUser => {
   try {
@@ -97,7 +97,7 @@ export const updateUser: CreateOrUpdateOne<UserUpdateFormModel> = async ({
  * - Hashes the new password and updates the user with it
  *
  * @param _modifiedPassword - A `PasswordUpdateModel` object to update an already created one
- * @returns A true value when the password has been updated in the database
+ * @returns A boolean `true` when the password has been updated in the database
  */
 export const updatePassword: CreateOrUpdateOne<PasswordUpdateModel, boolean> = async ({
   loggedUserId,
@@ -133,7 +133,7 @@ export const updatePassword: CreateOrUpdateOne<PasswordUpdateModel, boolean> = a
 }
 /** `[GET]` function for registered users by its `username`
  *
- * @returns A boolean value if the user with the provided username exists or not
+ * @returns A boolean to corroborate if the user with the provided username exists or not
  */
 export const findUserByUsername: GetOne<{ username: string }> = async ({ username }) => {
   try {

@@ -1,5 +1,5 @@
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from './constants'
-import { HttpError } from './types'
+import { HttpError } from './types/api'
 
 /** Converts a raw data object into a FormData for API consumption
  *
@@ -27,13 +27,15 @@ export const parseModelToFormData = <UserDefinedModel extends object>(
 export const parseFormDataToModel = <UserDefinedModel extends object>(
   _formData: FormData
 ): UserDefinedModel => {
-  return Array.from(_formData.entries()).reduce(
-    (_finalModel, [_formDataKey, _formDataValue]) => ({
+  return Array.from(_formData.entries()).reduce((_finalModel, [_formDataKey, _formDataValue]) => {
+    const parsedFormDataValue =
+      _formDataValue === 'null' ? null : _formDataValue === 'undefined' ? null : _formDataValue
+
+    return {
       ..._finalModel,
-      [_formDataKey]: _formDataValue
-    }),
-    {} as UserDefinedModel
-  )
+      [_formDataKey]: parsedFormDataValue
+    }
+  }, {} as UserDefinedModel)
 }
 
 /** Handles an API `Request` and obtains its `FormData` object to be parsed
@@ -50,27 +52,23 @@ export const parseRequestToModel = async <UserDefinedModel extends object>(
   return parseFormDataToModel<UserDefinedModel>(extractedFormData)
 }
 
-/** Normalizes a movie form's `genres` field into a clean list of genre ids
+/** Normalizes a concatenated list of id strings into a clean list of individual ones
  *
- * - Accepts either a comma-separated string (as sent through `FormData`) or an array
+ * - Accepts either a comma (or specific separator) separated string (as sent through `FormData`) or an array
  * - Filters out empty values, so an unselected/empty field never yields a bogus id
  *
- * @param _genres - Raw `genres` value coming from a form submission
- * @returns Array of non-empty genre id strings
+ * @param _concatenatedString - Raw `genres` value coming from a form submission
+ * @param _separator - `_concatenatedString` separator to return the individual ones. Is a comma (`,`) by default
+ * @returns An array of non-empty strings
  */
-export const parseGenresToIds = (_genres: string | string[]): string[] =>
-  (Array.isArray(_genres) ? _genres : _genres.split(',')).filter(Boolean)
-
-/** Extract error's message or creates a string out of the error object itself
- *
- * - If the `_error` is an instance of `Error`. It return its `message` property
- * - Else, the `_error` is stringified and returned as the message
- *
- * @param _error - An `unknown` error object to be parsed
- * @returns Error's message
- */
-export const getErrorMessage = (_error: unknown) =>
-  _error instanceof Error ? _error.message : String(_error)
+export const parseIdStringToArray = (
+  _concatenatedString: string | string[],
+  _separator: string = ','
+): string[] =>
+  (Array.isArray(_concatenatedString)
+    ? _concatenatedString
+    : _concatenatedString.split(_separator)
+  ).filter(Boolean)
 
 /** Extract Response's success message from the `/pages/api` request and
  * displays it as a user-defined entity (which is `object` by default)
@@ -134,8 +132,8 @@ export const parseHttpErrorToResponse = (_error: HttpError | unknown): Response 
  * the `/pages/api` handlers
  *
  * - Consoles the error at the `backend/api` level
- * - If the error is an instance of HttpError, it returns it withour adjust it
- * - Else, it creates an error message from the original error
+ * - If the `_error` is an instance of `Error`. It return its `message` property
+ * - Else, the `_error` is stringified and returned as the message
  * - Then, it returns the parsed message with a `INTERNAL_SERVER_ERROR` HTTP code
  *
  * @param _error - The error to be handled
@@ -152,7 +150,22 @@ export const parseApiErrorToHttpError = (
     return _error
   }
 
-  const errorMessage = getErrorMessage(_error)
+  const errorMessage = _error instanceof Error ? _error.message : String(_error)
 
   return new HttpError(HTTP_STATUS.INTERNAL_SERVER_ERROR, errorMessage)
+}
+
+/** Handles a value into a date formatted into ISO format (as standar)
+ *
+ * - If the _rawDate is a date, it will parse into a ISO-format string
+ * - If is a string or a number, it will create a new Date to parse into ISO-format
+ *
+ * @param _rawDate - Date to be parsed from a string, number or a Date
+ * @returns An ISO-formatted Date object
+ */
+export const parseValueToIsoDate = (_rawDate: Date | number | string): Date => {
+  const dateIsoString =
+    _rawDate instanceof Date ? _rawDate.toISOString() : new Date(_rawDate).toISOString()
+
+  return new Date(dateIsoString)
 }

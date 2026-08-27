@@ -1,5 +1,6 @@
 import { isSessionValid } from '@api/sessions'
 import { findUserBySession } from '@api/users'
+import { type CustomAstroLocals } from '@ts-types/entities'
 import {
   API_METHODS,
   API_URLS,
@@ -8,7 +9,6 @@ import {
   SESSION_COOKIE_NAME,
   USER_ERROR_MESSAGES
 } from '@ts/constants'
-import { type CustomAstroLocals } from '@ts/entities'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { onRequest } from './middleware'

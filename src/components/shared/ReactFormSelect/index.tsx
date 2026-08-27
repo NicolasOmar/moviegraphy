@@ -1,4 +1,4 @@
-import type { FormSelect } from '@ts/types'
+import type { FormSelect } from '@ts-types/forms'
 
 import { Form, Select } from 'antd'
 

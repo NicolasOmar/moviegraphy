@@ -1,6 +1,5 @@
 import type { GenresModel } from '@models'
-import type { GenreFormModel } from '@ts/entities'
-import type { FormConfig } from '@ts/types'
+import type { GenreFormModel } from '@ts-types/entities'
 
 import { type FormButton, ReactForm } from '@components/shared/ReactForm'
 import { useStore } from '@nanostores/react'
@@ -18,18 +17,7 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { type FC, useMemo } from 'react'
 
-const genreFormTitle = 'Create new Genre'
-const genreFormInputs: FormConfig<GenreFormModel> = [
-  {
-    config: {
-      label: 'Name',
-      name: 'name',
-      rules: [{ message: 'The name is required', required: true }, { max: 300 }],
-      type: 'text'
-    },
-    type: 'input'
-  }
-]
+import { genreFormInputs, genreFormTitle } from './configs'
 
 export const ReactGenreForm: FC = () => {
   const selectedGenreInContext = useStore($contextSelectedGenre)
@@ -101,6 +89,9 @@ export const ReactGenreForm: FC = () => {
     setLoadingSystemState(false)
   }
 
+  const handleInvalidation = () =>
+    publishNotification({ content: 'Check the form messages', type: 'error' })
+
   return (
     <ReactForm
       formButtons={memoizedFormButtons}
@@ -109,7 +100,7 @@ export const ReactGenreForm: FC = () => {
       formTitle={genreFormTitle}
       isLoading={isSystemLoading}
       onSubmit={handleSubmit}
-      onSubmitFailed={() => console.error('ERROR')}
+      onSubmitFailed={handleInvalidation}
     />
   )
 }

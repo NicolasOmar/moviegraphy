@@ -1,13 +1,13 @@
 import type { APIRoute } from 'astro'
 
 import { createGenre, deleteGenre, updateGenre } from '@api/genres'
-import { HTTP_STATUS } from '@ts/constants'
 import {
   type CustomAstroLocals,
   GenreCreateSchema,
   type GenreFormModel,
   GenreUpdateSchema
-} from '@ts/entities'
+} from '@ts-types/entities'
+import { HTTP_STATUS } from '@ts/constants'
 import { parseHttpErrorToResponse, parseMessageToResponse, parseRequestToModel } from '@ts/parsers'
 
 export const POST: APIRoute = async ({ locals, request }) => {

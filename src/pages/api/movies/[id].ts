@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro'
 
 import { getMovieWithGenres } from '@api/movies'
+import { type CustomAstroLocals } from '@ts-types/entities'
 import { HTTP_STATUS } from '@ts/constants'
-import { type CustomAstroLocals } from '@ts/entities'
 import { parseHttpErrorToResponse, parseMessageToResponse } from '@ts/parsers'
 
 export const GET: APIRoute = async ({ locals, params }) => {

@@ -1,15 +1,15 @@
 import type { MoviesModel } from '@models'
-import type { MovieApiModel, MovieWithGenresModel } from '@ts/entities'
+import type { MovieApiModel, MovieWithGenresModel } from '@ts-types/entities'
 
-import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
-import { parseApiErrorToHttpError, parseGenresToIds } from '@ts/parsers'
 import {
   type CreateOrUpdateOne,
   type DeleteOne,
   type GetMany,
   type GetOne,
   HttpError
-} from '@ts/types'
+} from '@ts-types/api'
+import { HTTP_STATUS, MOVIE_ERROR_MESSAGES } from '@ts/constants'
+import { parseApiErrorToHttpError, parseIdStringToArray } from '@ts/parsers'
 
 import prismaInstance from '../prisma'
 
@@ -61,12 +61,13 @@ export const getMovieWithGenres: GetOne<
  */
 export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async _newMovie => {
   const { genres, loggedUserId, ...movieData } = _newMovie
+  const parsedGenres = parseIdStringToArray(genres).map(_genreId => ({ genreId: _genreId }))
 
   try {
     return await prismaInstance.movies.create({
       data: {
         ...movieData,
-        genres: { create: parseGenresToIds(genres).map(_genreId => ({ genreId: _genreId })) },
+        genres: { create: parsedGenres },
         userId: loggedUserId
       }
     })
@@ -82,6 +83,7 @@ export const createMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
  */
 export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async _modifiedMovie => {
   const { genres, id: movieId, loggedUserId, ...dataToUpdate } = _modifiedMovie
+  const parsedGenres = parseIdStringToArray(genres).map(_genreId => ({ genreId: _genreId }))
 
   try {
     const [, updatedMovie] = await prismaInstance.$transaction([
@@ -89,7 +91,7 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
       prismaInstance.movies.update({
         data: {
           ...dataToUpdate,
-          genres: { create: parseGenresToIds(genres).map(_genreId => ({ genreId: _genreId })) }
+          genres: { create: parsedGenres }
         },
         where: { id: movieId, userId: loggedUserId }
       })
@@ -104,7 +106,7 @@ export const updateMovie: CreateOrUpdateOne<MovieApiModel, MoviesModel> = async 
 /** `[DELETE]` function for a single movie
  *
  * @param _movieId - A string related to an existing movie in the database
- * @returns A `true`
+ * @returns A boolean `true`
  */
 export const deleteMovie: DeleteOne = async _movieId => {
   try {

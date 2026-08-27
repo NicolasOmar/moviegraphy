@@ -12,6 +12,7 @@ export const sharedAlias = {
   '@models': resolvePath('../backend/prisma/generated/models'),
   '@schemas': resolvePath('../backend/prisma/schemas'),
   '@store': resolvePath('../store'),
+  '@ts-types': resolvePath('../ts/types'),
   '@ts': resolvePath('../ts'),
   ts: resolvePath('../ts')
 }

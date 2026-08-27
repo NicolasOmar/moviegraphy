@@ -1,18 +1,18 @@
+import { HttpError } from '@ts-types/api'
 import { HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
-import { HttpError } from '@ts/types'
 import { describe, expect, it, vi } from 'vitest'
 
 import { movieMocks } from '../mocks'
 import {
-  getErrorMessage,
   parseApiErrorToHttpError,
   parseFormDataToModel,
-  parseGenresToIds,
   parseHttpErrorToResponse,
+  parseIdStringToArray,
   parseMessageToResponse,
   parseModelToFormData,
   parseRequestToModel,
-  parseResponseErrorToMessage
+  parseResponseErrorToMessage,
+  parseValueToIsoDate
 } from '../parsers'
 
 describe('parseModelToFormData', () => {
@@ -76,30 +76,21 @@ describe('parseRequestToModel', () => {
   })
 })
 
-describe('parseGenresToIds', () => {
+describe('parseIdStringToArray', () => {
   it('splits a comma-separated string into its individual ids', () => {
-    expect(parseGenresToIds('genre-1,genre-2')).toEqual(['genre-1', 'genre-2'])
+    expect(parseIdStringToArray('genre-1,genre-2')).toEqual(['genre-1', 'genre-2'])
   })
 
   it('returns an array unchanged, aside from dropping empty entries', () => {
-    expect(parseGenresToIds(['genre-1', '', 'genre-2'])).toEqual(['genre-1', 'genre-2'])
+    expect(parseIdStringToArray(['genre-1', '', 'genre-2'])).toEqual(['genre-1', 'genre-2'])
   })
 
   it('returns an empty array for an empty string instead of a bogus single id', () => {
-    expect(parseGenresToIds('')).toEqual([])
-  })
-})
-
-describe('getErrorMessage', () => {
-  it('extracts the message from an Error instance', () => {
-    expect(getErrorMessage(new Error('database connection failed'))).toBe(
-      'database connection failed'
-    )
+    expect(parseIdStringToArray('')).toEqual([])
   })
 
-  it('coerces non-Error values to a string', () => {
-    expect(getErrorMessage('plain string failure')).toBe('plain string failure')
-    expect(getErrorMessage({ code: 500 })).toBe('[object Object]')
+  it('splits using a custom separator when one is provided', () => {
+    expect(parseIdStringToArray('country-1|country-2', '|')).toEqual(['country-1', 'country-2'])
   })
 })
 
@@ -174,5 +165,29 @@ describe('parseHttpErrorToResponse', () => {
 
     expect(response.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR)
     expect(await response.json()).toEqual({ message: USER_ERROR_MESSAGES.UNEXPECTED })
+  })
+})
+
+describe('parseValueToIsoDate', () => {
+  it('rebuilds a Date instance through an ISO round-trip', () => {
+    const original = new Date('2024-01-15T10:30:00.000Z')
+
+    const result = parseValueToIsoDate(original)
+
+    expect(result.toISOString()).toBe(original.toISOString())
+  })
+
+  it('parses a date string into a Date matching its ISO representation', () => {
+    const result = parseValueToIsoDate('2024-01-15')
+
+    expect(result.toISOString()).toBe(new Date('2024-01-15').toISOString())
+  })
+
+  it('parses a timestamp number into a Date matching its ISO representation', () => {
+    const timestamp = 1705315800000
+
+    const result = parseValueToIsoDate(timestamp)
+
+    expect(result.toISOString()).toBe(new Date(timestamp).toISOString())
   })
 })
