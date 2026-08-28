@@ -52,8 +52,15 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
     }
   }
 
-  const handleGenreEdit = (_genreToEdit: GenreWithMovieAmount) =>
-    updateSelectedGenreOnContext(_genreToEdit)
+  const handleGenreFormModal = useCallback(() => callFormModal({ form }), [form])
+
+  const handleGenreEdit = useCallback(
+    (_genreToEdit: GenreWithMovieAmount) => {
+      updateSelectedGenreOnContext(_genreToEdit)
+      handleGenreFormModal()
+    },
+    [handleGenreFormModal]
+  )
 
   const handleGenreDelete = useCallback(async (_genreToDelete: GenreWithMovieAmount) => {
     setLoadingSystemState(true)
@@ -95,11 +102,7 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       columns: [...columns, optionsColumn],
       dataSource: genreListInContext
     }
-  }, [genreListInContext, columns, isSystemLoading, handleGenreDelete])
-
-  const handleGenreFormModal = useCallback(() => {
-    callFormModal({ form })
-  }, [form])
+  }, [genreListInContext, columns, isSystemLoading, handleGenreEdit, handleGenreDelete])
 
   return (
     <ReactComposedTable
@@ -107,6 +110,7 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
         extraContent: <Button onClick={handleGenreFormModal}>Create a new one</Button>,
         title: 'There are not registered Genres'
       }}
+      onCreate={handleGenreFormModal}
       tableConfig={memoizedGenreTableConfig}
       title="List of Genres"
     />

@@ -1,9 +1,9 @@
 ---
 import { getGenreList } from '@api/genres'
-import { ReactGenreForm } from '@feature-components/genres/ReactGenreForm'
+// import { ReactGenreForm } from '@feature-components/genres/ReactGenreForm'
 import { ReactGenreTable } from '@feature-components/genres/ReactGenreTable'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
-import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
+import OneColumnLayout from '@layouts/OneColumnLayout.astro'
 import { type CustomAstroLocals } from '@ts-types/entities'
 
 const genreListColumns = [
@@ -23,8 +23,8 @@ const genreList = await getGenreList(loggedUserId).catch(() => [])
 ---
 
 <NavigationLayout>
-  <TwoColumnsLayout>
-    <ReactGenreForm client:visible />
+  <OneColumnLayout>
+    <!-- <ReactGenreForm client:visible /> -->
     <ReactGenreTable client:visible columns={genreListColumns} dataSource={genreList} />
-  </TwoColumnsLayout>
+  </OneColumnLayout>
 </NavigationLayout>

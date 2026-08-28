@@ -23,6 +23,10 @@ export const ReactModalForm = () => {
       globalFormModalStatus.onCancel()
     }
 
+    if (globalFormModalStatus) {
+      globalFormModalStatus.form.formInstance.resetFields()
+    }
+
     clearFormModal()
   }
 
@@ -46,7 +50,7 @@ export const ReactModalForm = () => {
             },
             {
               htmlType: 'button',
-              onClick: () => handleCancel(),
+              onClick: handleCancel,
               title: globalFormModalStatus.cancelText ?? 'Cancel',
               type: 'text'
             }

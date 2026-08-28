@@ -33,11 +33,12 @@ export const useGenreForm = (): FormModalModel<GenreFormModel> => {
 
   const handleSubmit = async (_genreToSubmit: GenreFormModel) => {
     setLoadingSystemState(true)
+    const selectedGenre = $contextSelectedGenre.get()
+    const isInCreateMode = selectedGenre === null
 
-    const isInCreateMode = selectedGenreInContext === null
     const genreToSend: GenreFormModel = isInCreateMode
       ? _genreToSubmit
-      : { ..._genreToSubmit, id: selectedGenreInContext.id }
+      : { ..._genreToSubmit, id: selectedGenre.id }
     const genreFormData = parseModelToFormData(genreToSend)
 
     if (isInCreateMode) {
@@ -70,7 +71,7 @@ export const useGenreForm = (): FormModalModel<GenreFormModel> => {
 
         updateSelectedGenreOnContext(null)
         updateGenresOnListContext({
-          ...selectedGenreInContext,
+          ...selectedGenre,
           ..._genreToSubmit
         })
 
