@@ -2,7 +2,7 @@ import type { PasswordUpdateFormModel } from '@ts-types/entities'
 import type { FormConfig } from '@ts-types/forms'
 import type { FC } from 'react'
 
-import { type FormButton, ReactForm } from '@base-components/ReactForm'
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
@@ -81,7 +81,7 @@ const passwordChangeInputs: FormConfig<PasswordUpdateFormModel> = [
     type: 'input'
   }
 ]
-const passwordChangeButtons: FormButton[] = [
+const passwordChangeButtons: FormButtonProps[] = [
   { htmlType: 'submit', title: 'Update', type: 'primary' }
 ]
 

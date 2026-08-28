@@ -1,7 +1,7 @@
 import type { ActorsModel, CountriesModel, GendersModel } from '@models'
 import type { ActorFormModel } from '@ts-types/entities'
 
-import { type FormButton, ReactForm } from '@base-components/ReactForm'
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading } from '@store/loading'
 import { publishNotification } from '@store/notifications'
@@ -32,7 +32,7 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
         htmlType: 'submit',
         title: 'Confirm',
         type: 'primary'
-      } as FormButton
+      } as FormButtonProps
     ]
   }, [])
   const memoizedFormInputs = useMemo(() => {

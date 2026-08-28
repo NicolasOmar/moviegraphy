@@ -8,7 +8,7 @@ import { ReactFormInput } from '../ReactFormInput'
 import { ReactFormRadio } from '../ReactFormRadio'
 import { ReactFormSelect } from '../ReactFormSelect'
 
-export interface FormButton {
+export interface FormButtonProps {
   children?: React.ReactNode
   htmlType: ButtonProps['htmlType']
   onClick?: ButtonProps['onClick']
@@ -17,7 +17,7 @@ export interface FormButton {
 }
 
 export interface ReactFormProps<T> {
-  formButtons: FormButton[]
+  formButtons: FormButtonProps[]
   formInputs: FormConfig<T>
   formInstance: FormInstance
   formTitle?: string

@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import { Form } from 'antd'
 import { describe, expect, it, vi } from 'vitest'
 
-import { type FormButton, ReactForm, type ReactFormProps } from './index'
+import { type FormButtonProps, ReactForm, type ReactFormProps } from './index'
 
 const formInputs: FormConfig<UserLoginFormModel> = [
   {
@@ -29,7 +29,7 @@ const formInputs: FormConfig<UserLoginFormModel> = [
   }
 ]
 
-const formButtons: FormButton[] = [{ htmlType: 'submit', title: 'Log In', type: 'primary' }]
+const formButtons: FormButtonProps[] = [{ htmlType: 'submit', title: 'Log In', type: 'primary' }]
 
 const Wrapper: FC<Partial<ReactFormProps<UserLoginFormModel>>> = props => {
   const [formInstance] = Form.useForm<UserLoginFormModel>()

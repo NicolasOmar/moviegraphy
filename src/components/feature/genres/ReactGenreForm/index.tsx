@@ -1,7 +1,7 @@
 import type { GenresModel } from '@models'
 import type { GenreFormModel } from '@ts-types/entities'
 
-import { type FormButton, ReactForm } from '@base-components/ReactForm'
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedGenre,
@@ -27,7 +27,7 @@ export const ReactGenreForm: FC = () => {
   const memoizedFormButtons = useMemo(() => {
     const submitButtonText = selectedGenreInContext ? 'Update' : 'Create'
 
-    return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButton[]
+    return [{ htmlType: 'submit', title: submitButtonText, type: 'primary' }] as FormButtonProps[]
   }, [selectedGenreInContext])
 
   $contextSelectedGenre.listen(_genre => {

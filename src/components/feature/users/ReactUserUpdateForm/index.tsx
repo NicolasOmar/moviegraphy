@@ -2,7 +2,7 @@ import type { UserUpdateFormModel } from '@ts-types/entities'
 import type { FormConfig } from '@ts-types/forms'
 import type { FC } from 'react'
 
-import { type FormButton, ReactForm } from '@base-components/ReactForm'
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
@@ -33,7 +33,9 @@ const updateFormInputs: FormConfig<UserUpdateFormModel> = [
     type: 'input'
   }
 ]
-const updateFormButtons: FormButton[] = [{ htmlType: 'submit', title: 'Update', type: 'primary' }]
+const updateFormButtons: FormButtonProps[] = [
+  { htmlType: 'submit', title: 'Update', type: 'primary' }
+]
 
 export const ReactUserUpdateForm: FC = () => {
   const [userUpdateForm] = Form.useForm<UserUpdateFormModel>()

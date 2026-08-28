@@ -1,7 +1,7 @@
 import type { UserFormModel } from '@ts-types/entities'
 import type { FormConfig } from '@ts-types/forms'
 
-import { type FormButton, ReactForm } from '@base-components/ReactForm'
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
@@ -99,7 +99,7 @@ const userFormInputs: FormConfig<UserFormModel> = [
     type: 'input'
   }
 ]
-const userFormButtons: FormButton[] = [
+const userFormButtons: FormButtonProps[] = [
   { htmlType: 'submit', title: 'Create', type: 'primary' },
   { children: <a href="/login">Log In</a>, htmlType: 'button', type: 'text' }
 ]
