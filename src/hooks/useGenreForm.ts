@@ -16,11 +16,20 @@ import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
+import { useEffect } from 'react'
 
 export const useGenreForm = (): FormModalModel<GenreFormModel> => {
   const selectedGenreInContext = useStore($contextSelectedGenre)
   const isSystemLoading = useStore($contextLoading)
   const [genreForm] = Form.useForm<GenreFormModel>()
+
+  useEffect(() => {
+    if (selectedGenreInContext) {
+      genreForm.setFieldsValue(selectedGenreInContext)
+    } else {
+      genreForm.resetFields()
+    }
+  }, [selectedGenreInContext, genreForm])
 
   const handleSubmit = async (_genreToSubmit: GenreFormModel) => {
     setLoadingSystemState(true)

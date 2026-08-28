@@ -9,6 +9,7 @@ export const sharedAlias = {
   '@base-components': resolvePath('../src/components/base'),
   '@composed-components': resolvePath('../src/components/composed'),
   '@feature-components': resolvePath('../src/components/feature'),
+  '@hooks': resolvePath('../src/hooks'),
   '@islands': resolvePath('../src/islands'),
   '@layouts': resolvePath('../src/layouts'),
   '@models': resolvePath('../backend/prisma/generated/models'),
