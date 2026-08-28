@@ -2,7 +2,7 @@ import type { GenresModel, MoviesModel } from '@models'
 import type { MovieFormModel } from '@ts-types/entities'
 import type { FormConfig } from '@ts-types/forms'
 
-import { type FormButton, ReactForm } from '@base-components/ReactForm'
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
 import {
@@ -54,12 +54,12 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   }, [genreList])
   const memoizedFormButtons = useMemo(() => {
     const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
-    const submitButton: FormButton = {
+    const submitButton: FormButtonProps = {
       htmlType: 'submit',
       title: submitButtonText,
       type: 'primary'
     }
-    const buttons: FormButton[] = selectedMovieInContext
+    const buttons: FormButtonProps[] = selectedMovieInContext
       ? [
           submitButton,
           {

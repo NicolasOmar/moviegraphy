@@ -1,4 +1,4 @@
-import { $globalModal } from '@store/modals'
+import { $globalConfirmModal } from '@store/modals'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ReactModal } from './index'
 
 beforeEach(() => {
-  $globalModal.set(null)
+  $globalConfirmModal.set(null)
 })
 
 describe('ReactModal', () => {
@@ -17,7 +17,7 @@ describe('ReactModal', () => {
   })
 
   it('renders the modal title and content from context once it is set', () => {
-    $globalModal.set({ content: 'Delete this genre?', title: 'Confirm deletion' })
+    $globalConfirmModal.set({ content: 'Delete this genre?', title: 'Confirm deletion' })
     render(<ReactModal />)
 
     expect(screen.getByText('Confirm deletion')).toBeInTheDocument()
@@ -27,44 +27,44 @@ describe('ReactModal', () => {
   it('calls onOk and clears the modal when the OK button is clicked', async () => {
     const user = userEvent.setup()
     const onOk = vi.fn()
-    $globalModal.set({ content: 'Delete this genre?', onOk, title: 'Confirm deletion' })
+    $globalConfirmModal.set({ content: 'Delete this genre?', onOk, title: 'Confirm deletion' })
     render(<ReactModal />)
 
     await user.click(screen.getByRole('button', { name: 'OK' }))
 
     expect(onOk).toHaveBeenCalled()
-    await waitFor(() => expect($globalModal.get()).toBeNull())
+    await waitFor(() => expect($globalConfirmModal.get()).toBeNull())
   })
 
   it('calls onCancel and clears the modal when the Cancel button is clicked', async () => {
     const user = userEvent.setup()
     const onCancel = vi.fn()
-    $globalModal.set({ content: 'Delete this genre?', onCancel, title: 'Confirm deletion' })
+    $globalConfirmModal.set({ content: 'Delete this genre?', onCancel, title: 'Confirm deletion' })
     render(<ReactModal />)
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(onCancel).toHaveBeenCalled()
-    await waitFor(() => expect($globalModal.get()).toBeNull())
+    await waitFor(() => expect($globalConfirmModal.get()).toBeNull())
   })
 
   it('clears the modal on OK without throwing when no onOk callback was provided', async () => {
     const user = userEvent.setup()
-    $globalModal.set({ content: 'Delete this genre?' })
+    $globalConfirmModal.set({ content: 'Delete this genre?' })
     render(<ReactModal />)
 
     await user.click(screen.getByRole('button', { name: 'OK' }))
 
-    await waitFor(() => expect($globalModal.get()).toBeNull())
+    await waitFor(() => expect($globalConfirmModal.get()).toBeNull())
   })
 
   it('clears the modal on Cancel without throwing when no onCancel callback was provided', async () => {
     const user = userEvent.setup()
-    $globalModal.set({ content: 'Delete this genre?' })
+    $globalConfirmModal.set({ content: 'Delete this genre?' })
     render(<ReactModal />)
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
-    await waitFor(() => expect($globalModal.get()).toBeNull())
+    await waitFor(() => expect($globalConfirmModal.get()).toBeNull())
   })
 })

@@ -1,18 +1,37 @@
+import type { ReactFormProps } from '@base-components/ReactForm'
+
 import { atom } from 'nanostores'
 
-interface ModalModel {
+export interface FormModalModel<UserDefinedEntity> extends Omit<ConfigmModalModel, 'content'> {
+  cancelText?: string
+  dataToEdit?: UserDefinedEntity
+  form: Omit<ReactFormProps<UserDefinedEntity>, 'formButtons'>
+  okText?: string
+}
+
+interface ConfigmModalModel {
   content: string
   onCancel?: () => void
   onOk?: () => void
   title?: string
 }
 
-export const $globalModal = atom<ModalModel | null>(null)
+export const $globalConfirmModal = atom<ConfigmModalModel | null>(null)
 
-export const callModal = (_newModalObj: ModalModel) => {
-  $globalModal.set(_newModalObj)
+export const callConfirmModal = (_newModalObj: ConfigmModalModel) => {
+  $globalConfirmModal.set(_newModalObj)
 }
 
-export const clearModal = () => {
-  $globalModal.set(null)
+export const closeConfirmModal = () => {
+  $globalConfirmModal.set(null)
+}
+
+export const $globalFormModal = atom<FormModalModel<unknown> | null>(null)
+
+export const callFormModal = <UserDefinedEntity>(_newFormObj: FormModalModel<UserDefinedEntity>) => {
+  $globalFormModal.set(_newFormObj as FormModalModel<unknown>)
+}
+
+export const clearFormModal = () => {
+  $globalFormModal.set(null)
 }

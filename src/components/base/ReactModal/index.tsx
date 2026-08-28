@@ -1,36 +1,36 @@
 import { useStore } from '@nanostores/react'
-import { $globalModal, clearModal } from '@store/modals'
+import { $globalConfirmModal, closeConfirmModal } from '@store/modals'
 import { Modal } from 'antd'
 import { type FC } from 'react'
 
 export const ReactModal: FC = () => {
-  const modalStatus = useStore($globalModal)
+  const globalModalStatus = useStore($globalConfirmModal)
 
   const handleOk = () => {
-    if (modalStatus && modalStatus.onOk) {
-      modalStatus.onOk()
+    if (globalModalStatus?.onOk) {
+      globalModalStatus.onOk()
     }
 
-    clearModal()
+    closeConfirmModal()
   }
 
   const handleCancel = () => {
-    if (modalStatus && modalStatus.onCancel) {
-      modalStatus.onCancel()
+    if (globalModalStatus?.onCancel) {
+      globalModalStatus.onCancel()
     }
 
-    clearModal()
+    closeConfirmModal()
   }
 
-  return modalStatus ? (
+  return globalModalStatus !== null ? (
     <Modal
       closable={{ 'aria-label': 'Custom Close Button' }}
       onCancel={handleCancel}
       onOk={handleOk}
-      open={modalStatus !== null}
-      title={modalStatus.title}
+      open={globalModalStatus !== null}
+      title={globalModalStatus.title}
     >
-      {modalStatus.content}
+      {globalModalStatus.content}
     </Modal>
   ) : null
 }
