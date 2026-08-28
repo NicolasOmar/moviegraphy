@@ -7,6 +7,7 @@ import { ReactFormDatePicker } from '../ReactFormDatePicker'
 import { ReactFormInput } from '../ReactFormInput'
 import { ReactFormRadio } from '../ReactFormRadio'
 import { ReactFormSelect } from '../ReactFormSelect'
+import './styles.css'
 
 export interface FormButtonProps {
   children?: React.ReactNode
@@ -16,29 +17,31 @@ export interface FormButtonProps {
   type: ButtonProps['type']
 }
 
-export interface ReactFormProps<T> {
+export interface ReactFormProps<UserDefinedEntity> {
   formButtons: FormButtonProps[]
-  formInputs: FormConfig<T>
+  formInputs: FormConfig<UserDefinedEntity>
   formInstance: FormInstance
   formTitle?: string
+  hidesInResponsive?: boolean
   isLoading?: boolean
-  onSubmit: (submittedFormData: T) => void
+  onSubmit: (submittedFormData: UserDefinedEntity) => void
   onSubmitFailed?: () => void
-  onValuesChange?: (updatedValues: T) => void
+  onValuesChange?: (updatedValues: UserDefinedEntity) => void
   styles?: React.CSSProperties
 }
 
-export const ReactForm = <T,>({
+export const ReactForm = <UserDefinedEntity,>({
   formButtons,
   formInputs,
   formInstance,
   formTitle,
+  hidesInResponsive = false,
   isLoading = false,
   onSubmit,
   onSubmitFailed,
   onValuesChange,
   styles
-}: ReactFormProps<T>): React.ReactElement => {
+}: ReactFormProps<UserDefinedEntity>): React.ReactElement => {
   const memoizedInputs = useMemo(
     () =>
       formInputs.map(({ config, type }, _inputIndex) => {
@@ -50,13 +53,30 @@ export const ReactForm = <T,>({
 
         switch (type) {
           case 'date':
-            return <ReactFormDatePicker key={inputKey} {...(customConfig as FormInput<T>)} />
+            return (
+              <ReactFormDatePicker
+                key={inputKey}
+                {...(customConfig as FormInput<UserDefinedEntity>)}
+              />
+            )
           case 'input':
-            return <ReactFormInput key={inputKey} {...(customConfig as FormInput<T>)} />
+            return (
+              <ReactFormInput key={inputKey} {...(customConfig as FormInput<UserDefinedEntity>)} />
+            )
           case 'radio':
-            return <ReactFormRadio key={inputKey} {...(customConfig as FormRadioGroup<T>)} />
+            return (
+              <ReactFormRadio
+                key={inputKey}
+                {...(customConfig as FormRadioGroup<UserDefinedEntity>)}
+              />
+            )
           case 'select':
-            return <ReactFormSelect key={inputKey} {...(customConfig as FormSelect<T>)} />
+            return (
+              <ReactFormSelect
+                key={inputKey}
+                {...(customConfig as FormSelect<UserDefinedEntity>)}
+              />
+            )
           default:
             return null
         }
@@ -91,7 +111,7 @@ export const ReactForm = <T,>({
   )
 
   return (
-    <section>
+    <section className={hidesInResponsive ? 'hiddeable' : undefined}>
       {formTitle ? (
         <Typography.Title style={{ textAlign: 'center' }}>{formTitle}</Typography.Title>
       ) : null}

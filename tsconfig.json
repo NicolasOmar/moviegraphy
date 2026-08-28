@@ -13,11 +13,13 @@
       "@base-components/*": ["src/components/base/*"],
       "@composed-components/*": ["src/components/composed/*"],
       "@feature-components/*": ["src/components/feature/*"],
+      "@hooks/*": ["src/hooks/*"],
       "@islands/*": ["src/islands/*"],
       "@layouts/*": ["src/layouts/*"],
       "@models": ["backend/prisma/generated/models"],
       "@prisma/*": ["backend/prisma/*"],
       "@store/*": ["store/*"],
+      "@styles/*": ["src/styles/*"],
       "@ts/*": ["ts/*"],
       "@ts-types/*": ["ts/types/*"]
     }

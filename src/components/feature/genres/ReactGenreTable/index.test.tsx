@@ -1,6 +1,6 @@
 import { $contextGenreList, $contextSelectedGenre } from '@store/genres'
 import { $contextLoading } from '@store/loading'
-import { $globalModal } from '@store/modals'
+import { $globalConfirmModal } from '@store/modals'
 import { $globalNotifications } from '@store/notifications'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -16,7 +16,7 @@ beforeEach(() => {
   $contextGenreList.set([])
   $contextLoading.set(false)
   $contextSelectedGenre.set(null)
-  $globalModal.set(null)
+  $globalConfirmModal.set(null)
   $globalNotifications.set(null)
   vi.stubGlobal(
     'fetch',
@@ -108,15 +108,15 @@ describe('ReactGenreTable', () => {
     const [, deleteButton] = within(firstRow).getAllByRole('button')
     await user.click(deleteButton)
 
-    await waitFor(() => expect($globalModal.get()).not.toBeNull())
-    expect($globalModal.get()?.content).toBe(
+    await waitFor(() => expect($globalConfirmModal.get()).not.toBeNull())
+    expect($globalConfirmModal.get()?.content).toBe(
       "The genre 'Sci-Fi' has 3 movies registered, are you sure you want to delete the genre anyways?"
     )
     expect(fetch).not.toHaveBeenCalled()
     expect($contextLoading.get()).toBe(true)
 
     act(() => {
-      $globalModal.get()?.onOk?.()
+      $globalConfirmModal.get()?.onOk?.()
     })
 
     await waitFor(() =>
@@ -139,11 +139,11 @@ describe('ReactGenreTable', () => {
     const [, deleteButton] = within(firstRow).getAllByRole('button')
     await user.click(deleteButton)
 
-    await waitFor(() => expect($globalModal.get()).not.toBeNull())
+    await waitFor(() => expect($globalConfirmModal.get()).not.toBeNull())
     expect($contextLoading.get()).toBe(true)
 
     act(() => {
-      $globalModal.get()?.onCancel?.()
+      $globalConfirmModal.get()?.onCancel?.()
     })
 
     expect(fetch).not.toHaveBeenCalled()

@@ -1,0 +1,6 @@
+/* matches --breakpoint-md in src/styles/breakpoints.css */
+@media (max-width: 768px) {
+  section.hiddeable {
+    display: none;
+  }
+}

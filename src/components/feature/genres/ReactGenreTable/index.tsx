@@ -2,6 +2,7 @@ import type { GenreWithMovieAmount } from '@ts-types/entities'
 
 import { type ReactTableProps } from '@base-components/ReactTable'
 import { ReactComposedTable } from '@composed-components/ReactComposedTable'
+import { useGenreForm } from '@hooks/useGenreForm'
 import { useStore } from '@nanostores/react'
 import {
   $contextGenreList,
@@ -10,7 +11,7 @@ import {
   updateSelectedGenreOnContext
 } from '@store/genres'
 import { $contextLoading, setLoadingSystemState } from '@store/loading'
-import { callModal } from '@store/modals'
+import { callConfirmModal, callFormModal } from '@store/modals'
 import { publishNotification } from '@store/notifications'
 import {
   API_METHODS,
@@ -29,6 +30,7 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
 }) => {
   const genreListInContext = useStore($contextGenreList)
   const isSystemLoading = useStore($contextLoading)
+  const { form } = useGenreForm()
 
   useEffect(() => setGenreListOnContext(dataSource ?? []), [dataSource])
 
@@ -57,7 +59,7 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
     setLoadingSystemState(true)
 
     if (_genreToDelete.moviesAmount && _genreToDelete.moviesAmount > 0) {
-      callModal({
+      callConfirmModal({
         content: buildGenreDeleteConfirmationMessage(
           _genreToDelete.name,
           _genreToDelete.moviesAmount
@@ -95,10 +97,14 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
     }
   }, [genreListInContext, columns, isSystemLoading, handleGenreDelete])
 
+  const handleGenreFormModal = useCallback(() => {
+    callFormModal({ form })
+  }, [form])
+
   return (
     <ReactComposedTable
       noDataConfig={{
-        extraContent: <Button onClick={() => console.warn('test')}>Create a new one</Button>,
+        extraContent: <Button onClick={handleGenreFormModal}>Create a new one</Button>,
         title: 'There are not registered Genres'
       }}
       tableConfig={memoizedGenreTableConfig}

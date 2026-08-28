@@ -10,7 +10,10 @@ describe('callConfirmModal', () => {
   it('sets the modal atom with the given content', () => {
     callConfirmModal({ content: 'Are you sure?', title: 'Confirm deletion' })
 
-    expect($globalConfirmModal.get()).toEqual({ content: 'Are you sure?', title: 'Confirm deletion' })
+    expect($globalConfirmModal.get()).toEqual({
+      content: 'Are you sure?',
+      title: 'Confirm deletion'
+    })
   })
 
   it('overwrites the previous modal when called again before it is closed', () => {

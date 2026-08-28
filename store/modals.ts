@@ -28,7 +28,9 @@ export const closeConfirmModal = () => {
 
 export const $globalFormModal = atom<FormModalModel<unknown> | null>(null)
 
-export const callFormModal = <UserDefinedEntity>(_newFormObj: FormModalModel<UserDefinedEntity>) => {
+export const callFormModal = <UserDefinedEntity>(
+  _newFormObj: FormModalModel<UserDefinedEntity>
+) => {
   $globalFormModal.set(_newFormObj as FormModalModel<unknown>)
 }
 
