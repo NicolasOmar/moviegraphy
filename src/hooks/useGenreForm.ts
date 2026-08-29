@@ -1,26 +1,32 @@
 import type { GenresModel } from '@models'
-import type { FormModalModel } from '@store/modals'
-import type { GenreFormModel } from '@ts-types/entities'
+import type { GenreFormModel, GenreWithMovieAmount } from '@ts-types/entities'
 
 import { genreFormInputs, genreFormTitle } from '@feature-components/genres/ReactGenreForm/configs'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedGenre,
   addGenreToListContext,
+  deleteGenreOnListContext,
   updateGenresOnListContext,
   updateSelectedGenreOnContext
 } from '@store/genres'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
+import { callConfirmModal, type FormModalModel } from '@store/modals'
 import { publishNotification } from '@store/notifications'
-import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
+import {
+  API_METHODS,
+  API_URLS,
+  buildGenreDeleteConfirmationMessage,
+  HTTP_STATUS
+} from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 
-export const useGenreForm = (): FormModalModel<GenreFormModel> => {
+export const useGenreForm = (): FormModalModel<GenreFormModel, GenreWithMovieAmount> => {
   const selectedGenreInContext = useStore($contextSelectedGenre)
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
   const [genreForm] = Form.useForm<GenreFormModel>()
 
   useEffect(() => {
@@ -32,7 +38,7 @@ export const useGenreForm = (): FormModalModel<GenreFormModel> => {
   }, [selectedGenreInContext, genreForm])
 
   const handleSubmit = async (_genreToSubmit: GenreFormModel) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
     const selectedGenre = $contextSelectedGenre.get()
     const isInCreateMode = selectedGenre === null
 
@@ -82,11 +88,50 @@ export const useGenreForm = (): FormModalModel<GenreFormModel> => {
       }
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
   }
 
-  const handleInvalidation = () =>
+  const handleFailedSubmit = () =>
     publishNotification({ content: 'Check the form messages', type: 'error' })
+
+  const handleDeleteAction = async (_genreId: string) => {
+    const genreIdToDelete = parseModelToFormData({ id: _genreId })
+
+    const genreDeleteResponse = await fetchWithAuth(API_URLS.GENRES, {
+      body: genreIdToDelete,
+      method: API_METHODS.DELETE
+    })
+
+    if (genreDeleteResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(genreDeleteResponse)
+      publishNotification({ content: errorMessage, type: 'error' })
+    } else {
+      deleteGenreOnListContext(_genreId)
+      updateSelectedGenreOnContext(null)
+      publishNotification({ content: 'Genre deleted', type: 'success' })
+    }
+  }
+
+  const handleGenreDelete = useCallback(async (_genreToDelete: GenreWithMovieAmount) => {
+    setGlobalLoadingState(true)
+
+    if (_genreToDelete.moviesAmount && _genreToDelete.moviesAmount > 0) {
+      callConfirmModal({
+        content: buildGenreDeleteConfirmationMessage(
+          _genreToDelete.name,
+          _genreToDelete.moviesAmount
+        ),
+        onCancel: () => setGlobalLoadingState(false),
+        onOk: async () => {
+          await handleDeleteAction(_genreToDelete.id)
+          setGlobalLoadingState(false)
+        }
+      })
+    } else {
+      await handleDeleteAction(_genreToDelete.id)
+      setGlobalLoadingState(false)
+    }
+  }, [])
 
   return {
     form: {
@@ -95,7 +140,8 @@ export const useGenreForm = (): FormModalModel<GenreFormModel> => {
       formTitle: genreFormTitle,
       isLoading: isSystemLoading,
       onSubmit: handleSubmit,
-      onSubmitFailed: handleInvalidation
-    }
+      onSubmitFailed: handleFailedSubmit
+    },
+    handleDelete: handleGenreDelete
   }
 }
