@@ -3,7 +3,7 @@ import type { ActorFormModel } from '@ts-types/entities'
 
 import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading } from '@store/loading'
+import { $globalLoading } from '@store/loading'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
@@ -23,7 +23,7 @@ interface ReactActorFormProps {
 }
 
 export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderList }) => {
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
   const [actorForm] = Form.useForm<ActorFormModel>()
 
   const memoizedFormButtons = useMemo(() => {

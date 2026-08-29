@@ -1,4 +1,4 @@
-import { $contextLoading } from '@store/loading'
+import { $globalLoading } from '@store/loading'
 import { $globalNotifications } from '@store/notifications'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -10,7 +10,7 @@ import { actorFormTitle } from './configs'
 import { ReactActorForm } from './index'
 
 beforeEach(() => {
-  $contextLoading.set(false)
+  $globalLoading.set(false)
   $globalNotifications.set(null)
   vi.spyOn(console, 'warn').mockImplementation(() => undefined)
   vi.stubGlobal(
@@ -60,7 +60,7 @@ describe('ReactActorForm', () => {
   })
 
   it('disables every field and the submit button while the global loading state is true', () => {
-    $contextLoading.set(true)
+    $globalLoading.set(true)
     render(<ReactActorForm countryList={countryMocks} genderList={genderMocks} />)
 
     expect(screen.getByLabelText('Name')).toBeDisabled()

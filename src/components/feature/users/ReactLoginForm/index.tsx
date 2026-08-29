@@ -3,7 +3,7 @@ import type { FormConfig } from '@ts-types/forms'
 
 import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL } from '@ts/constants'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
@@ -41,10 +41,10 @@ const loginFormButtons: FormButtonProps[] = [
 
 export const ReactLoginForm: FC = () => {
   const [loginForm] = Form.useForm<UserLoginFormModel>()
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
 
   const handleSubmit = async (_loginFormData: UserLoginFormModel) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
 
     const userToLogin = parseModelToFormData(_loginFormData)
 
@@ -60,7 +60,7 @@ export const ReactLoginForm: FC = () => {
       window.location.href = PAGE_URL.HOME
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
   }
 
   return (

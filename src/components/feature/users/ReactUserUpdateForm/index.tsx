@@ -4,7 +4,7 @@ import type { FC } from 'react'
 
 import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
@@ -39,10 +39,10 @@ const updateFormButtons: FormButtonProps[] = [
 
 export const ReactUserUpdateForm: FC = () => {
   const [userUpdateForm] = Form.useForm<UserUpdateFormModel>()
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
 
   const handleSubmit = async (_userUpdateFormData: UserUpdateFormModel) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
 
     const userToUpdate = parseModelToFormData(_userUpdateFormData)
 
@@ -58,7 +58,7 @@ export const ReactUserUpdateForm: FC = () => {
       publishNotification({ content: 'User correctly updated', type: 'success' })
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
   }
 
   const handleInvalidation = () =>

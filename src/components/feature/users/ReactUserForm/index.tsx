@@ -3,7 +3,7 @@ import type { FormConfig } from '@ts-types/forms'
 
 import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, PAGE_URL, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual } from '@ts/helpers'
@@ -106,10 +106,10 @@ const userFormButtons: FormButtonProps[] = [
 
 export const ReactUserForm: FC = () => {
   const [userForm] = Form.useForm<UserFormModel>()
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
 
   const handleSubmit = async (_userFormDataModel: UserFormModel) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
 
     const userToCreate = parseModelToFormData(_userFormDataModel)
 
@@ -125,7 +125,7 @@ export const ReactUserForm: FC = () => {
       window.location.href = PAGE_URL.HOME
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
   }
 
   const handleInvalidation = () =>

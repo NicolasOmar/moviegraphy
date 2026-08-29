@@ -4,7 +4,7 @@ import type { FC } from 'react'
 
 import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS, USER_ERROR_MESSAGES } from '@ts/constants'
 import { arePassworsEqual, fetchWithAuth } from '@ts/helpers'
@@ -87,10 +87,10 @@ const passwordChangeButtons: FormButtonProps[] = [
 
 export const ReactPasswordForm: FC = () => {
   const [passwordForm] = Form.useForm<PasswordUpdateFormModel>()
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
 
   const handleSubmit = async (_formData: PasswordUpdateFormModel) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
 
     const passwordToUpdate = parseModelToFormData(_formData)
 
@@ -107,7 +107,7 @@ export const ReactPasswordForm: FC = () => {
       publishNotification({ content: 'Password updated', type: 'success' })
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
     return null
   }
 

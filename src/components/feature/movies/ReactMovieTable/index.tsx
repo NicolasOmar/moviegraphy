@@ -5,7 +5,7 @@ import type { InputEventHandler } from '@ts-types/forms'
 
 import { ReactTable } from '@base-components/ReactTable'
 import { useStore } from '@nanostores/react'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
 import {
   $contextMovieList,
   deleteMovieOnListContext,
@@ -25,7 +25,7 @@ import { type FC, useEffect, useMemo, useState } from 'react'
 
 export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dataSource }) => {
   const movieListInContext = useStore($contextMovieList)
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
   const [searchParam, setSearchParam] = useState<string>('')
 
   const handleSearch: InputEventHandler = searchEvent => setSearchParam(searchEvent.target.value)
@@ -79,7 +79,7 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
   }
 
   const handleMovieDelete = async (_movieId: string) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
     const movieIdToDelete = parseModelToFormData({ id: _movieId })
 
     const movieDeleteResponse = await fetchWithAuth(API_URLS.MOVIES, {
@@ -96,7 +96,7 @@ export const ReactMovieTable: FC<ReactTableProps<MoviesModel>> = ({ columns, dat
       publishNotification({ content: 'Movie deleted', type: 'success' })
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
   }
 
   return (

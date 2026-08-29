@@ -4,7 +4,7 @@ import type { FormConfig } from '@ts-types/forms'
 
 import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
 import { useStore } from '@nanostores/react'
-import { $contextLoading, setLoadingSystemState } from '@store/loading'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
 import {
   $contextSelectedMovie,
   addMovieToListContext,
@@ -30,7 +30,7 @@ interface ReactMovieFormProps {
 
 export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   const selectedMovieInContext = useStore($contextSelectedMovie)
-  const isSystemLoading = useStore($contextLoading)
+  const isSystemLoading = useStore($globalLoading)
   const [movieForm] = Form.useForm<MovieFormModel>()
 
   const handleCancel = useCallback(() => {
@@ -84,7 +84,7 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
   })
 
   const handleSubmit = async (_movieToSubmit: MovieFormModel) => {
-    setLoadingSystemState(true)
+    setGlobalLoadingState(true)
 
     const isInCreateMode = selectedMovieInContext === null
     const movieToSend: MovieFormModel = isInCreateMode
@@ -137,7 +137,7 @@ export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
       }
     }
 
-    setLoadingSystemState(false)
+    setGlobalLoadingState(false)
   }
 
   const handleInvalidation = () =>
