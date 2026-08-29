@@ -106,6 +106,23 @@ describe('ReactGenreForm', () => {
     expect($contextSelectedGenre.get()).toBeNull()
   })
 
+  it('resets the fields and clears the selection when Cancel is clicked', async () => {
+    const user = userEvent.setup()
+    const [genreToEdit] = genreMocks
+    render(<ReactGenreForm />)
+    $contextGenreList.set([genreToEdit])
+
+    act(() => {
+      updateSelectedGenreOnContext(genreToEdit)
+    })
+
+    expect(await screen.findByLabelText('Name')).toHaveValue(genreToEdit.name)
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect($contextSelectedGenre.get()).toBeNull()
+    await waitFor(() => expect(screen.getByLabelText('Name')).toHaveValue(''))
+  })
+
   it('shows an error message and keeps the selection when an update fails', async () => {
     const user = userEvent.setup()
     const [genreToEdit] = genreMocks

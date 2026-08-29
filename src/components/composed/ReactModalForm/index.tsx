@@ -6,37 +6,37 @@ import { Modal } from 'antd'
 export const ReactModalForm = () => {
   const globalFormModalStatus = useStore($globalFormModal)
 
+  if (globalFormModalStatus === null) {
+    return null
+  }
+
   const handleOk = (_formData: unknown) => {
-    if (globalFormModalStatus?.onOk) {
+    if (globalFormModalStatus.onOk) {
       globalFormModalStatus.onOk()
     }
 
-    if (globalFormModalStatus) {
-      globalFormModalStatus.form.onSubmit(_formData)
-    }
+    globalFormModalStatus.form.onSubmit(_formData)
 
     clearFormModal()
   }
 
   const handleCancel = () => {
-    if (globalFormModalStatus?.onCancel) {
+    if (globalFormModalStatus.onCancel) {
       globalFormModalStatus.onCancel()
     }
 
-    if (globalFormModalStatus) {
-      globalFormModalStatus.form.formInstance.resetFields()
-    }
+    globalFormModalStatus.form.formInstance.resetFields()
 
     clearFormModal()
   }
 
-  return globalFormModalStatus !== null ? (
+  return (
     <Modal
       closable={{ 'aria-label': 'Custom Close Button' }}
       footer={[]}
       onCancel={handleCancel}
       onOk={handleOk}
-      open={globalFormModalStatus !== null}
+      open
       title={globalFormModalStatus.title}
     >
       <ReactForm
@@ -60,5 +60,5 @@ export const ReactModalForm = () => {
         }}
       />
     </Modal>
-  ) : null
+  )
 }
