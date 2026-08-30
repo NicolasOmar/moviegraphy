@@ -2,14 +2,14 @@ import type { ReactFormProps } from '@base-components/ReactForm'
 
 import { atom } from 'nanostores'
 
-export interface FormModalModel<UserDefinedEntity, DeletionEntity = object> extends Omit<
+export interface FormModalModel<UserDefinedEntity, AlternativeEntity = object> extends Omit<
   ConfigmModalModel,
   'content'
 > {
   cancelText?: string
   dataToEdit?: UserDefinedEntity
   form: Omit<ReactFormProps<UserDefinedEntity>, 'formButtons'>
-  handleDelete?: (_deleteOption: DeletionEntity) => Promise<void>
+  handleDelete?: (_deleteOption: AlternativeEntity) => Promise<void>
   okText?: string
 }
 

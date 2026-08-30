@@ -8,7 +8,7 @@ import { API_URLS } from '@ts/constants'
 import { genreMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ReactGenreTable } from './index'
+import { ReactGenrePage } from './index'
 
 const columns = [{ dataIndex: 'name', title: 'Name' }]
 
@@ -30,16 +30,16 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-describe('ReactGenreTable', () => {
+describe('ReactGenrePage', () => {
   it('renders no rows when dataSource is omitted, defaulting the context list to an empty array', () => {
-    render(<ReactGenreTable columns={columns} />)
+    render(<ReactGenrePage columns={columns} />)
 
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
     expect($contextGenreList.get()).toEqual([])
   })
 
   it('renders one row per genre in dataSource and stores it on context', async () => {
-    render(<ReactGenreTable columns={columns} dataSource={genreMocks} />)
+    render(<ReactGenrePage columns={columns} dataSource={genreMocks} />)
 
     await waitFor(() => {
       genreMocks.forEach(genre => expect(screen.getByText(genre.name)).toBeInTheDocument())
@@ -49,7 +49,7 @@ describe('ReactGenreTable', () => {
 
   it('selects a genre for editing when its edit button is clicked', async () => {
     const user = userEvent.setup()
-    render(<ReactGenreTable columns={columns} dataSource={genreMocks} />)
+    render(<ReactGenrePage columns={columns} dataSource={genreMocks} />)
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
@@ -61,7 +61,7 @@ describe('ReactGenreTable', () => {
 
   it('deletes a genre via a DELETE request and clears the selection', async () => {
     const user = userEvent.setup()
-    render(<ReactGenreTable columns={columns} dataSource={genreMocks} />)
+    render(<ReactGenrePage columns={columns} dataSource={genreMocks} />)
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
@@ -82,7 +82,7 @@ describe('ReactGenreTable', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'Genre is referenced elsewhere' }), { status: 409 })
     )
-    render(<ReactGenreTable columns={columns} dataSource={genreMocks} />)
+    render(<ReactGenrePage columns={columns} dataSource={genreMocks} />)
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
@@ -101,7 +101,7 @@ describe('ReactGenreTable', () => {
   it('opens a confirmation modal before deleting a genre with related movies, deleting it once confirmed', async () => {
     const user = userEvent.setup()
     const genreWithMovies = { ...genreMocks[0], moviesAmount: 3 }
-    render(<ReactGenreTable columns={columns} dataSource={[genreWithMovies]} />)
+    render(<ReactGenrePage columns={columns} dataSource={[genreWithMovies]} />)
     await waitFor(() => expect(screen.getByText(genreWithMovies.name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
@@ -132,7 +132,7 @@ describe('ReactGenreTable', () => {
   it('stays in a loading state while the deletion is still awaiting confirmation, clearing it if cancelled', async () => {
     const user = userEvent.setup()
     const genreWithMovies = { ...genreMocks[0], moviesAmount: 3 }
-    render(<ReactGenreTable columns={columns} dataSource={[genreWithMovies]} />)
+    render(<ReactGenrePage columns={columns} dataSource={[genreWithMovies]} />)
     await waitFor(() => expect(screen.getByText(genreWithMovies.name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)

@@ -1,7 +1,7 @@
 import type { GenresModel } from '@models'
 import type { GenreFormModel, GenreWithMovieAmount } from '@ts-types/entities'
 
-import { genreFormInputs, genreFormTitle } from '@feature-components/genres/ReactGenreForm/configs'
+import { genreFormInputs, genreFormTitle } from '@feature-components/genres/ReactGenrePage/configs'
 import { useStore } from '@nanostores/react'
 import {
   $contextSelectedGenre,
@@ -11,7 +11,7 @@ import {
   updateSelectedGenreOnContext
 } from '@store/genres'
 import { $globalLoading, setGlobalLoadingState } from '@store/loading'
-import { callConfirmModal, type FormModalModel } from '@store/modals'
+import { callConfirmModal, callFormModal } from '@store/modals'
 import { publishNotification } from '@store/notifications'
 import {
   API_METHODS,
@@ -22,9 +22,15 @@ import {
 import { fetchWithAuth } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 
-export const useGenreForm = (): FormModalModel<GenreFormModel, GenreWithMovieAmount> => {
+interface HookProps<T> {
+  handleCreate: () => void
+  handleDelete: (_deleteEntity: T) => void
+  handleUpdate: (_updateEntity: T) => void
+}
+
+export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
   const selectedGenreInContext = useStore($contextSelectedGenre)
   const isSystemLoading = useStore($globalLoading)
   const [genreForm] = Form.useForm<GenreFormModel>()
@@ -41,7 +47,7 @@ export const useGenreForm = (): FormModalModel<GenreFormModel, GenreWithMovieAmo
     setGlobalLoadingState(true)
     const selectedGenre = $contextSelectedGenre.get()
     const isInCreateMode = selectedGenre === null
-
+    console.warn({ isInCreateMode, selectedGenre })
     const genreToSend: GenreFormModel = isInCreateMode
       ? _genreToSubmit
       : { ..._genreToSubmit, id: selectedGenre.id }
@@ -112,7 +118,7 @@ export const useGenreForm = (): FormModalModel<GenreFormModel, GenreWithMovieAmo
     }
   }
 
-  const handleGenreDelete = useCallback(async (_genreToDelete: GenreWithMovieAmount) => {
+  const handleGenreDelete = async (_genreToDelete: GenreWithMovieAmount) => {
     setGlobalLoadingState(true)
 
     if (_genreToDelete.moviesAmount && _genreToDelete.moviesAmount > 0) {
@@ -131,17 +137,31 @@ export const useGenreForm = (): FormModalModel<GenreFormModel, GenreWithMovieAmo
       await handleDeleteAction(_genreToDelete.id)
       setGlobalLoadingState(false)
     }
-  }, [])
+  }
+
+  const invokeForm = () => {
+    callFormModal({
+      form: {
+        formInputs: genreFormInputs,
+        formInstance: genreForm,
+        formTitle: genreFormTitle,
+        isLoading: isSystemLoading,
+        onSubmit: handleSubmit,
+        onSubmitFailed: handleFailedSubmit
+      }
+    })
+  }
+
+  const handleGenreCreate = () => invokeForm()
+
+  const handleGenreUpdate = (_genreToEdit: GenreWithMovieAmount) => {
+    updateSelectedGenreOnContext(_genreToEdit)
+    invokeForm()
+  }
 
   return {
-    form: {
-      formInputs: genreFormInputs,
-      formInstance: genreForm,
-      formTitle: genreFormTitle,
-      isLoading: isSystemLoading,
-      onSubmit: handleSubmit,
-      onSubmitFailed: handleFailedSubmit
-    },
-    handleDelete: handleGenreDelete
+    handleCreate: handleGenreCreate,
+    handleDelete: handleGenreDelete,
+    handleUpdate: handleGenreUpdate
   }
 }

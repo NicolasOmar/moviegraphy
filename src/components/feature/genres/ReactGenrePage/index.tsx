@@ -4,45 +4,30 @@ import { type ReactTableProps } from '@base-components/ReactTable'
 import { ReactComposedTable } from '@composed-components/ReactComposedTable'
 import { useGenreForm } from '@hooks/useGenreForm'
 import { useStore } from '@nanostores/react'
-import {
-  $contextGenreList,
-  setGenreListOnContext,
-  updateSelectedGenreOnContext
-} from '@store/genres'
+import { $contextGenreList, setGenreListOnContext } from '@store/genres'
 import { $globalLoading } from '@store/loading'
-import { callFormModal } from '@store/modals'
 import { Button } from 'antd'
-import { type FC, useCallback, useEffect, useMemo } from 'react'
+import { type FC, useEffect, useMemo } from 'react'
 
-export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
+export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
   columns,
   dataSource
 }) => {
   const genreListInContext = useStore($contextGenreList)
   const isSystemLoading = useStore($globalLoading)
-  const { form, handleDelete } = useGenreForm()
+  const { handleCreate, handleDelete, handleUpdate } = useGenreForm()
 
   useEffect(() => setGenreListOnContext(dataSource ?? []), [dataSource])
-
-  const handleGenreFormModal = useCallback(() => callFormModal({ form }), [form])
-
-  const handleGenreEdit = useCallback(
-    (_genreToEdit: GenreWithMovieAmount) => {
-      updateSelectedGenreOnContext(_genreToEdit)
-      handleGenreFormModal()
-    },
-    [handleGenreFormModal]
-  )
 
   const memoizedGenreTableConfig = useMemo(() => {
     const optionsColumn = {
       key: 'options',
       render: (_singleGenre: GenreWithMovieAmount) => (
         <>
-          <Button disabled={isSystemLoading} onClick={() => handleGenreEdit(_singleGenre)}>
+          <Button disabled={isSystemLoading} onClick={() => handleUpdate(_singleGenre)}>
             Edit
           </Button>
-          <Button disabled={isSystemLoading} onClick={() => handleDelete!(_singleGenre)}>
+          <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleGenre)}>
             Delete
           </Button>
         </>
@@ -53,14 +38,14 @@ export const ReactGenreTable: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       columns: [...columns, optionsColumn],
       dataSource: genreListInContext
     }
-  }, [genreListInContext, columns, isSystemLoading, handleGenreEdit, handleDelete])
+  }, [genreListInContext, columns, isSystemLoading, handleUpdate, handleDelete])
 
   return (
     <ReactComposedTable
       createText="+ New Genre"
-      handleCreate={handleGenreFormModal}
+      handleCreate={handleCreate}
       noDataConfig={{
-        extraContent: <Button onClick={handleGenreFormModal}>Create a new one</Button>,
+        extraContent: <Button onClick={handleCreate}>Create a new one</Button>,
         title: 'There are not registered Genres'
       }}
       tableConfig={memoizedGenreTableConfig}
