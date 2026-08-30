@@ -1,0 +1,157 @@
+import type { GenresModel, MoviesModel } from '@models'
+import type { MovieFormModel } from '@ts-types/entities'
+import type { FormConfig } from '@ts-types/forms'
+
+import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
+import { useStore } from '@nanostores/react'
+import { $globalLoading, setGlobalLoadingState } from '@store/loading'
+import {
+  $contextSelectedMovie,
+  addMovieToListContext,
+  updateMovieOnListContext,
+  updateSelectedMovieOnContext
+} from '@store/movies'
+import { publishNotification } from '@store/notifications'
+import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
+import { fetchWithAuth } from '@ts/helpers'
+import {
+  parseModelToFormData,
+  parseResponseErrorToMessage,
+  parseResponseMessageToEntity
+} from '@ts/parsers'
+import { Form } from 'antd'
+import { type FC, useCallback, useMemo } from 'react'
+
+import { movieFormInputs, movieFormTitle } from './configs'
+
+interface ReactMovieFormProps {
+  genreList: GenresModel[]
+}
+
+export const ReactMovieForm: FC<ReactMovieFormProps> = ({ genreList }) => {
+  const selectedMovieInContext = useStore($contextSelectedMovie)
+  const isSystemLoading = useStore($globalLoading)
+  const [movieForm] = Form.useForm<MovieFormModel>()
+
+  const handleCancel = useCallback(() => {
+    movieForm.resetFields()
+    updateSelectedMovieOnContext(null)
+  }, [movieForm])
+
+  const memoizedFormInputs = useMemo(() => {
+    return [
+      ...movieFormInputs,
+      {
+        config: {
+          initialValue: [],
+          label: 'Genres',
+          name: 'genres',
+          options: genreList.map(_genre => ({ label: _genre.name, value: _genre.id }))
+        },
+        type: 'select'
+      }
+    ] as FormConfig<MovieFormModel>
+  }, [genreList])
+  const memoizedFormButtons = useMemo(() => {
+    const submitButtonText = selectedMovieInContext ? 'Update' : 'Create'
+    const submitButton: FormButtonProps = {
+      htmlType: 'submit',
+      title: submitButtonText,
+      type: 'primary'
+    }
+    const buttons: FormButtonProps[] = selectedMovieInContext
+      ? [
+          submitButton,
+          {
+            htmlType: 'button',
+            onClick: () => handleCancel(),
+            title: 'Cancel',
+            type: 'text'
+          }
+        ]
+      : [submitButton]
+
+    return buttons
+  }, [selectedMovieInContext, handleCancel])
+
+  $contextSelectedMovie.listen(_movie => {
+    if (_movie) {
+      movieForm.setFieldsValue({
+        ..._movie,
+        genres: _movie.genres?.map(({ id }) => id) ?? []
+      })
+    }
+  })
+
+  const handleSubmit = async (_movieToSubmit: MovieFormModel) => {
+    setGlobalLoadingState(true)
+
+    const isInCreateMode = selectedMovieInContext === null
+    const movieToSend: MovieFormModel = isInCreateMode
+      ? _movieToSubmit
+      : { ..._movieToSubmit, id: selectedMovieInContext.id }
+    const movieFormData = parseModelToFormData(movieToSend)
+
+    if (selectedMovieInContext === null) {
+      const movieCreateResponse = await fetchWithAuth(API_URLS.MOVIES, {
+        body: movieFormData,
+        method: API_METHODS.POST
+      })
+
+      if (movieCreateResponse.status !== HTTP_STATUS.OK) {
+        const errorMessage = await parseResponseErrorToMessage(movieCreateResponse)
+        publishNotification({ content: errorMessage, type: 'error' })
+      } else {
+        const newMovieFinal = await parseResponseMessageToEntity<MoviesModel>(movieCreateResponse)
+
+        handleCancel()
+        addMovieToListContext(newMovieFinal)
+        publishNotification({ content: 'Movie created', type: 'success' })
+      }
+    } else {
+      const movieUpdateResponse = await fetchWithAuth(API_URLS.MOVIES, {
+        body: movieFormData,
+        method: API_METHODS.PATCH
+      })
+
+      if (movieUpdateResponse.status !== HTTP_STATUS.OK) {
+        const errorMessage = await parseResponseErrorToMessage(movieUpdateResponse)
+        publishNotification({ content: errorMessage, type: 'error' })
+      } else {
+        const { countryMade, description, name, releaseYear } = _movieToSubmit
+
+        handleCancel()
+        updateMovieOnListContext({
+          countryMade,
+          description,
+          id: selectedMovieInContext.id,
+          name,
+          releaseYear,
+          userId: selectedMovieInContext.userId
+        })
+
+        publishNotification({
+          content: `Movie '${_movieToSubmit.name}' updated`,
+          type: 'success'
+        })
+      }
+    }
+
+    setGlobalLoadingState(false)
+  }
+
+  const handleInvalidation = () =>
+    publishNotification({ content: 'Check the form messages', type: 'error' })
+
+  return (
+    <ReactForm
+      formButtons={memoizedFormButtons}
+      formInputs={memoizedFormInputs}
+      formInstance={movieForm}
+      formTitle={movieFormTitle}
+      isLoading={isSystemLoading}
+      onSubmit={handleSubmit}
+      onSubmitFailed={handleInvalidation}
+    />
+  )
+}

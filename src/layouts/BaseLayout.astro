@@ -1,7 +1,9 @@
 ---
-import { ReactModal } from '@components/shared/ReactModal'
-import { ReactNotifications } from '@components/shared/ReactNotifications'
+import { ReactModal } from '@base-components/ReactModal'
+import { ReactNotifications } from '@base-components/ReactNotifications'
+import { ReactModalForm } from '@composed-components/ReactModalForm'
 import { ClientRouter } from 'astro:transitions'
+import '@styles/breakpoints.css'
 ---
 
 <!doctype html>
@@ -20,6 +22,7 @@ import { ClientRouter } from 'astro:transitions'
     <slot />
     <ReactNotifications client:load transition:persist />
     <ReactModal client:load transition:persist />
+    <ReactModalForm client:load transition:persist />
   </body>
 </html>
 
