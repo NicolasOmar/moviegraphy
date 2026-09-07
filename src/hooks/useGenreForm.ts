@@ -17,6 +17,8 @@ import {
   API_METHODS,
   API_URLS,
   buildGenreDeleteConfirmationMessage,
+  COMMON_ERROR_MESSAGES,
+  GENRE_SUCCESS_MESSAGES,
   HTTP_STATUS
 } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
@@ -24,10 +26,10 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { useEffect } from 'react'
 
-interface HookProps<T> {
+interface HookProps<UserDefinedEntity> {
   handleCreate: () => void
-  handleDelete: (_deleteEntity: T) => void
-  handleUpdate: (_updateEntity: T) => void
+  handleDelete: (_deleteEntity: UserDefinedEntity) => void
+  handleUpdate: (_updateEntity: UserDefinedEntity) => void
 }
 
 export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
@@ -43,11 +45,11 @@ export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
     }
   }, [selectedGenreInContext, genreForm])
 
-  const handleSubmit = async (_genreToSubmit: GenreFormModel) => {
+  const handleGenreSubmit = async (_genreToSubmit: GenreFormModel) => {
     setGlobalLoadingState(true)
     const selectedGenre = $contextSelectedGenre.get()
     const isInCreateMode = selectedGenre === null
-    console.warn({ isInCreateMode, selectedGenre })
+
     const genreToSend: GenreFormModel = isInCreateMode
       ? _genreToSubmit
       : { ..._genreToSubmit, id: selectedGenre.id }
@@ -67,7 +69,7 @@ export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
 
         genreForm.resetFields()
         addGenreToListContext(newGenre)
-        publishNotification({ content: 'Genre created', type: 'success' })
+        publishNotification({ content: GENRE_SUCCESS_MESSAGES.CREATE, type: 'success' })
       }
     } else {
       const genreUpdateResponse = await fetchWithAuth(API_URLS.GENRES, {
@@ -97,8 +99,8 @@ export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
     setGlobalLoadingState(false)
   }
 
-  const handleFailedSubmit = () =>
-    publishNotification({ content: 'Check the form messages', type: 'error' })
+  const handleFailedGenreSubmit = () =>
+    publishNotification({ content: COMMON_ERROR_MESSAGES.FORM_ERRORS, type: 'error' })
 
   const handleDeleteAction = async (_genreId: string) => {
     const genreIdToDelete = parseModelToFormData({ id: _genreId })
@@ -114,7 +116,7 @@ export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
     } else {
       deleteGenreOnListContext(_genreId)
       updateSelectedGenreOnContext(null)
-      publishNotification({ content: 'Genre deleted', type: 'success' })
+      publishNotification({ content: GENRE_SUCCESS_MESSAGES.DELETE, type: 'success' })
     }
   }
 
@@ -139,28 +141,26 @@ export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
     }
   }
 
-  const invokeForm = () => {
+  const invokeGenreForm = () => {
     callFormModal({
       form: {
         formInputs: genreFormInputs,
         formInstance: genreForm,
         formTitle: genreFormTitle,
         isLoading: isSystemLoading,
-        onSubmit: handleSubmit,
-        onSubmitFailed: handleFailedSubmit
+        onSubmit: handleGenreSubmit,
+        onSubmitFailed: handleFailedGenreSubmit
       }
     })
   }
 
-  const handleGenreCreate = () => invokeForm()
-
   const handleGenreUpdate = (_genreToEdit: GenreWithMovieAmount) => {
     updateSelectedGenreOnContext(_genreToEdit)
-    invokeForm()
+    invokeGenreForm()
   }
 
   return {
-    handleCreate: handleGenreCreate,
+    handleCreate: invokeGenreForm,
     handleDelete: handleGenreDelete,
     handleUpdate: handleGenreUpdate
   }

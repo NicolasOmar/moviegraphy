@@ -70,3 +70,25 @@ export enum USER_ERROR_MESSAGES {
 }
 
 export const SESSION_COOKIE_NAME = 'session'
+
+export enum COMMON_ERROR_MESSAGES {
+  FORM_ERRORS = 'Check the form messages'
+}
+
+export enum COMMON_TEXTS {
+  DELETE = 'Delete',
+  EDIT = 'Edit',
+  NEW_BTN = 'Create a new one',
+  OPTIONS = 'Options'
+}
+
+export enum GENRE_SUCCESS_MESSAGES {
+  CREATE = 'Genre created',
+  DELETE = 'Genre deleted'
+}
+
+export enum GENRE_TEXTS {
+  NEW_BTN = '+ New Genre',
+  NO_DATA = 'There are not registered Genres',
+  TITLE = 'List of Genres'
+}

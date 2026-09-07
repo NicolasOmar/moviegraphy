@@ -6,6 +6,7 @@ import { useGenreForm } from '@hooks/useGenreForm'
 import { useStore } from '@nanostores/react'
 import { $contextGenreList, setGenreListOnContext } from '@store/genres'
 import { $globalLoading } from '@store/loading'
+import { COMMON_TEXTS, GENRE_TEXTS } from '@ts/constants'
 import { Button } from 'antd'
 import { type FC, useEffect, useMemo } from 'react'
 
@@ -25,14 +26,14 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       render: (_singleGenre: GenreWithMovieAmount) => (
         <>
           <Button disabled={isSystemLoading} onClick={() => handleUpdate(_singleGenre)}>
-            Edit
+            {COMMON_TEXTS.DELETE}
           </Button>
           <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleGenre)}>
-            Delete
+            {COMMON_TEXTS.DELETE}
           </Button>
         </>
       ),
-      title: 'Options'
+      title: COMMON_TEXTS.OPTIONS
     }
     return {
       columns: [...columns, optionsColumn],
@@ -42,14 +43,14 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
 
   return (
     <ReactComposedTable
-      createText="+ New Genre"
+      createText={GENRE_TEXTS.NEW_BTN}
       handleCreate={handleCreate}
       noDataConfig={{
-        extraContent: <Button onClick={handleCreate}>Create a new one</Button>,
-        title: 'There are not registered Genres'
+        extraContent: <Button onClick={handleCreate}>{COMMON_TEXTS.NEW_BTN}</Button>,
+        title: GENRE_TEXTS.NO_DATA
       }}
       tableConfig={memoizedGenreTableConfig}
-      title="List of Genres"
+      title={GENRE_TEXTS.TITLE}
     />
   )
 }
