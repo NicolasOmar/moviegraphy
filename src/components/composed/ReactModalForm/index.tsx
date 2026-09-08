@@ -56,7 +56,8 @@ export const ReactModalForm = () => {
             }
           ],
           onSubmit: handleOk,
-          onSubmitFailed: () => console.error('onSubmitFailed')
+          onSubmitFailed:
+            globalFormModalStatus.form.onSubmitFailed ?? (() => console.error('onSubmitFailed'))
         }}
       />
     </Modal>

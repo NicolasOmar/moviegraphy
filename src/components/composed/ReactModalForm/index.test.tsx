@@ -28,14 +28,22 @@ interface WrapperProps {
   onCancel?: () => void
   onOk?: () => void
   onSubmit?: (values: TestFormValues) => void
+  onSubmitFailed?: () => void
 }
 
-const Wrapper: FC<WrapperProps> = ({ cancelText, okText, onCancel, onOk, onSubmit = vi.fn() }) => {
+const Wrapper: FC<WrapperProps> = ({
+  cancelText,
+  okText,
+  onCancel,
+  onOk,
+  onSubmit = vi.fn(),
+  onSubmitFailed
+}) => {
   const [formInstance] = Form.useForm<TestFormValues>()
 
   callFormModal<TestFormValues>({
     cancelText,
-    form: { formInputs, formInstance, onSubmit },
+    form: { formInputs, formInstance, onSubmit, onSubmitFailed },
     okText,
     onCancel,
     onOk,
@@ -108,6 +116,29 @@ describe('ReactModalForm', () => {
     expect(await screen.findByText('The name is required')).toBeInTheDocument()
     expect(onSubmit).not.toHaveBeenCalled()
     expect($globalFormModal.get()).not.toBeNull()
+  })
+
+  it('calls the given onSubmitFailed when a required field is left empty', async () => {
+    const user = userEvent.setup()
+    const onSubmitFailed = vi.fn()
+    render(<Wrapper onSubmitFailed={onSubmitFailed} />)
+
+    await user.click(screen.getByRole('button', { name: 'Confirm' }))
+
+    expect(await screen.findByText('The name is required')).toBeInTheDocument()
+    expect(onSubmitFailed).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to logging an error when a required field is left empty and no onSubmitFailed was given', async () => {
+    const user = userEvent.setup()
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    render(<Wrapper />)
+
+    await user.click(screen.getByRole('button', { name: 'Confirm' }))
+
+    expect(await screen.findByText('The name is required')).toBeInTheDocument()
+    expect(consoleErrorSpy).toHaveBeenCalledWith('onSubmitFailed')
+    consoleErrorSpy.mockRestore()
   })
 
   it('resets the fields, calls onCancel and clears the modal when Cancel is clicked', async () => {

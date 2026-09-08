@@ -148,6 +148,12 @@ describe('ReactForm', () => {
     expect(screen.getByRole('radio', { name: 'Male' })).toBeInTheDocument()
   })
 
+  it('applies the hiddeable class to the section when hidesInResponsive is true', () => {
+    const { container } = render(<Wrapper hidesInResponsive />)
+
+    expect(container.querySelector('section')).toHaveClass('hiddeable')
+  })
+
   it('renders nothing for a form input whose type does not match a known input kind', () => {
     type UnknownValues = { mystery: string }
     const unknownInputs = [
