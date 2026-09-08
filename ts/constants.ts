@@ -75,20 +75,22 @@ export enum COMMON_ERROR_MESSAGES {
   FORM_ERRORS = 'Check the form messages'
 }
 
-export enum COMMON_TEXTS {
+export enum COMMON_LABELS {
   DELETE = 'Delete',
   EDIT = 'Edit',
   NEW_BTN = 'Create a new one',
-  OPTIONS = 'Options'
+  OPTIONS = 'Options',
+  SEARCH_BY_NAME = 'Search by name'
+}
+
+export enum GENRE_LABELS {
+  NEW_BTN = '+ New Genre',
+  NO_DATA = 'There are not registered Genres',
+  NO_SEARCH_DATA = 'There are no registered genres based on your search',
+  TITLE = 'List of Genres'
 }
 
 export enum GENRE_SUCCESS_MESSAGES {
   CREATE = 'Genre created',
   DELETE = 'Genre deleted'
-}
-
-export enum GENRE_TEXTS {
-  NEW_BTN = '+ New Genre',
-  NO_DATA = 'There are not registered Genres',
-  TITLE = 'List of Genres'
 }

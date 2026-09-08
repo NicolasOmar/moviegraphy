@@ -6,9 +6,9 @@ import { useGenreForm } from '@hooks/useGenreForm'
 import { useStore } from '@nanostores/react'
 import { $contextGenreList, setGenreListOnContext } from '@store/genres'
 import { $globalLoading } from '@store/loading'
-import { COMMON_TEXTS, GENRE_TEXTS } from '@ts/constants'
+import { COMMON_LABELS, GENRE_LABELS } from '@ts/constants'
 import { Button } from 'antd'
-import { type FC, useEffect, useMemo } from 'react'
+import { type FC, useEffect, useMemo, useState } from 'react'
 
 export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
   columns,
@@ -17,8 +17,11 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
   const genreListInContext = useStore($contextGenreList)
   const isSystemLoading = useStore($globalLoading)
   const { handleCreate, handleDelete, handleUpdate } = useGenreForm()
+  const [searchValue, setSearchValue] = useState<null | string>(null)
 
   useEffect(() => setGenreListOnContext(dataSource ?? []), [dataSource])
+
+  const isSearching = useMemo(() => searchValue !== null, [searchValue])
 
   const memoizedGenreTableConfig = useMemo(() => {
     const optionsColumn = {
@@ -26,31 +29,49 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       render: (_singleGenre: GenreWithMovieAmount) => (
         <>
           <Button disabled={isSystemLoading} onClick={() => handleUpdate(_singleGenre)}>
-            {COMMON_TEXTS.DELETE}
+            {COMMON_LABELS.EDIT}
           </Button>
           <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleGenre)}>
-            {COMMON_TEXTS.DELETE}
+            {COMMON_LABELS.DELETE}
           </Button>
         </>
       ),
-      title: COMMON_TEXTS.OPTIONS
+      title: COMMON_LABELS.OPTIONS
     }
+    const filteredDataSoruce =
+      searchValue === null
+        ? genreListInContext
+        : genreListInContext.filter(({ name }) =>
+            name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+          )
+
     return {
       columns: [...columns, optionsColumn],
-      dataSource: genreListInContext
+      dataSource: filteredDataSoruce
     }
-  }, [genreListInContext, columns, isSystemLoading, handleUpdate, handleDelete])
+  }, [columns, genreListInContext, isSystemLoading, searchValue, handleUpdate, handleDelete])
+
+  const handleSearch = (searchValue: string) =>
+    setSearchValue(searchValue.length ? searchValue : null)
 
   return (
     <ReactComposedTable
-      createText={GENRE_TEXTS.NEW_BTN}
+      createText={GENRE_LABELS.NEW_BTN}
       handleCreate={handleCreate}
+      isSearching={isSearching}
       noDataConfig={{
-        extraContent: <Button onClick={handleCreate}>{COMMON_TEXTS.NEW_BTN}</Button>,
-        title: GENRE_TEXTS.NO_DATA
+        extraContent: <Button onClick={handleCreate}>{COMMON_LABELS.NEW_BTN}</Button>,
+        title: GENRE_LABELS.NO_DATA
+      }}
+      noSearchConfig={{
+        title: GENRE_LABELS.NO_SEARCH_DATA
+      }}
+      searchConfig={{
+        onChange: handleSearch,
+        placeholder: COMMON_LABELS.SEARCH_BY_NAME
       }}
       tableConfig={memoizedGenreTableConfig}
-      title={GENRE_TEXTS.TITLE}
+      title={GENRE_LABELS.TITLE}
     />
   )
 }
