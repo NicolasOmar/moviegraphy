@@ -7,6 +7,13 @@ import type { ChangeEventHandler } from 'react'
  */
 export type FormConfig<ConfigEntity> = Array<FormItemConfig<ConfigEntity>>
 
+/** Used to integrate Create, Delete and Update methods into the hook */
+export interface FormHookProps<UserDefinedEntity> {
+  handleCreate: () => void
+  handleDelete: (_deleteEntity: UserDefinedEntity) => void
+  handleUpdate: (_updateEntity: UserDefinedEntity) => void
+}
+
 /** Used for text-based form inputs, includes a specific `type` definition
  * @typeParam ConfigEntity - Type / Entity / Model used to format type's parent properties
  */

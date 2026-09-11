@@ -1,5 +1,6 @@
 import type { GenresModel } from '@models'
 import type { GenreFormModel, GenreWithMovieAmount } from '@ts-types/entities'
+import type { FormHookProps } from '@ts/types/forms'
 
 import { genreFormInputs, genreFormTitle } from '@feature-components/genres/ReactGenrePage/configs'
 import { useStore } from '@nanostores/react'
@@ -26,13 +27,7 @@ import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { useEffect } from 'react'
 
-interface HookProps<UserDefinedEntity> {
-  handleCreate: () => void
-  handleDelete: (_deleteEntity: UserDefinedEntity) => void
-  handleUpdate: (_updateEntity: UserDefinedEntity) => void
-}
-
-export const useGenreForm = (): HookProps<GenreWithMovieAmount> => {
+export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
   const selectedGenreInContext = useStore($contextSelectedGenre)
   const isSystemLoading = useStore($globalLoading)
   const [genreForm] = Form.useForm<GenreFormModel>()

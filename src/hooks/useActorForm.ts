@@ -1,9 +1,11 @@
 import type { ActorsModel, CountriesModel, GendersModel } from '@models'
-import type { ActorFormModel } from '@ts-types/entities'
+import type { ActorFormModel } from '@ts/types/entities'
+import type { FormHookProps } from '@ts/types/forms'
 
-import { type FormButtonProps, ReactForm } from '@base-components/ReactForm'
+import { actorFormInputs, actorFormTitle } from '@feature-components/actors/ReactActorsPage/configs'
 import { useStore } from '@nanostores/react'
 import { $globalLoading } from '@store/loading'
+import { callFormModal } from '@store/modals'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
@@ -13,28 +15,20 @@ import {
   parseResponseMessageToEntity
 } from '@ts/parsers'
 import { Form } from 'antd'
-import { type FC, useMemo } from 'react'
-
-import { actorFormInputs, actorFormTitle } from './configs'
+import { useMemo } from 'react'
 
 interface ReactActorFormProps {
   countryList: CountriesModel[]
   genderList: GendersModel[]
 }
 
-export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderList }) => {
+export const useActorForm = ({
+  countryList,
+  genderList
+}: ReactActorFormProps): FormHookProps<ActorsModel> => {
   const isSystemLoading = useStore($globalLoading)
   const [actorForm] = Form.useForm<ActorFormModel>()
 
-  const memoizedFormButtons = useMemo(() => {
-    return [
-      {
-        htmlType: 'submit',
-        title: 'Confirm',
-        type: 'primary'
-      } as FormButtonProps
-    ]
-  }, [])
   const memoizedFormInputs = useMemo(() => {
     const parsedInputConfig = actorFormInputs.map(_inputConfig => {
       switch (_inputConfig.config.name) {
@@ -62,7 +56,10 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
     return parsedInputConfig
   }, [genderList, countryList])
 
-  const handleSubmit = async (_actorToSubmit: ActorFormModel) => {
+  const handleFailedActorSubmit = () =>
+    publishNotification({ content: 'Check the form messages', type: 'error' })
+
+  const handleActorCreate = async (_actorToSubmit: ActorFormModel) => {
     const actorFormData = parseModelToFormData({
       ..._actorToSubmit,
       deadDate: _actorToSubmit.deadDate ?? null
@@ -82,18 +79,26 @@ export const ReactActorForm: FC<ReactActorFormProps> = ({ countryList, genderLis
     }
   }
 
-  const handleInvalidation = () =>
-    publishNotification({ content: 'Check the form messages', type: 'error' })
+  const invokeActorForm = () => {
+    callFormModal({
+      form: {
+        formInputs: memoizedFormInputs,
+        formInstance: actorForm,
+        formTitle: actorFormTitle,
+        isLoading: isSystemLoading,
+        onSubmit: handleActorCreate,
+        onSubmitFailed: handleFailedActorSubmit
+      }
+    })
+  }
 
-  return (
-    <ReactForm
-      formButtons={memoizedFormButtons}
-      formInputs={memoizedFormInputs}
-      formInstance={actorForm}
-      formTitle={actorFormTitle}
-      isLoading={isSystemLoading}
-      onSubmit={handleSubmit}
-      onSubmitFailed={handleInvalidation}
-    />
-  )
+  const handleActorDelete = (_actorToDelete: ActorsModel) => console.warn(_actorToDelete)
+
+  const handleActorUpdate = (_actorToUpdate: ActorsModel) => console.error(_actorToUpdate)
+
+  return {
+    handleCreate: invokeActorForm,
+    handleDelete: handleActorUpdate,
+    handleUpdate: handleActorDelete
+  }
 }
