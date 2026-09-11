@@ -1,0 +1,66 @@
+import type { ReactTableProps } from '@base-components/ReactTable'
+import type { GenresModel, MoviesModel } from '@models'
+
+import { ReactComposedTable } from '@composed-components/ReactComposedTable'
+import { useMovieForm } from '@hooks/useMovieForm'
+import { useStore } from '@nanostores/react'
+import { $globalLoading } from '@store/loading'
+import { $contextMovieList, setMovieListOnContext } from '@store/movies'
+import { COMMON_LABELS } from '@ts/constants'
+import { Button } from 'antd'
+import { type FC, useEffect, useMemo } from 'react'
+
+interface ReactMoviePageProps extends ReactTableProps<MoviesModel> {
+  genreList: GenresModel[]
+}
+
+export const ReactMoviePage: FC<ReactMoviePageProps> = ({ columns, dataSource, genreList }) => {
+  const movieListInContext = useStore($contextMovieList)
+  const isSystemLoading = useStore($globalLoading)
+  const { handleCreate, handleDelete, handleUpdate } = useMovieForm({ genreList })
+
+  useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
+
+  const memoizedMovieTableConfig = useMemo(() => {
+    const optionsColumn = {
+      key: 'options',
+      render: (_singleMovie: MoviesModel) => (
+        <>
+          <Button disabled={isSystemLoading} onClick={() => handleUpdate(_singleMovie)}>
+            Edit
+          </Button>
+          <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleMovie)}>
+            Delete
+          </Button>
+        </>
+      ),
+      title: 'Options'
+    }
+
+    return {
+      columns: [...columns, optionsColumn],
+      dataSource: movieListInContext
+    }
+  }, [movieListInContext, columns, isSystemLoading, handleUpdate, handleDelete])
+
+  return (
+    <ReactComposedTable
+      createText={'Create Movie button'}
+      handleCreate={handleCreate}
+      isSearching={false}
+      noDataConfig={{
+        extraContent: <Button onClick={handleCreate}>{COMMON_LABELS.NEW_BTN}</Button>,
+        title: 'No created movies'
+      }}
+      noSearchConfig={{
+        title: 'No searchable movies'
+      }}
+      searchConfig={{
+        onChange: () => {},
+        placeholder: COMMON_LABELS.SEARCH_BY_NAME
+      }}
+      tableConfig={memoizedMovieTableConfig}
+      title={'List of movies'}
+    />
+  )
+}
