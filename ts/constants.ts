@@ -83,6 +83,8 @@ export enum COMMON_ERROR_MESSAGES {
 }
 
 export enum COMMON_LABELS {
+  CANCEL = 'Cancel',
+  CONFIRM = 'Confirm',
   DELETE = 'Delete',
   EDIT = 'Edit',
   NEW_BTN = 'Create a new one',
@@ -107,4 +109,9 @@ export enum MOVIE_LABELS {
   NO_DATA = 'There are not registered Movies',
   NO_SEARCH_DATA = 'There are no registered movies based on your search',
   TITLE = 'List of Movies'
+}
+
+export enum MOVIE_SUCCESS_MESSAGES {
+  CREATE = 'Movie created',
+  DELETE = 'Movie deleted'
 }

@@ -3,7 +3,7 @@ import type { ReactFormProps } from '@base-components/ReactForm'
 import { atom } from 'nanostores'
 
 export interface FormModalModel<UserDefinedEntity, AlternativeEntity = object> extends Omit<
-  ConfigmModalModel,
+  ConfirmModalModel,
   'content'
 > {
   cancelText?: string
@@ -13,16 +13,20 @@ export interface FormModalModel<UserDefinedEntity, AlternativeEntity = object> e
   okText?: string
 }
 
-interface ConfigmModalModel {
+export interface ViewModalModel extends Omit<ConfirmModalModel, 'content'> {
+  content: object
+}
+
+interface ConfirmModalModel {
   content: string
   onCancel?: () => void
   onOk?: () => void
   title?: string
 }
 
-export const $globalConfirmModal = atom<ConfigmModalModel | null>(null)
+export const $globalConfirmModal = atom<ConfirmModalModel | null>(null)
 
-export const callConfirmModal = (_newModalObj: ConfigmModalModel) => {
+export const callConfirmModal = (_newModalObj: ConfirmModalModel) => {
   $globalConfirmModal.set(_newModalObj)
 }
 
@@ -40,4 +44,14 @@ export const callFormModal = <UserDefinedEntity>(
 
 export const clearFormModal = () => {
   $globalFormModal.set(null)
+}
+
+export const $globalViewModal = atom<null | ViewModalModel>(null)
+
+export const callViewModal = (_newViewObj: ViewModalModel) => {
+  $globalViewModal.set(_newViewObj)
+}
+
+export const clearViewModal = () => {
+  $globalViewModal.set(null)
 }

@@ -15,7 +15,7 @@ import {
   updateSelectedMovieOnContext
 } from '@store/movies'
 import { publishNotification } from '@store/notifications'
-import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
+import { API_METHODS, API_URLS, HTTP_STATUS, MOVIE_SUCCESS_MESSAGES } from '@ts/constants'
 import { fetchWithAuth, publishFormError } from '@ts/helpers'
 import {
   parseModelToFormData,
@@ -89,7 +89,7 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
 
         handleCancel()
         addMovieToListContext(newMovieFinal)
-        publishNotification({ content: 'Movie created', type: 'success' })
+        publishNotification({ content: MOVIE_SUCCESS_MESSAGES.CREATE, type: 'success' })
       }
     } else {
       const movieUpdateResponse = await fetchWithAuth(API_URLS.MOVIES, {
@@ -159,7 +159,7 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
     } else {
       deleteMovieOnListContext(_movieToDelete.id)
       updateSelectedMovieOnContext(null)
-      publishNotification({ content: 'Movie deleted', type: 'success' })
+      publishNotification({ content: MOVIE_SUCCESS_MESSAGES.DELETE, type: 'success' })
     }
 
     setGlobalLoadingState(false)
