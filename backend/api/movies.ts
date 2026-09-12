@@ -15,7 +15,7 @@ import prismaInstance from '../prisma'
 
 /** `[GET]` function for registered movies
  *
- * @param _loggeduserId - Logged user's id to access its registered movies
+ * @param _loggedUserId - Logged user's id to access its registered movies
  * @returns A list of `MoviesModel`
  */
 export const getMovieList: GetMany<string, MoviesModel> = async _loggedUserId => {

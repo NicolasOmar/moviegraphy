@@ -74,14 +74,14 @@ export const updateGenre: CreateOrUpdateOne<GenreApiModel, GenresModel> = async 
  *
  * - Gets user's ids based on its session token
  *
- * @param _loggeduserId - Logged user's id to access its registered genres
+ * @param _loggedUserId - Logged user's id to access its registered genres
  * @returns A list of `GenreWithMovieAmount`
  */
-export const getGenreList: GetMany<string, GenreWithMovieAmount> = async _loggeduserId => {
+export const getGenreList: GetMany<string, GenreWithMovieAmount> = async _loggedUserId => {
   try {
     const genreList = await prismaInstance.genres.findMany({
       include: { _count: { select: { movies: true } } },
-      where: { userId: _loggeduserId }
+      where: { userId: _loggedUserId }
     })
 
     return genreList.map(_genre => ({

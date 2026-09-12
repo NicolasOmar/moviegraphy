@@ -1,21 +1,59 @@
 ---
+import type { CustomAstroLocals } from '@ts/types/entities'
+
+import { getActorsList } from '@api/actors'
 import { getCountryList } from '@api/countries'
 import { getGenderList } from '@api/genders'
 import { ReactActorsPage } from '@feature-components/actors/ReactActorsPage'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
 import OneColumnLayout from '@layouts/OneColumnLayout.astro'
 
+const actorsListColumns = [
+  {
+    dataIndex: 'name',
+    name: 'name',
+    title: 'Name'
+  },
+  {
+    dataIndex: 'lastName',
+    name: 'lastName',
+    title: 'Lastname'
+  },
+  {
+    dataIndex: 'bornDate',
+    name: 'bornDate',
+    title: 'Born date'
+  },
+  {
+    dataIndex: 'deadDate',
+    name: 'deadDate',
+    title: 'Passed date'
+  },
+  {
+    dataIndex: 'genderId',
+    name: 'genderId',
+    title: 'Gender'
+  },
+  {
+    dataIndex: 'countries',
+    name: 'countries',
+    title: 'Countries'
+  }
+]
+
+const loggedUserId = (Astro.locals as CustomAstroLocals).loggedUserId
 const countryList = await getCountryList(null).catch(() => [])
 const genderList = await getGenderList(null).catch(() => [])
+const actorsList = await getActorsList(loggedUserId).catch(() => [])
 ---
 
 <NavigationLayout>
   <OneColumnLayout>
     <ReactActorsPage
       client:visible
-      columns={[]}
+      columns={actorsListColumns}
       countryList={countryList}
-      dataSource={[]}
+      dataSource={actorsList}
       genderList={genderList}
     />
   </OneColumnLayout>
