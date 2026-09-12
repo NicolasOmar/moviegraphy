@@ -89,7 +89,8 @@ export enum COMMON_LABELS {
   EDIT = 'Edit',
   NEW_BTN = 'Create a new one',
   OPTIONS = 'Options',
-  SEARCH_BY_NAME = 'Search by name'
+  SEARCH_BY_NAME = 'Search by name',
+  VIEW = 'VIEW'
 }
 
 export enum GENRE_LABELS {

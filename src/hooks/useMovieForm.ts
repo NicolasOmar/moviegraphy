@@ -6,7 +6,7 @@ import { actorFormTitle } from '@feature-components/actors/ReactActorsPage/confi
 import { movieFormInputs } from '@feature-components/movies/ReactMoviePage/configs'
 import { useStore } from '@nanostores/react'
 import { $globalLoading, setGlobalLoadingState } from '@store/loading'
-import { callFormModal } from '@store/modals'
+import { callFormModal, callViewModal } from '@store/modals'
 import {
   $contextSelectedMovie,
   addMovieToListContext,
@@ -181,11 +181,16 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
   const handleSearch = (searchValue: string) =>
     setSearchValue(searchValue.length ? searchValue : null)
 
+  const handleView = (_movieToView: MoviesModel) => {
+    callViewModal({ content: _movieToView })
+  }
+
   return {
     handleCreate: invokeForm,
     handleDelete,
     handleSearch,
     handleUpdate,
+    handleView,
     isLoading: isSystemLoading,
     searchTerm: searchValue
   }

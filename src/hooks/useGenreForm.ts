@@ -12,7 +12,7 @@ import {
   updateSelectedGenreOnContext
 } from '@store/genres'
 import { $globalLoading, setGlobalLoadingState } from '@store/loading'
-import { callConfirmModal, callFormModal } from '@store/modals'
+import { callConfirmModal, callFormModal, callViewModal } from '@store/modals'
 import { publishNotification } from '@store/notifications'
 import {
   API_METHODS,
@@ -155,11 +155,16 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
   const handleSearch = (searchValue: string) =>
     setSearchValue(searchValue.length ? searchValue : null)
 
+  const handleView = (_genreToView: GenreWithMovieAmount) => {
+    callViewModal({ content: _genreToView })
+  }
+
   return {
     handleCreate: invokeForm,
     handleDelete,
     handleSearch,
     handleUpdate,
+    handleView,
     isLoading: isSystemLoading,
     searchTerm: searchValue
   }

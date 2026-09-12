@@ -4,7 +4,6 @@ import type { GenresModel, MoviesModel } from '@models'
 import { ReactComposedTable } from '@composed-components/ReactComposedTable'
 import { useMovieForm } from '@hooks/useMovieForm'
 import { useStore } from '@nanostores/react'
-import { callViewModal } from '@store/modals'
 import { $contextMovieList, setMovieListOnContext } from '@store/movies'
 import { COMMON_LABELS, MOVIE_LABELS } from '@ts/constants'
 import { Button } from 'antd'
@@ -16,24 +15,27 @@ interface ReactMoviePageProps extends ReactTableProps<MoviesModel> {
 
 export const ReactMoviePage: FC<ReactMoviePageProps> = ({ columns, dataSource, genreList }) => {
   const movieListInContext = useStore($contextMovieList)
-  const { handleCreate, handleDelete, handleSearch, handleUpdate, isLoading, searchTerm } =
-    useMovieForm({ genreList })
+  const {
+    handleCreate,
+    handleDelete,
+    handleSearch,
+    handleUpdate,
+    handleView,
+    isLoading,
+    searchTerm
+  } = useMovieForm({ genreList })
 
   useEffect(() => setMovieListOnContext(dataSource ?? []), [dataSource])
 
   const isSearching = useMemo(() => searchTerm !== null, [searchTerm])
-
-  const viewMovie = (_movie: MoviesModel) => {
-    callViewModal({ content: _movie })
-  }
 
   const memoizedMovieTableConfig = useMemo(() => {
     const optionsColumn = {
       key: 'options',
       render: (_singleMovie: MoviesModel) => (
         <>
-          <Button disabled={isLoading} onClick={() => viewMovie(_singleMovie)}>
-            VIEW
+          <Button disabled={isLoading} onClick={() => handleView(_singleMovie)}>
+            {COMMON_LABELS.VIEW}
           </Button>
           <Button disabled={isLoading} onClick={() => handleUpdate(_singleMovie)}>
             {COMMON_LABELS.EDIT}
@@ -56,7 +58,7 @@ export const ReactMoviePage: FC<ReactMoviePageProps> = ({ columns, dataSource, g
       columns: [...columns, optionsColumn],
       dataSource: filteredDataSoruce
     }
-  }, [movieListInContext, searchTerm, columns, isLoading, handleUpdate, handleDelete])
+  }, [movieListInContext, searchTerm, columns, isLoading, handleUpdate, handleDelete, handleView])
 
   return (
     <ReactComposedTable

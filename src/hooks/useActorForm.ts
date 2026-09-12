@@ -5,7 +5,7 @@ import type { FormHookProps } from '@ts/types/forms'
 import { actorFormInputs, actorFormTitle } from '@feature-components/actors/ReactActorsPage/configs'
 import { useStore } from '@nanostores/react'
 import { $globalLoading } from '@store/loading'
-import { callFormModal } from '@store/modals'
+import { callFormModal, callViewModal } from '@store/modals'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
 import { fetchWithAuth } from '@ts/helpers'
@@ -93,18 +93,23 @@ export const useActorForm = ({
     })
   }
 
-  const handleActorDelete = (_actorToDelete: ActorsModel) => console.warn(_actorToDelete)
+  const handleDelete = (_actorToDelete: ActorsModel) => console.warn(_actorToDelete)
 
-  const handleActorUpdate = (_actorToUpdate: ActorsModel) => console.error(_actorToUpdate)
+  const handleUpdate = (_actorToUpdate: ActorsModel) => console.error(_actorToUpdate)
 
   const handleSearch = (searchValue: string) =>
     setSearchValue(searchValue.length ? searchValue : null)
 
+  const handleView = (_actorToView: ActorsModel) => {
+    callViewModal({ content: _actorToView })
+  }
+
   return {
     handleCreate: invokeActorForm,
-    handleDelete: handleActorUpdate,
+    handleDelete,
     handleSearch,
-    handleUpdate: handleActorDelete,
+    handleUpdate,
+    handleView,
     isLoading: isSystemLoading,
     searchTerm: searchValue
   }

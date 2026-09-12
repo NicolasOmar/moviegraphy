@@ -14,8 +14,15 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
   dataSource
 }) => {
   const genreListInContext = useStore($contextGenreList)
-  const { handleCreate, handleDelete, handleSearch, handleUpdate, isLoading, searchTerm } =
-    useGenreForm()
+  const {
+    handleCreate,
+    handleDelete,
+    handleSearch,
+    handleUpdate,
+    handleView,
+    isLoading,
+    searchTerm
+  } = useGenreForm()
 
   useEffect(() => setGenreListOnContext(dataSource ?? []), [dataSource])
 
@@ -26,6 +33,9 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       key: 'options',
       render: (_singleGenre: GenreWithMovieAmount) => (
         <>
+          <Button disabled={isLoading} onClick={() => handleView(_singleGenre)}>
+            {COMMON_LABELS.VIEW}
+          </Button>
           <Button disabled={isLoading} onClick={() => handleUpdate(_singleGenre)}>
             {COMMON_LABELS.EDIT}
           </Button>
@@ -47,7 +57,7 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       columns: [...columns, optionsColumn],
       dataSource: filteredDataSoruce
     }
-  }, [columns, genreListInContext, isLoading, searchTerm, handleUpdate, handleDelete])
+  }, [columns, genreListInContext, isLoading, searchTerm, handleUpdate, handleDelete, handleView])
 
   return (
     <ReactComposedTable

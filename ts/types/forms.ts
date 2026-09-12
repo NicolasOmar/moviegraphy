@@ -13,6 +13,7 @@ export interface FormHookProps<UserDefinedEntity> {
   handleDelete: (_deleteEntity: UserDefinedEntity) => void
   handleSearch: (_searchTerm: string) => void
   handleUpdate: (_updateEntity: UserDefinedEntity) => void
+  handleView: (_viewEntity: UserDefinedEntity) => void
   isLoading: boolean
   searchTerm: null | string
 }
