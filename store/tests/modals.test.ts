@@ -5,9 +5,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   $globalConfirmModal,
   $globalFormModal,
+  $globalViewModal,
   callConfirmModal,
   callFormModal,
+  callViewModal,
   clearFormModal,
+  clearViewModal,
   closeConfirmModal
 } from '../modals'
 
@@ -29,6 +32,7 @@ const buildFormModal = () => {
 beforeEach(() => {
   $globalConfirmModal.set(null)
   $globalFormModal.set(null)
+  $globalViewModal.set(null)
 })
 
 describe('callConfirmModal', () => {
@@ -85,5 +89,30 @@ describe('clearFormModal', () => {
     clearFormModal()
 
     expect($globalFormModal.get()).toBeNull()
+  })
+})
+
+describe('callViewModal', () => {
+  it('sets the view modal atom with the given content', () => {
+    callViewModal({ content: { name: 'Sci-Fi' }, title: 'Genre details' })
+
+    expect($globalViewModal.get()).toEqual({ content: { name: 'Sci-Fi' }, title: 'Genre details' })
+  })
+
+  it('overwrites the previous view modal when called again before it is cleared', () => {
+    callViewModal({ content: { name: 'First' } })
+    callViewModal({ content: { name: 'Second' } })
+
+    expect($globalViewModal.get()).toEqual({ content: { name: 'Second' } })
+  })
+})
+
+describe('clearViewModal', () => {
+  it('resets the view modal atom to null', () => {
+    callViewModal({ content: { name: 'Sci-Fi' } })
+
+    clearViewModal()
+
+    expect($globalViewModal.get()).toBeNull()
   })
 })

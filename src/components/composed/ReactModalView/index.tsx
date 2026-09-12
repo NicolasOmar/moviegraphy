@@ -19,10 +19,12 @@ export const ReactModalView = () => {
     >
       <Space orientation="vertical">
         {Object.entries(globalViewModalStatus.content).map(([key, value], contentI) => {
+          const displayValue = value instanceof Date ? value.toLocaleDateString() : String(value)
+
           return (
             <Space key={contentI}>
               <p>{key}:</p>
-              <p>{value}</p>
+              <p>{displayValue}</p>
             </Space>
           )
         })}

@@ -148,6 +148,36 @@ describe('ReactForm', () => {
     expect(screen.getByRole('radio', { name: 'Male' })).toBeInTheDocument()
   })
 
+  it('renders a select for a "select" input', () => {
+    type GenreLikeValues = { genres: string[] }
+    const selectInputs: FormConfig<GenreLikeValues> = [
+      {
+        config: {
+          label: 'Genres',
+          name: 'genres',
+          options: [{ label: 'Sci-Fi', value: 'sci-fi-id' }]
+        },
+        type: 'select'
+      }
+    ]
+    const SelectWrapper: FC = () => {
+      const [formInstance] = Form.useForm<GenreLikeValues>()
+
+      return (
+        <ReactForm
+          formButtons={formButtons}
+          formInputs={selectInputs}
+          formInstance={formInstance}
+          onSubmit={vi.fn()}
+        />
+      )
+    }
+    render(<SelectWrapper />)
+
+    expect(screen.getByText('Genres')).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
+  })
+
   it('applies the hiddeable class to the section when hidesInResponsive is true', () => {
     const { container } = render(<Wrapper hidesInResponsive />)
 

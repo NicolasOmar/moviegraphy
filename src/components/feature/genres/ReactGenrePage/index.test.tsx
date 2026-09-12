@@ -5,7 +5,7 @@ import { $globalConfirmModal, $globalFormModal } from '@store/modals'
 import { $globalNotifications } from '@store/notifications'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { API_URLS, COMMON_ERROR_MESSAGES } from '@ts/constants'
+import { API_URLS, COMMON_ERROR_MESSAGES, COMMON_LABELS } from '@ts/constants'
 import { genreMocks } from '@ts/mocks'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -63,7 +63,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [editButton] = within(firstRow).getAllByRole('button')
+    const editButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.EDIT })
     await user.click(editButton)
 
     expect($contextSelectedGenre.get()).toEqual(genreMocks[0])
@@ -75,7 +75,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    const deleteButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.DELETE })
     await user.click(deleteButton)
 
     await waitFor(() =>
@@ -96,7 +96,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    const deleteButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.DELETE })
     await user.click(deleteButton)
 
     await waitFor(() =>
@@ -115,7 +115,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreWithMovies.name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    const deleteButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.DELETE })
     await user.click(deleteButton)
 
     await waitFor(() => expect($globalConfirmModal.get()).not.toBeNull())
@@ -146,7 +146,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreWithMovies.name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [, deleteButton] = within(firstRow).getAllByRole('button')
+    const deleteButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.DELETE })
     await user.click(deleteButton)
 
     await waitFor(() => expect($globalConfirmModal.get()).not.toBeNull())
@@ -231,7 +231,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [editButton] = within(firstRow).getAllByRole('button')
+    const editButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.EDIT })
     await user.click(editButton)
 
     const nameField = await screen.findByLabelText('Name')
@@ -265,7 +265,7 @@ describe('ReactGenrePage', () => {
     await waitFor(() => expect(screen.getByText(genreMocks[0].name)).toBeInTheDocument())
 
     const [firstRow] = screen.getAllByRole('row').slice(1)
-    const [editButton] = within(firstRow).getAllByRole('button')
+    const editButton = within(firstRow).getByRole('button', { name: COMMON_LABELS.EDIT })
     await user.click(editButton)
 
     const nameField = await screen.findByLabelText('Name')
