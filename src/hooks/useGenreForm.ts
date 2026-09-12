@@ -18,11 +18,10 @@ import {
   API_METHODS,
   API_URLS,
   buildGenreDeleteConfirmationMessage,
-  COMMON_ERROR_MESSAGES,
   GENRE_SUCCESS_MESSAGES,
   HTTP_STATUS
 } from '@ts/constants'
-import { fetchWithAuth } from '@ts/helpers'
+import { fetchWithAuth, publishFormError } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
 import { useEffect } from 'react'
@@ -94,9 +93,6 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
     setGlobalLoadingState(false)
   }
 
-  const handleFailedGenreSubmit = () =>
-    publishNotification({ content: COMMON_ERROR_MESSAGES.FORM_ERRORS, type: 'error' })
-
   const handleDeleteAction = async (_genreId: string) => {
     const genreIdToDelete = parseModelToFormData({ id: _genreId })
 
@@ -144,7 +140,7 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
         formTitle: genreFormTitle,
         isLoading: isSystemLoading,
         onSubmit: handleGenreSubmit,
-        onSubmitFailed: handleFailedGenreSubmit
+        onSubmitFailed: publishFormError
       }
     })
   }
@@ -157,6 +153,7 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
   return {
     handleCreate: invokeGenreForm,
     handleDelete: handleGenreDelete,
-    handleUpdate: handleGenreUpdate
+    handleUpdate: handleGenreUpdate,
+    isLoading: isSystemLoading
   }
 }

@@ -71,6 +71,13 @@ export enum USER_ERROR_MESSAGES {
 
 export const SESSION_COOKIE_NAME = 'session'
 
+export enum ACTOR_LABELS {
+  NEW_BTN = '+ New Actor',
+  NO_DATA = 'There are not registered Actors',
+  NO_SEARCH_DATA = 'There are no registered actors based on your search',
+  TITLE = 'List of Actors'
+}
+
 export enum COMMON_ERROR_MESSAGES {
   FORM_ERRORS = 'Check the form messages'
 }
@@ -93,4 +100,11 @@ export enum GENRE_LABELS {
 export enum GENRE_SUCCESS_MESSAGES {
   CREATE = 'Genre created',
   DELETE = 'Genre deleted'
+}
+
+export enum MOVIE_LABELS {
+  NEW_BTN = '+ New Movie',
+  NO_DATA = 'There are not registered Movies',
+  NO_SEARCH_DATA = 'There are no registered movies based on your search',
+  TITLE = 'List of Movies'
 }

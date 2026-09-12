@@ -4,6 +4,7 @@ import type { FC } from 'react'
 
 import { ReactComposedTable } from '@composed-components/ReactComposedTable'
 import { useActorForm } from '@hooks/useActorForm'
+import { ACTOR_LABELS, COMMON_LABELS } from '@ts/constants'
 import { Button } from 'antd'
 
 interface ReactActorsPageProps extends ReactTableProps<ActorsModel> {
@@ -16,15 +17,15 @@ export const ReactActorsPage: FC<ReactActorsPageProps> = ({ countryList, genderL
 
   return (
     <ReactComposedTable
-      createText="+Actors"
+      createText={ACTOR_LABELS.NEW_BTN}
       handleCreate={() => {}}
       isSearching={false}
       noDataConfig={{
-        extraContent: <Button onClick={handleCreate}>+Actor</Button>,
-        title: 'Sorry, no registered actors'
+        extraContent: <Button onClick={handleCreate}>{COMMON_LABELS.NEW_BTN}</Button>,
+        title: ACTOR_LABELS.NO_DATA
       }}
       noSearchConfig={{
-        title: 'No searchable data'
+        title: ACTOR_LABELS.NO_SEARCH_DATA
       }}
       searchConfig={{
         onChange: () => {}
@@ -33,7 +34,7 @@ export const ReactActorsPage: FC<ReactActorsPageProps> = ({ countryList, genderL
         columns: [],
         dataSource: []
       }}
-      title="Hello there"
+      title={ACTOR_LABELS.TITLE}
     />
   )
 }

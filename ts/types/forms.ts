@@ -12,6 +12,7 @@ export interface FormHookProps<UserDefinedEntity> {
   handleCreate: () => void
   handleDelete: (_deleteEntity: UserDefinedEntity) => void
   handleUpdate: (_updateEntity: UserDefinedEntity) => void
+  isLoading: boolean
 }
 
 /** Used for text-based form inputs, includes a specific `type` definition

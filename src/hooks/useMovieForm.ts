@@ -180,6 +180,7 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
   return {
     handleCreate: invokeMovieForm,
     handleDelete: handleMovieDelete,
-    handleUpdate: handleMovieUpdate
+    handleUpdate: handleMovieUpdate,
+    isLoading: isSystemLoading
   }
 }

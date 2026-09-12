@@ -6,7 +6,7 @@ import { useMovieForm } from '@hooks/useMovieForm'
 import { useStore } from '@nanostores/react'
 import { $globalLoading } from '@store/loading'
 import { $contextMovieList, setMovieListOnContext } from '@store/movies'
-import { COMMON_LABELS } from '@ts/constants'
+import { COMMON_LABELS, GENRE_LABELS, MOVIE_LABELS } from '@ts/constants'
 import { Button } from 'antd'
 import { type FC, useEffect, useMemo } from 'react'
 
@@ -27,14 +27,14 @@ export const ReactMoviePage: FC<ReactMoviePageProps> = ({ columns, dataSource, g
       render: (_singleMovie: MoviesModel) => (
         <>
           <Button disabled={isSystemLoading} onClick={() => handleUpdate(_singleMovie)}>
-            Edit
+            {COMMON_LABELS.EDIT}
           </Button>
           <Button disabled={isSystemLoading} onClick={() => handleDelete(_singleMovie)}>
-            Delete
+            {COMMON_LABELS.DELETE}
           </Button>
         </>
       ),
-      title: 'Options'
+      title: COMMON_LABELS.OPTIONS
     }
 
     return {
@@ -45,22 +45,22 @@ export const ReactMoviePage: FC<ReactMoviePageProps> = ({ columns, dataSource, g
 
   return (
     <ReactComposedTable
-      createText={'Create Movie button'}
+      createText={MOVIE_LABELS.NEW_BTN}
       handleCreate={handleCreate}
       isSearching={false}
       noDataConfig={{
         extraContent: <Button onClick={handleCreate}>{COMMON_LABELS.NEW_BTN}</Button>,
-        title: 'No created movies'
+        title: MOVIE_LABELS.NO_DATA
       }}
       noSearchConfig={{
-        title: 'No searchable movies'
+        title: MOVIE_LABELS.NO_SEARCH_DATA
       }}
       searchConfig={{
         onChange: () => {},
         placeholder: COMMON_LABELS.SEARCH_BY_NAME
       }}
       tableConfig={memoizedMovieTableConfig}
-      title={'List of movies'}
+      title={GENRE_LABELS.TITLE}
     />
   )
 }

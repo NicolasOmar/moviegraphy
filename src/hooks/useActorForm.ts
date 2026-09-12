@@ -99,6 +99,7 @@ export const useActorForm = ({
   return {
     handleCreate: invokeActorForm,
     handleDelete: handleActorUpdate,
-    handleUpdate: handleActorDelete
+    handleUpdate: handleActorDelete,
+    isLoading: isSystemLoading
   }
 }
