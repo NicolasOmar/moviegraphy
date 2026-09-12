@@ -11,8 +11,10 @@ export type FormConfig<ConfigEntity> = Array<FormItemConfig<ConfigEntity>>
 export interface FormHookProps<UserDefinedEntity> {
   handleCreate: () => void
   handleDelete: (_deleteEntity: UserDefinedEntity) => void
+  handleSearch: (_searchTerm: string) => void
   handleUpdate: (_updateEntity: UserDefinedEntity) => void
   isLoading: boolean
+  searchTerm: null | string
 }
 
 /** Used for text-based form inputs, includes a specific `type` definition

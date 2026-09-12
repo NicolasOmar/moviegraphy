@@ -16,31 +16,34 @@ import {
 } from '@store/movies'
 import { publishNotification } from '@store/notifications'
 import { API_METHODS, API_URLS, HTTP_STATUS } from '@ts/constants'
-import { fetchWithAuth } from '@ts/helpers'
+import { fetchWithAuth, publishFormError } from '@ts/helpers'
 import {
   parseModelToFormData,
   parseResponseErrorToMessage,
   parseResponseMessageToEntity
 } from '@ts/parsers'
 import { Form } from 'antd'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 interface ReactMovieFormProps {
   genreList: GenresModel[]
 }
 
 export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<MoviesModel> => {
-  const selectedMovieInContext = useStore($contextSelectedMovie)
   const isSystemLoading = useStore($globalLoading)
-  const [movieForm] = Form.useForm<MoviesModel>()
+  const [movieForm] = Form.useForm<MovieFormModel>()
+  const [searchValue, setSearchValue] = useState<null | string>(null)
 
-  useEffect(() => {
-    if (selectedMovieInContext) {
-      movieForm.setFieldsValue(selectedMovieInContext)
+  $contextSelectedMovie.listen(_movie => {
+    if (_movie) {
+      movieForm.setFieldsValue({
+        ..._movie,
+        genres: _movie.genres?.map(({ id }) => id) ?? []
+      })
     } else {
       movieForm.resetFields()
     }
-  }, [selectedMovieInContext, movieForm])
+  })
 
   const memoizedFormInputs = useMemo(() => {
     return [
@@ -57,9 +60,6 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
     ] as FormConfig<MovieFormModel>
   }, [genreList])
 
-  const handleInvalidation = () =>
-    publishNotification({ content: 'Check the form messages', type: 'error' })
-
   const handleCancel = useCallback(() => {
     movieForm.resetFields()
     updateSelectedMovieOnContext(null)
@@ -68,13 +68,14 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
   const handleMovieSubmit = async (_movieToSubmit: MovieFormModel) => {
     setGlobalLoadingState(true)
 
-    const isInCreateMode = selectedMovieInContext === null
+    const movieInContext = $contextSelectedMovie.get()
+    const isInCreateMode = movieInContext == null
     const movieToSend: MovieFormModel = isInCreateMode
       ? _movieToSubmit
-      : { ..._movieToSubmit, id: selectedMovieInContext.id }
+      : { ..._movieToSubmit, id: movieInContext.id }
     const movieFormData = parseModelToFormData(movieToSend)
 
-    if (selectedMovieInContext === null) {
+    if (isInCreateMode) {
       const movieCreateResponse = await fetchWithAuth(API_URLS.MOVIES, {
         body: movieFormData,
         method: API_METHODS.POST
@@ -106,10 +107,10 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
         updateMovieOnListContext({
           countryMade,
           description,
-          id: selectedMovieInContext.id,
+          id: movieInContext.id,
           name,
           releaseYear,
-          userId: selectedMovieInContext.userId
+          userId: movieInContext.userId
         })
 
         publishNotification({
@@ -122,28 +123,28 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
     setGlobalLoadingState(false)
   }
 
-  const handleMovieUpdate = async (_movieToEdit: MoviesModel) => {
+  const handleUpdate = async (_movieToEdit: MoviesModel) => {
     setGlobalLoadingState(true)
 
-    const movieCompleteResponse = await fetchWithAuth(`${API_URLS.MOVIES}/${_movieToEdit.id}`, {
+    const movieToUpdateResponse = await fetchWithAuth(`${API_URLS.MOVIES}/${_movieToEdit.id}`, {
       method: API_METHODS.GET
     })
 
-    if (movieCompleteResponse.status !== HTTP_STATUS.OK) {
-      const errorMessage = await parseResponseErrorToMessage(movieCompleteResponse)
+    if (movieToUpdateResponse.status !== HTTP_STATUS.OK) {
+      const errorMessage = await parseResponseErrorToMessage(movieToUpdateResponse)
       publishNotification({ content: errorMessage, type: 'error' })
     } else {
-      const movieCompleteModel =
-        await parseResponseMessageToEntity<MovieWithGenresModel>(movieCompleteResponse)
+      const movieToUpdate =
+        await parseResponseMessageToEntity<MovieWithGenresModel>(movieToUpdateResponse)
 
-      updateSelectedMovieOnContext(movieCompleteModel)
-      invokeMovieForm()
+      updateSelectedMovieOnContext(movieToUpdate)
+      invokeForm()
     }
 
     setGlobalLoadingState(false)
   }
 
-  const handleMovieDelete = async (_movieToDelete: MoviesModel) => {
+  const handleDelete = async (_movieToDelete: MoviesModel) => {
     setGlobalLoadingState(true)
     const movieIdToDelete = parseModelToFormData({ id: _movieToDelete.id })
 
@@ -164,7 +165,7 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
     setGlobalLoadingState(false)
   }
 
-  const invokeMovieForm = () => {
+  const invokeForm = () => {
     callFormModal({
       form: {
         formInputs: memoizedFormInputs,
@@ -172,15 +173,20 @@ export const useMovieForm = ({ genreList }: ReactMovieFormProps): FormHookProps<
         formTitle: actorFormTitle,
         isLoading: isSystemLoading,
         onSubmit: handleMovieSubmit,
-        onSubmitFailed: handleInvalidation
+        onSubmitFailed: publishFormError
       }
     })
   }
 
+  const handleSearch = (searchValue: string) =>
+    setSearchValue(searchValue.length ? searchValue : null)
+
   return {
-    handleCreate: invokeMovieForm,
-    handleDelete: handleMovieDelete,
-    handleUpdate: handleMovieUpdate,
-    isLoading: isSystemLoading
+    handleCreate: invokeForm,
+    handleDelete,
+    handleSearch,
+    handleUpdate,
+    isLoading: isSystemLoading,
+    searchTerm: searchValue
   }
 }

@@ -15,7 +15,7 @@ import {
   parseResponseMessageToEntity
 } from '@ts/parsers'
 import { Form } from 'antd'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 interface ReactActorFormProps {
   countryList: CountriesModel[]
@@ -28,6 +28,7 @@ export const useActorForm = ({
 }: ReactActorFormProps): FormHookProps<ActorsModel> => {
   const isSystemLoading = useStore($globalLoading)
   const [actorForm] = Form.useForm<ActorFormModel>()
+  const [searchValue, setSearchValue] = useState<null | string>(null)
 
   const memoizedFormInputs = useMemo(() => {
     const parsedInputConfig = actorFormInputs.map(_inputConfig => {
@@ -96,10 +97,15 @@ export const useActorForm = ({
 
   const handleActorUpdate = (_actorToUpdate: ActorsModel) => console.error(_actorToUpdate)
 
+  const handleSearch = (searchValue: string) =>
+    setSearchValue(searchValue.length ? searchValue : null)
+
   return {
     handleCreate: invokeActorForm,
     handleDelete: handleActorUpdate,
+    handleSearch,
     handleUpdate: handleActorDelete,
-    isLoading: isSystemLoading
+    isLoading: isSystemLoading,
+    searchTerm: searchValue
   }
 }

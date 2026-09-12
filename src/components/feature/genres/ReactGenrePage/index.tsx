@@ -7,19 +7,19 @@ import { useStore } from '@nanostores/react'
 import { $contextGenreList, setGenreListOnContext } from '@store/genres'
 import { COMMON_LABELS, GENRE_LABELS } from '@ts/constants'
 import { Button } from 'antd'
-import { type FC, useEffect, useMemo, useState } from 'react'
+import { type FC, useEffect, useMemo } from 'react'
 
 export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
   columns,
   dataSource
 }) => {
   const genreListInContext = useStore($contextGenreList)
-  const { handleCreate, handleDelete, handleUpdate, isLoading } = useGenreForm()
-  const [searchValue, setSearchValue] = useState<null | string>(null)
+  const { handleCreate, handleDelete, handleSearch, handleUpdate, isLoading, searchTerm } =
+    useGenreForm()
 
   useEffect(() => setGenreListOnContext(dataSource ?? []), [dataSource])
 
-  const isSearching = useMemo(() => searchValue !== null, [searchValue])
+  const isSearching = useMemo(() => searchTerm !== null, [searchTerm])
 
   const memoizedGenreTableConfig = useMemo(() => {
     const optionsColumn = {
@@ -37,20 +37,17 @@ export const ReactGenrePage: FC<ReactTableProps<GenreWithMovieAmount>> = ({
       title: COMMON_LABELS.OPTIONS
     }
     const filteredDataSoruce =
-      searchValue === null
+      searchTerm === null
         ? genreListInContext
         : genreListInContext.filter(({ name }) =>
-            name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+            name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
           )
 
     return {
       columns: [...columns, optionsColumn],
       dataSource: filteredDataSoruce
     }
-  }, [columns, genreListInContext, isLoading, searchValue, handleUpdate, handleDelete])
-
-  const handleSearch = (searchValue: string) =>
-    setSearchValue(searchValue.length ? searchValue : null)
+  }, [columns, genreListInContext, isLoading, searchTerm, handleUpdate, handleDelete])
 
   return (
     <ReactComposedTable

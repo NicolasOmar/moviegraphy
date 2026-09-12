@@ -24,12 +24,13 @@ import {
 import { fetchWithAuth, publishFormError } from '@ts/helpers'
 import { parseModelToFormData, parseResponseErrorToMessage } from '@ts/parsers'
 import { Form } from 'antd'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
   const selectedGenreInContext = useStore($contextSelectedGenre)
   const isSystemLoading = useStore($globalLoading)
   const [genreForm] = Form.useForm<GenreFormModel>()
+  const [searchValue, setSearchValue] = useState<null | string>(null)
 
   useEffect(() => {
     if (selectedGenreInContext) {
@@ -41,6 +42,7 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
 
   const handleGenreSubmit = async (_genreToSubmit: GenreFormModel) => {
     setGlobalLoadingState(true)
+
     const selectedGenre = $contextSelectedGenre.get()
     const isInCreateMode = selectedGenre === null
 
@@ -111,7 +113,7 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
     }
   }
 
-  const handleGenreDelete = async (_genreToDelete: GenreWithMovieAmount) => {
+  const handleDelete = async (_genreToDelete: GenreWithMovieAmount) => {
     setGlobalLoadingState(true)
 
     if (_genreToDelete.moviesAmount && _genreToDelete.moviesAmount > 0) {
@@ -132,7 +134,7 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
     }
   }
 
-  const invokeGenreForm = () => {
+  const invokeForm = () => {
     callFormModal({
       form: {
         formInputs: genreFormInputs,
@@ -145,15 +147,20 @@ export const useGenreForm = (): FormHookProps<GenreWithMovieAmount> => {
     })
   }
 
-  const handleGenreUpdate = (_genreToEdit: GenreWithMovieAmount) => {
+  const handleUpdate = (_genreToEdit: GenreWithMovieAmount) => {
     updateSelectedGenreOnContext(_genreToEdit)
-    invokeGenreForm()
+    invokeForm()
   }
 
+  const handleSearch = (searchValue: string) =>
+    setSearchValue(searchValue.length ? searchValue : null)
+
   return {
-    handleCreate: invokeGenreForm,
-    handleDelete: handleGenreDelete,
-    handleUpdate: handleGenreUpdate,
-    isLoading: isSystemLoading
+    handleCreate: invokeForm,
+    handleDelete,
+    handleSearch,
+    handleUpdate,
+    isLoading: isSystemLoading,
+    searchTerm: searchValue
   }
 }
