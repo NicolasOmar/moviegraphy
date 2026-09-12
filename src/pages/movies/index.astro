@@ -3,10 +3,9 @@ import type { CustomAstroLocals } from '@ts-types/entities'
 
 import { getGenreList } from '@api/genres'
 import { getMovieList } from '@api/movies'
-import { ReactMovieForm } from '@components/movies/ReactMovieForm'
-import { ReactMovieTable } from '@components/movies/ReactMovieTable'
+import { ReactMoviePage } from '@feature-components/movies/ReactMoviePage'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
-import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
+import OneColumnLayout from '@layouts/OneColumnLayout.astro'
 
 const movieListColumns = [
   {
@@ -37,8 +36,12 @@ const movieList = await getMovieList(loggedUserId).catch(() => [])
 ---
 
 <NavigationLayout>
-  <TwoColumnsLayout>
-    <ReactMovieForm client:visible genreList={genreList} />
-    <ReactMovieTable client:visible columns={movieListColumns} dataSource={movieList} />
-  </TwoColumnsLayout>
+  <OneColumnLayout>
+    <ReactMoviePage
+      client:visible
+      columns={movieListColumns}
+      dataSource={movieList}
+      genreList={genreList}
+    />
+  </OneColumnLayout>
 </NavigationLayout>

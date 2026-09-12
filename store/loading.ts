@@ -1,6 +1,6 @@
 import { atom } from 'nanostores'
 
-export const $contextLoading = atom<boolean>(false)
+export const $globalLoading = atom<boolean>(false)
 
-export const setLoadingSystemState = (newLoadingState: boolean) =>
-  $contextLoading.set(newLoadingState)
+export const setGlobalLoadingState = (_newLoadingState: boolean) =>
+  $globalLoading.set(_newLoadingState)

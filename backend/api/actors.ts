@@ -1,7 +1,7 @@
 import type { ActorsModel } from '@models'
 import type { ActorApiModel } from '@ts-types/entities'
 
-import { type CreateOrUpdateOne, HttpError } from '@ts-types/api'
+import { type CreateOrUpdateOne, type GetMany, HttpError } from '@ts-types/api'
 import { HTTP_STATUS } from '@ts/constants'
 import { parseApiErrorToHttpError, parseIdStringToArray } from '@ts/parsers'
 
@@ -38,5 +38,21 @@ export const createActor: CreateOrUpdateOne<ActorApiModel, ActorsModel> = async 
     })
   } catch (_createActorError) {
     throw parseApiErrorToHttpError(_createActorError, '[POST /api/actors]')
+  }
+}
+
+/** `[GET]` function for registered actors
+ *
+ * @returns A list of `ActorsModel`
+ */
+export const getActorsList: GetMany<string, ActorsModel> = async _loggedUserId => {
+  try {
+    const actorsList = await prismaInstance.actors.findMany({
+      where: { userId: _loggedUserId }
+    })
+
+    return actorsList
+  } catch (_getActorsListError) {
+    throw parseApiErrorToHttpError(_getActorsListError, '[GET /api/actors]')
   }
 }

@@ -1,17 +1,60 @@
 ---
+import type { CustomAstroLocals } from '@ts/types/entities'
+
+import { getActorsList } from '@api/actors'
 import { getCountryList } from '@api/countries'
 import { getGenderList } from '@api/genders'
-import { ReactActorForm } from '@components/actors/ReactActorForm'
+import { ReactActorsPage } from '@feature-components/actors/ReactActorsPage'
 import NavigationLayout from '@layouts/NavigationLayout.astro'
-import TwoColumnsLayout from '@layouts/TwoColumnsLayout.astro'
+import OneColumnLayout from '@layouts/OneColumnLayout.astro'
 
+const actorsListColumns = [
+  {
+    dataIndex: 'name',
+    name: 'name',
+    title: 'Name'
+  },
+  {
+    dataIndex: 'lastName',
+    name: 'lastName',
+    title: 'Lastname'
+  },
+  {
+    dataIndex: 'bornDate',
+    name: 'bornDate',
+    title: 'Born date'
+  },
+  {
+    dataIndex: 'deadDate',
+    name: 'deadDate',
+    title: 'Passed date'
+  },
+  {
+    dataIndex: 'genderId',
+    name: 'genderId',
+    title: 'Gender'
+  },
+  {
+    dataIndex: 'countries',
+    name: 'countries',
+    title: 'Countries'
+  }
+]
+
+const loggedUserId = (Astro.locals as CustomAstroLocals).loggedUserId
 const countryList = await getCountryList(null).catch(() => [])
 const genderList = await getGenderList(null).catch(() => [])
+const actorsList = await getActorsList(loggedUserId).catch(() => [])
 ---
 
 <NavigationLayout>
-  <TwoColumnsLayout>
-    <ReactActorForm client:visible countryList={countryList} genderList={genderList} />
-    <section>Testng List</section>
-  </TwoColumnsLayout>
+  <OneColumnLayout>
+    <ReactActorsPage
+      client:visible
+      columns={actorsListColumns}
+      countryList={countryList}
+      dataSource={actorsList}
+      genderList={genderList}
+    />
+  </OneColumnLayout>
 </NavigationLayout>

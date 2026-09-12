@@ -1,4 +1,6 @@
-import { HTTP_STATUS, PAGE_URL } from './constants'
+import { publishNotification } from '@store/notifications'
+
+import { COMMON_ERROR_MESSAGES, HTTP_STATUS, PAGE_URL } from './constants'
 
 /**
  * `fetch` wrapper for API calls that require an authenticated session. A plain `fetch` would
@@ -49,3 +51,6 @@ export const getISODateWithDaysOffset = (days: number): Date => {
   const isoNow = getCurrentISODate()
   return new Date(isoNow.getTime() + days * 24 * 60 * 60 * 1000)
 }
+
+export const publishFormError = () =>
+  publishNotification({ content: COMMON_ERROR_MESSAGES.FORM_ERRORS, type: 'error' })
